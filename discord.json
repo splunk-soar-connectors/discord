@@ -21,8 +21,8 @@
     "license": "Copyright (c) Discord, 2024",
     "app_version": "1.0.0",
     "utctime_updated": "2024-08-07T07:57:28.958868Z",
-    "package_name": "phantom_discord2",
-    "main_module": "discord2_connector.py",
+    "package_name": "phantom_discord",
+    "main_module": "discord_connector.py",
     "min_phantom_version": "6.2.2.134",
     "app_wizard_version": "1.0.0",
     "configuration": {
@@ -152,9 +152,7 @@
                 {
                     "data_path": "action_result.parameter.guild_id",
                     "data_type": "string",
-                    "contains": [
-                        "guild id"
-                    ]
+                    "contains": []
                 },
                 {
                     "data_path": "action_result.data.*.*.id",
