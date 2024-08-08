@@ -1,0 +1,135 @@
+{
+    "appid": "3df4aac3-ab56-42a1-8305-ea6155744509",
+    "name": "discord2",
+    "description": "discord",
+    "type": "information",
+    "product_vendor": "discord",
+    "logo": "discord2.svg",
+    "logo_dark": "discord2_dark.svg",
+    "product_name": "discord",
+    "python_version": "3",
+    "product_version_regex": ".*",
+    "publisher": "discord",
+    "license": "Copyright (c) discord, 2024",
+    "app_version": "1.0.0",
+    "utctime_updated": "2024-08-07T07:57:28.958868Z",
+    "package_name": "phantom_discord2",
+    "main_module": "discord2_connector.py",
+    "min_phantom_version": "6.2.2.134",
+    "app_wizard_version": "1.0.0",
+    "configuration": {
+        "token": {
+            "description": "discord bot token",
+            "data_type": "password",
+            "required": true,
+            "order": 0,
+            "name": "token",
+            "id": 0
+        }
+    },
+    "actions": [
+        {
+            "action": "test connectivity",
+            "identifier": "test_connectivity",
+            "description": "Validate the asset configuration for connectivity using supplied configuration",
+            "verbose": "",
+            "type": "test",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "list gulds",
+            "identifier": "list_gulds",
+            "description": ";list guild (channels)",
+            "verbose": "",
+            "type": "contain",
+            "read_only": false,
+            "parameters": {},
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "list channels",
+            "identifier": "list_channels",
+            "description": "list channels of specific guild",
+            "verbose": "",
+            "type": "contain",
+            "read_only": true,
+            "parameters": {
+                "guild_id": {
+                    "description": "guilds id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "guild_id"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.guild_id",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "guild_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        }
+    ],
+    "pip3_dependencies": {
+        "pypi": [
+            {
+                "module": "discord"
+            }
+        ]
+    }
+}
