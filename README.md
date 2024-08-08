@@ -22,6 +22,7 @@ This Phantom App is licensed under the Apache 2.0 license. Please see our [Contr
 
 
 ### Configuration Variables
+
 The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord asset in SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
