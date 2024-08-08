@@ -50,9 +50,54 @@
             "output": [
                 {
                     "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.*.id",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 0
+                    "column_name": "Guild ID",
+                    "column_order": 1,
+                    "contains": [
+                        "discord guild id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.*.name",
+                    "data_type": "string",
+                    "column_name": "Guild name",
+                    "column_order": 1,
+                    "contains": [
+                        "discord guild name"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.*.icon",
+                    "data_type": "string",
+                    "contains": [
+                        "icon"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.*.owner",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.*.baner",
+                    "data_type": "string",
+                    "contains": [
+                        "baner"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.*.permissions",
+                    "data_type": "string",
+                    "contains": [
+                        "permissions"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -68,7 +113,10 @@
                 }
             ],
             "render": {
-                "type": "table"
+                "width": 12,
+                "title": "List Channels",
+                "type": "table",
+                "height": 5
             },
             "versions": "EQ(*)"
         },
