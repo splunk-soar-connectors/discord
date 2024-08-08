@@ -27,7 +27,7 @@
     "app_wizard_version": "1.0.0",
     "configuration": {
         "token": {
-            "description": "discord bot token",
+            "description": "Discord bot token",
             "data_type": "password",
             "required": true,
             "order": 0,
@@ -39,8 +39,8 @@
         {
             "action": "test connectivity",
             "identifier": "test_connectivity",
-            "description": "Validate the asset configuration for connectivity using supplied configuration",
-            "verbose": "",
+            "description": "Tests authorization with Discord",
+            "verbose": "Checks that the provided bot token is valid.",
             "type": "test",
             "read_only": true,
             "parameters": {},
@@ -48,12 +48,12 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "list gulds",
-            "identifier": "list_gulds",
-            "description": ";list guild (channels)",
-            "verbose": "",
-            "type": "contain",
-            "read_only": false,
+            "action": "list guilds",
+            "identifier": "list_guilds",
+            "description": "List guilds of a Discord bot is a member of",
+            "verbose": "The output of this action is a list of all guilds (servers) a Discord bot is a member of. The guilds will be listed with their corresponding guild IDs.",
+            "type": "investigate",
+            "read_only": true,
             "parameters": {},
             "output": [
                 {
@@ -122,7 +122,7 @@
             ],
             "render": {
                 "width": 12,
-                "title": "List Channels",
+                "title": "List Guilds",
                 "type": "table",
                 "height": 5
             },
@@ -131,9 +131,9 @@
         {
             "action": "list channels",
             "identifier": "list_channels",
-            "description": "list channels of specific guild",
-            "verbose": "",
-            "type": "contain",
+            "description": "List Channels of a specific guild",
+            "verbose": "The output of this action is a list of all channels of a specific guild. The channels will be listed with their corresponding channel IDs.",
+            "type": "investigate",
             "read_only": true,
             "parameters": {
                 "guild_id": {
@@ -152,9 +152,27 @@
                 {
                     "data_path": "action_result.parameter.guild_id",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "guild_id",
-                    "column_order": 0
+                    "contains": [
+                        "guild id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.*.id",
+                    "data_type": "string",
+                    "column_name": "Channel ID",
+                    "column_order": 1,
+                    "contains": [
+                        "discord channel id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.*.name",
+                    "data_type": "string",
+                    "column_name": "Channel name",
+                    "column_order": 1,
+                    "contains": [
+                        "discord channel name"
+                    ]
                 },
                 {
                     "data_path": "action_result.status",
