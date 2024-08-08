@@ -1,16 +1,24 @@
 {
     "appid": "3df4aac3-ab56-42a1-8305-ea6155744509",
-    "name": "discord2",
-    "description": "discord",
+    "name": "Discord",
+    "description": "Integrate with Discord to post messages and attachments to channels",
+    "contributors": [
+        {
+            "name": "Kacper Czernik"
+        },
+        {
+            "name": "Katarzyna Zuchowska"
+        }
+    ],
     "type": "information",
-    "product_vendor": "discord",
-    "logo": "discord2.svg",
-    "logo_dark": "discord2_dark.svg",
-    "product_name": "discord",
+    "product_vendor": "Discord",
+    "logo": "discord.svg",
+    "logo_dark": "discord_dark.svg",
+    "product_name": "Discord",
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "discord",
-    "license": "Copyright (c) discord, 2024",
+    "license": "Copyright (c) Discord, 2024",
     "app_version": "1.0.0",
     "utctime_updated": "2024-08-07T07:57:28.958868Z",
     "package_name": "phantom_discord2",
