@@ -1,6 +1,6 @@
 {
-    "appid": "3df4aac3-ab56-42a1-8305-ea6155744509",
-    "name": "Discord",
+    "appid": "7da90c54-59c5-4fc7-95ec-132968a22909",
+    "name": "discord_kczernik",
     "description": "Integrate with Discord to post messages and attachments to channels",
     "contributors": [
         {
@@ -11,17 +11,17 @@
         }
     ],
     "type": "information",
-    "product_vendor": "Discord",
+    "product_vendor": "Discord_clone_1723108489099",
     "logo": "discord.svg",
     "logo_dark": "discord_dark.svg",
-    "product_name": "Discord",
+    "product_name": "Discord_clone_1723108489099",
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "discord",
     "license": "Copyright (c) Discord, 2024",
     "app_version": "1.0.0",
-    "utctime_updated": "2024-08-07T07:57:28.958868Z",
-    "package_name": "phantom_discord",
+    "utctime_updated": "2024-08-08T09:14:58.622184Z",
+    "package_name": "phantom_discord_kczernik",
     "main_module": "discord_connector.py",
     "min_phantom_version": "6.2.2.134",
     "app_wizard_version": "1.0.0",
@@ -195,6 +195,76 @@
                 "type": "table"
             },
             "versions": "EQ(*)"
+        },
+        {
+            "action": "get_message",
+            "identifier": "get_message",
+            "description": "get chosen message",
+            "verbose": "",
+            "type": "investigate",
+            "read_only": false,
+            "parameters": {
+                "channel_id": {
+                    "description": "channel id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "channel_id"
+                },
+                "message_id": {
+                    "description": "message id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "message_id"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.channel_id",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "channel_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.message_id",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "message_id",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
         }
     ],
     "pip3_dependencies": {
@@ -203,5 +273,12 @@
                 "module": "discord"
             }
         ]
-    }
+    },
+    "copied_from_id": 216,
+    "copied_from_version": "1.0.0",
+    "directory": "discord_kczernik_7da90c54-59c5-4fc7-95ec-132968a22909",
+    "version": 1,
+    "appname": "-",
+    "executable": "spawn3",
+    "disabled": false
 }
