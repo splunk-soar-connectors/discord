@@ -1,6 +1,6 @@
 {
-    "appid": "7da90c54-59c5-4fc7-95ec-132968a22909",
-    "name": "discord_kczernik",
+    "appid": "9bbc656e-76b8-4305-9f9c-98e20f873316",
+    "name": "discord_kczernik2",
     "description": "Integrate with Discord to post messages and attachments to channels",
     "contributors": [
         {
@@ -11,28 +11,36 @@
         }
     ],
     "type": "information",
-    "product_vendor": "Discord_clone_1723108489099",
+    "product_vendor": "Discord_clone_1723108489099_clone_1723121852701",
     "logo": "discord.svg",
     "logo_dark": "discord_dark.svg",
-    "product_name": "Discord_clone_1723108489099",
+    "product_name": "Discord_clone_1723108489099_clone_1723121852701",
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "discord",
     "license": "Copyright (c) Discord, 2024",
     "app_version": "1.0.0",
-    "utctime_updated": "2024-08-08T09:14:58.622184Z",
-    "package_name": "phantom_discord_kczernik",
+    "utctime_updated": "2024-08-08T13:39:16.084358Z",
+    "package_name": "phantom_discord_kczernik2",
     "main_module": "discord_connector.py",
     "min_phantom_version": "6.2.2.134",
     "app_wizard_version": "1.0.0",
     "configuration": {
         "token": {
             "description": "Discord bot token",
-            "data_type": "password",
+            "data_type": "string",
             "required": true,
-            "order": 0,
-            "name": "token",
-            "id": 0
+            "value_list": [],
+            "default": "",
+            "order": 0
+        },
+        "guild_id": {
+            "description": "server/guild id",
+            "data_type": "numeric",
+            "required": false,
+            "value_list": [],
+            "default": "",
+            "order": 1
         }
     },
     "actions": [
@@ -274,9 +282,9 @@
             }
         ]
     },
-    "copied_from_id": 216,
+    "copied_from_id": 219,
     "copied_from_version": "1.0.0",
-    "directory": "discord_kczernik_7da90c54-59c5-4fc7-95ec-132968a22909",
+    "directory": "discord_kczernik2_9bbc656e-76b8-4305-9f9c-98e20f873316",
     "version": 1,
     "appname": "-",
     "executable": "spawn3",
