@@ -14,6 +14,7 @@ from phantom.base_connector import BaseConnector
 import requests
 import json
 import discord
+import asyncio
 from bs4 import BeautifulSoup
 
 
@@ -163,8 +164,6 @@ class DiscordConnector(BaseConnector):
         )
 
         if phantom.is_fail(ret_val):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
             self.save_progress("Test Connectivity Failed.")
             return action_result.get_status()
 
@@ -172,23 +171,10 @@ class DiscordConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_guilds(self, param):
-        # Implement the handler here
-        # use self.save_progress(...) to send progress messages back to the platform
         self.debug_print("param", param)
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
-        # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Access action parameters passed in the 'param' dictionary
-
-        # Required values can be accessed directly
-        # required_parameter = param['required_parameter']
-
-        # Optional values should use the .get() function
-        # optional_parameter = param.get('optional_parameter', 'default_value')
-
-        # make rest call
 
         ret_val, response = self._make_rest_call(
             '/users/@me/guilds', action_result, params=None, headers=self._headers
@@ -230,21 +216,44 @@ class DiscordConnector(BaseConnector):
         channel_id = param['channel_id']
         message_id = param['message_id']
 
-        guild = self._client.get_guild(self._guild_id)
-        if guild is None:
-            return action_result.set_status(phantom.APP_ERROR, "unable to get guild {0}".format(self._guild_id))
-        channel = guild.get_channel(int(channel_id))
-        if channel is None:
-            return action_result.set_status(phantom.APP_ERROR, "unable to get channel {0}".format(channel_id))
-        message = channel.fetch_message(int(message_id))
-        if message is None:
-            return action_result.set_status(phantom.APP_ERROR, "unable to get message {0}".format(message_id))
+        message = asyncio.run(self.foo(channel_id, message_id))
 
-        action_result.add_data(guild)
+        # gets the message while scanning for NoneTypes
+        # guild = self._client.get_guild(self._guild_id)
+        # if guild is None:
+        #     return action_result.set_status(phantom.APP_ERROR, "unable to get guild {0}".format(self._guild_id))
+        # channel = guild.get_channel(int(channel_id))
+        # if channel is None:
+        #     return action_result.set_status(phantom.APP_ERROR, "unable to get channel {0}".format(channel_id))
+        # message = channel.fetch_message(int(message_id))
+        # if message is None:
+        #     return action_result.set_status(phantom.APP_ERROR, "unable to get message {0}".format(message_id))
+
+
+        action_result.add_data(message)
         summary = action_result.update_summary({})
         summary['message'] = len(str(message))
 
         return action_result.set_status(phantom.APP_SUCCESS)
+
+    async def foo(self, channel_id, message_id):
+        await self._client.login(self._token)
+
+        f_guild = await self._client.fetch_guild(self._guild_id)
+        self.save_progress("fetched guild: {}".format(str(f_guild)))
+
+        guild = self._client.get_guild(self._guild_id)
+        self.save_progress("guild: {}".format(str(guild)))
+
+        channel = f_guild.get_channel(channel_id)
+        self.save_progress("channel guild: {}".format(str(channel)))
+
+        message = await channel.fetch_message(message_id)
+        self.save_progress("message guild: {}".format(str(message)))
+
+        # await self._client.close()
+        return message
+
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
@@ -270,7 +279,6 @@ class DiscordConnector(BaseConnector):
 
     def initialize(self):
         # Load the state in initialize, use it to store data
-        # that needs to be accessed across actions
         self._state = self.load_state()
 
         # get the asset config
@@ -279,14 +287,18 @@ class DiscordConnector(BaseConnector):
         self._base_url = "https://discord.com/api/v10"
         self._token = config['token']
         self._guild_id = config['guild_id']
+
         self._headers = {"Authorization": "Bot " + self._token}
 
-        ###
+
         intents = discord.Intents.default()
         intents.presences = True
         intents.members = True
         intents.message_content = True
         self._client = discord.Client(intents=intents)
+
+        # self.save_progress("awdhwiwdajhadwajkwpdkaopwkd;awlkdpkdwapkjdwowkdaopdapl")
+        # self._message = asyncio.run(self.foo(1270733142906507279, 1271037292701548606))
 
         return phantom.APP_SUCCESS
 
