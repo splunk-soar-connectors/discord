@@ -229,10 +229,11 @@ class DiscordConnector(BaseConnector):
         # if message is None:
         #     return action_result.set_status(phantom.APP_ERROR, "unable to get message {0}".format(message_id))
 
+        message = self.parse_message(message)
 
-        # action_result.add_data(message)
-        # summary = action_result.update_summary({})
-        # summary['message'] = len(str(message))
+        action_result.add_data(message)
+        summary = action_result.update_summary({})
+        summary['message'] = len(message)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -254,6 +255,20 @@ class DiscordConnector(BaseConnector):
         await self._client.close()
         return message
 
+    def parse_message(self, message):
+
+        json_message = {
+            "channel_id": message.channel.id,
+            "channel_name": message.channel.name,
+            "message_id": message.id,
+            "author_id": message.author.id,
+            "author_name": message.author.name,
+            "attachments": message.attachments,
+            "content": message.content,
+            "embeds": message.embeds,
+            "timestamp": message.created_at.timestamp()
+        }
+        return json_message
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
