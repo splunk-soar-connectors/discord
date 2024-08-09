@@ -216,7 +216,7 @@ class DiscordConnector(BaseConnector):
         channel_id = param['channel_id']
         message_id = param['message_id']
 
-        message = asyncio.run(self.foo(channel_id, message_id))
+        message = asyncio.run(self.fetch_message_info(channel_id, message_id))
 
         # gets the message while scanning for NoneTypes
         # guild = self._client.get_guild(self._guild_id)
@@ -230,28 +230,28 @@ class DiscordConnector(BaseConnector):
         #     return action_result.set_status(phantom.APP_ERROR, "unable to get message {0}".format(message_id))
 
 
-        action_result.add_data(message)
-        summary = action_result.update_summary({})
-        summary['message'] = len(str(message))
+        # action_result.add_data(message)
+        # summary = action_result.update_summary({})
+        # summary['message'] = len(str(message))
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    async def foo(self, channel_id, message_id):
+    async def fetch_message_info(self, channel_id, message_id):
         await self._client.login(self._token)
 
-        f_guild = await self._client.fetch_guild(self._guild_id)
-        self.save_progress("fetched guild: {}".format(str(f_guild)))
+        guild = await self._client.fetch_guild(self._guild_id)
 
-        guild = self._client.get_guild(self._guild_id)
-        self.save_progress("guild: {}".format(str(guild)))
+        self.save_progress("fetched guild: {}".format(str(guild)))
+        self.save_progress("fetched guild id: {}".format(str(guild.id)))
+        self.save_progress("fetched guild type: {}".format(str(type(guild))))
 
-        channel = f_guild.get_channel(channel_id)
-        self.save_progress("channel guild: {}".format(str(channel)))
+        channel = await guild.fetch_channel(channel_id)
+        self.save_progress("channel: {}".format(str(channel)))
 
         message = await channel.fetch_message(message_id)
-        self.save_progress("message guild: {}".format(str(message)))
+        self.save_progress("message: {}".format(str(message)))
 
-        # await self._client.close()
+        await self._client.close()
         return message
 
 
