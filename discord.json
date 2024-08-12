@@ -33,6 +33,14 @@
             "order": 0,
             "name": "token",
             "id": 0
+        },
+        "guild_id": {
+            "description": "Guild ID",
+            "data_type": "numeric",
+            "required": true,
+            "order": 0,
+            "name": "guild_id",
+            "id": 0
         }
     },
     "actions": [
@@ -48,106 +56,13 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "list guilds",
-            "identifier": "list_guilds",
-            "description": "List guilds of a Discord bot is a member of",
-            "verbose": "The output of this action is a list of all guilds (servers) a Discord bot is a member of. The guilds will be listed with their corresponding guild IDs.",
-            "type": "investigate",
-            "read_only": true,
-            "parameters": {},
-            "output": [
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.*.id",
-                    "data_type": "string",
-                    "column_name": "Guild ID",
-                    "column_order": 1,
-                    "contains": [
-                        "discord guild id"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.*.name",
-                    "data_type": "string",
-                    "column_name": "Guild name",
-                    "column_order": 1,
-                    "contains": [
-                        "discord guild name"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.*.icon",
-                    "data_type": "string",
-                    "contains": [
-                        "icon"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.*.owner",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.*.baner",
-                    "data_type": "string",
-                    "contains": [
-                        "baner"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.*.permissions",
-                    "data_type": "string",
-                    "contains": [
-                        "permissions"
-                    ]
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "summary.total_objects",
-                    "data_type": "numeric"
-                },
-                {
-                    "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
-                }
-            ],
-            "render": {
-                "width": 12,
-                "title": "List Guilds",
-                "type": "table",
-                "height": 5
-            },
-            "versions": "EQ(*)"
-        },
-        {
             "action": "list channels",
             "identifier": "list_channels",
             "description": "List Channels of a specific guild",
             "verbose": "The output of this action is a list of all channels of a specific guild. The channels will be listed with their corresponding channel IDs.",
             "type": "investigate",
             "read_only": true,
-            "parameters": {
-                "guild_id": {
-                    "description": "guilds id",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": true,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 0,
-                    "name": "guild_id"
-                }
-            },
+            "parameters": {},
             "output": [
                 {
                     "data_path": "action_result.parameter.guild_id",
@@ -192,7 +107,10 @@
                 }
             ],
             "render": {
-                "type": "table"
+                "width": 12,
+                "title": "List Channels",
+                "type": "table",
+                "height": 5
             },
             "versions": "EQ(*)"
         }

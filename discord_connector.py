@@ -14,6 +14,8 @@ from phantom.base_connector import BaseConnector
 import requests
 import json
 from bs4 import BeautifulSoup
+import discord
+import asyncio
 
 
 class RetVal(tuple):
@@ -35,7 +37,12 @@ class Discord2Connector(BaseConnector):
         # Do note that the app json defines the asset config, so please
         # modify this as you deem fit.
         self._base_url = "https://discord.com/api/v10"
-
+        self._session = None
+        self._guild = None
+        self._client = None
+        self._token = None
+        self._guild_id = None
+        self._headers = None
 
     def _process_empty_response(self, response, action_result):
         if response.status_code == 200:
@@ -165,8 +172,8 @@ class Discord2Connector(BaseConnector):
 
         self.save_progress("Connecting to endpoint")
         # make rest call
-        headers={"Authorization": "Bot " + self._token}
-        
+        headers = {"Authorization": "Bot " + self._token}
+
         ret_val, response = self._make_rest_call(
             '/gateway/bot', action_result, params=None, headers=headers
         )
@@ -184,52 +191,54 @@ class Discord2Connector(BaseConnector):
         # For now return Error with a message, in case of success we don't set the message, but use the summary
         # return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
 
-    def _handle_list_gulds(self, param):
+    async def _handle_get_guild(self):
+        await self._client.login(self._token)
+        self._guild = await self._client.fetch_guild(self._guild_id)
+
+    def _handle_list_channels(self, param):
         # Implement the handler here
         # use self.save_progress(...) to send progress messages back to the platform
-        self.debug_print("param", param)
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
-
-        # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
+
+        self.save_progress(str(type(self._guild)))
         # Access action parameters passed in the 'param' dictionary
 
         # Required values can be accessed directly
-        # required_parameter = param['required_parameter']
+        # guild_id = param['guild_id']
 
         # Optional values should use the .get() function
         # optional_parameter = param.get('optional_parameter', 'default_value')
 
         # make rest call
-        headers={"Authorization": "Bot " + self._token}
-        
-        ret_val, response = self._make_rest_call(
-            '/users/@me/guilds', action_result, params=None, headers=headers
-        )
+        # ret_val, response = self._make_rest_call(
+        #     '/guilds/' + self._guild_id + '/channels', action_result, params=None, headers=self._headers
+        # )
 
-        if phantom.is_fail(ret_val):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
-            self.save_progress("List Guilds Failed.")
-            return action_result.get_status()
-            pass
+        channels = self._loop.run_until_complete(self._guild.fetch_channels())
+
+
+        for channel in channels:
+            add_chan = {}
+            add_chan['name'] = channel.name
+            add_chan['id'] = channel.id
+            action_result.add_data(add_chan)
+
+        # if phantom.is_fail(ret_val):
+        #     # the call to the 3rd party device or service failed, action result should contain all the error details
+        #     # for now the return is commented out, but after implementation, return from here
+        #     return action_result.get_status()
+        #     pass
 
         # Now post process the data,  uncomment code as you deem fit
 
         # Add the response into the data section
-        
-        action_result.add_data(response)
-        #self.save_progress(str(type(response)))
-        
-        #for guild in response:
-            #action_result.add_data(guild)
-        
-        # guilds = response.get
-        
+        # action_result.add_data(response)
+
         # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['num_guilds'] = len(response)
+        # summary = action_result.update_summary({})
+        # summary['num_channels'] = len(response)
 
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
@@ -238,49 +247,6 @@ class Discord2Connector(BaseConnector):
         # For now return Error with a message, in case of success we don't set the message, but use the summary
         # return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
 
-    def _handle_list_channels(self, param):
-        # Implement the handler here
-        # use self.save_progress(...) to send progress messages back to the platform
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
-
-        # Add an action result object to self (BaseConnector) to represent the action for this param
-        action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Access action parameters passed in the 'param' dictionary
-
-        # Required values can be accessed directly
-        guild_id = param['guild_id']
-
-        # Optional values should use the .get() function
-        # optional_parameter = param.get('optional_parameter', 'default_value')
-
-        # make rest call
-        ret_val, response = self._make_rest_call(
-            '/guilds/' + guild_id + '/channels', action_result, params=None, headers=self._headers
-        )
-
-        if phantom.is_fail(ret_val):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
-            return action_result.get_status()
-            pass
-
-        # Now post process the data,  uncomment code as you deem fit
-
-        # Add the response into the data section
-        action_result.add_data(response)
-
-        # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['num_channels'] = len(response)
-
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
-        return action_result.set_status(phantom.APP_SUCCESS)
-
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        #return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
-
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
 
@@ -288,9 +254,6 @@ class Discord2Connector(BaseConnector):
         action_id = self.get_action_identifier()
 
         self.debug_print("action_id", self.get_action_identifier())
-
-        if action_id == 'list_gulds':
-            ret_val = self._handle_list_gulds(param)
 
         if action_id == 'list_channels':
             ret_val = self._handle_list_channels(param)
@@ -319,12 +282,33 @@ class Discord2Connector(BaseConnector):
 
         self._base_url = "https://discord.com/api/v10"
         self._token = config['token']
-        self._headers={"Authorization": "Bot " + self._token}
+        self._guild_id = config['guild_id']
+        self._headers = {"Authorization": "Bot " + self._token}
+
+        intents = discord.Intents.default()
+        intents.presences = True
+        intents.members = True
+        intents.message_content = True
+        self._client = discord.Client(intents=intents)
+
+        self._loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._loop)
+
+        try:
+            self._loop.run_until_complete(self._handle_get_guild())
+        except discord.LoginFailure as e:
+            self.save_progress("Login Failure")
+        except discord.NotFound as e:
+            self.save_progress("Guild not found")
+        except discord.HTTPException as e:
+            self.save_progress("HTTP Exception")
+
 
         return phantom.APP_SUCCESS
 
     def finalize(self):
         # Save the state, this data is saved across actions and app upgrades
+        self._loop.close()
         self.save_state(self._state)
         return phantom.APP_SUCCESS
 
@@ -345,7 +329,6 @@ def main():
     password = args.password
 
     if username is not None and password is None:
-
         # User specified a username but not a password, so ask
         import getpass
         password = getpass.getpass("Password: ")
