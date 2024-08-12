@@ -1,29 +1,17 @@
 [comment]: # "Auto-generated SOAR connector documentation"
-# Discord
+# discord_kczernik
 
 Publisher: discord  
 Connector Version: 1.0.0  
-Product Vendor: Discord  
-Product Name: Discord  
+Product Vendor: Discord_clone_1723108489099  
+Product Name: Discord_clone_1723108489099  
 Product Version Supported (regex): ".\*"  
 Minimum Product Version: 6.2.2.134  
 
 Integrate with Discord to post messages and attachments to channels
 
-# Splunk> Phantom
-
-Welcome to the open-source repository for Splunk> Phantom's discord App.
-
-Please have a look at our [Contributing Guide](https://github.com/Splunk-SOAR-Apps/.github/blob/main/.github/CONTRIBUTING.md) if you are interested in contributing, raising issues, or learning more about open-source Phantom apps.
-
-## Legal and License
-
-This Phantom App is licensed under the Apache 2.0 license. Please see our [Contributing Guide](https://github.com/Splunk-SOAR-Apps/.github/blob/main/.github/CONTRIBUTING.md#legal-notice) for further details.
-
-
 ### Configuration Variables
-
-The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord asset in SOAR.
+The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord_clone_1723108489099 asset in SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
@@ -33,6 +21,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
 [list guilds](#action-list-guilds) - List guilds of a Discord bot is a member of  
 [list channels](#action-list-channels) - List Channels of a specific guild  
+[get_message](#action-getmessage) - get chosen message  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -92,6 +81,28 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 action_result.parameter.guild_id | string |  |  
 action_result.data.\*.\*.id | string |  `discord channel id`  |  
 action_result.data.\*.\*.name | string |  `discord channel name`  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'get_message'
+get chosen message
+
+Type: **investigate**  
+Read only: **False**
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**channel_id** |  required  | channel id | string | 
+**message_id** |  required  | message id | string | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.channel_id | string |  |  
+action_result.parameter.message_id | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
