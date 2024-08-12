@@ -1,6 +1,6 @@
 {
-    "appid": "e7a7d990-0ad4-49d2-a3a4-b830acd19e0e",
-    "name": "discord_kczernik4",
+    "appid": "0e4f8ac8-af3d-4fbd-802f-fd06607fe0b9",
+    "name": "discord_kczernik5",
     "description": "Integrate with Discord to post messages and attachments to channels",
     "contributors": [
         {
@@ -11,17 +11,17 @@
         }
     ],
     "type": "information",
-    "product_vendor": "Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502",
+    "product_vendor": "Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502_clone_1723463646231",
     "logo": "discord.svg",
     "logo_dark": "discord_dark.svg",
-    "product_name": "Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502",
+    "product_name": "Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502_clone_1723463646231",
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "discord",
     "license": "Copyright (c) Discord, 2024",
     "app_version": "1.0.0",
-    "utctime_updated": "2024-08-09T10:10:27.400865Z",
-    "package_name": "phantom_discord_kczernik4",
+    "utctime_updated": "2024-08-12T12:06:21.058775Z",
+    "package_name": "phantom_discord_kczernik5",
     "main_module": "discord_connector.py",
     "min_phantom_version": "6.2.2.134",
     "app_wizard_version": "1.0.0",
@@ -209,12 +209,12 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "get_message",
+            "action": "get message",
             "identifier": "get_message",
-            "description": "get chosen message",
+            "description": "gets information about the message, such as: attachments, embeds, content, author and creation date timestamp",
             "verbose": "",
             "type": "investigate",
-            "read_only": false,
+            "read_only": true,
             "parameters": {
                 "channel_id": {
                     "description": "channel id",
@@ -241,18 +241,85 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.parameter.channel_id",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "channel_id",
+                    "data_path": "action_result.data.*.message origin.channel id",
+                    "data_type": "numeric",
+                    "contains": [
+                        "channel id"
+                    ],
+                    "column_name": "channel id",
                     "column_order": 0
                 },
                 {
-                    "data_path": "action_result.parameter.message_id",
+                    "data_path": "action_result.data.*.message origin.channel name",
                     "data_type": "string",
-                    "contains": [],
+                    "contains": [
+                        "channel name"
+                    ],
+                    "column_name": "channel name",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.message data.message id",
+                    "data_type": "numeric",
+                    "contains": [
+                        "message id"
+                    ],
                     "column_name": "message_id",
-                    "column_order": 1
+                    "column_order": 0
+                },
+                                {
+                    "data_path": "action_result.data.*.message data.date",
+                    "data_type": "numeric",
+                    "contains": [
+                        "message date"
+                    ],
+                    "column_name": "message creation date",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.author data.author id",
+                    "data_type": "numeric",
+                    "contains": [
+                        "author id"
+                    ],
+                    "column_name": "author id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.author data.author name",
+                    "data_type": "string",
+                    "contains": [
+                        "author name"
+                    ],
+                    "column_name": "author name",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.attachments",
+                    "data_type": "string",
+                    "contains": [
+                        "attachments"
+                    ],
+                    "column_name": "attachments",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.embeds",
+                    "data_type": "string",
+                    "contains": [
+                        "embeds"
+                    ],
+                    "column_name": "embeds",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.content",
+                    "data_type": "string",
+                    "contains": [
+                        "message content"
+                    ],
+                    "column_name": "content",
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.status",
@@ -286,11 +353,12 @@
             }
         ]
     },
-    "copied_from_id": 221,
+    "copied_from_id": 224,
     "copied_from_version": "1.0.0",
-    "directory": "discord_kczernik4_e7a7d990-0ad4-49d2-a3a4-b830acd19e0e",
+    "directory": "discord_kczernik5_0e4f8ac8-af3d-4fbd-802f-fd06607fe0b9",
     "version": 1,
     "appname": "-",
     "executable": "spawn3",
-    "disabled": false
+    "disabled": false,
+    "custom_made": true
 }

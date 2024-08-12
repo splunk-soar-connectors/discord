@@ -217,17 +217,8 @@ class DiscordConnector(BaseConnector):
         message_id = param['message_id']
 
         message = asyncio.run(self.fetch_message_info(channel_id, message_id))
-
-        # gets the message while scanning for NoneTypes
-        # guild = self._client.get_guild(self._guild_id)
-        # if guild is None:
-        #     return action_result.set_status(phantom.APP_ERROR, "unable to get guild {0}".format(self._guild_id))
-        # channel = guild.get_channel(int(channel_id))
-        # if channel is None:
-        #     return action_result.set_status(phantom.APP_ERROR, "unable to get channel {0}".format(channel_id))
-        # message = channel.fetch_message(int(message_id))
-        # if message is None:
-        #     return action_result.set_status(phantom.APP_ERROR, "unable to get message {0}".format(message_id))
+        if message is None:
+            return action_result.get_status()
 
         message = self.parse_message(message)
 
@@ -239,12 +230,11 @@ class DiscordConnector(BaseConnector):
 
     async def fetch_message_info(self, channel_id, message_id):
         await self._client.login(self._token)
+        message = None
 
         guild = await self._client.fetch_guild(self._guild_id)
-
         self.save_progress("fetched guild: {}".format(str(guild)))
         self.save_progress("fetched guild id: {}".format(str(guild.id)))
-        self.save_progress("fetched guild type: {}".format(str(type(guild))))
 
         channel = await guild.fetch_channel(channel_id)
         self.save_progress("channel: {}".format(str(channel)))
@@ -256,18 +246,24 @@ class DiscordConnector(BaseConnector):
         return message
 
     def parse_message(self, message):
-
         json_message = {
-            "channel_id": message.channel.id,
-            "channel_name": message.channel.name,
-            "message_id": message.id,
-            "author_id": message.author.id,
-            "author_name": message.author.name,
+            "message origin": {
+                "channel id": message.channel.id,
+                "channel name": message.channel.name,
+            },
+            "message data": {
+                "message id": message.id,
+                "date": str(message.created_at)
+            },
+            "author data": {
+                "author id": message.author.id,
+                "author name": message.author.name,
+            },
             "attachments": message.attachments,
             "content": message.content,
             "embeds": message.embeds,
-            "timestamp": message.created_at.timestamp()
         }
+
         return json_message
 
     def handle_action(self, param):
@@ -305,15 +301,11 @@ class DiscordConnector(BaseConnector):
 
         self._headers = {"Authorization": "Bot " + self._token}
 
-
         intents = discord.Intents.default()
         intents.presences = True
         intents.members = True
         intents.message_content = True
         self._client = discord.Client(intents=intents)
-
-        # self.save_progress("awdhwiwdajhadwajkwpdkaopwkd;awlkdpkdwapkjdwowkdaopdapl")
-        # self._message = asyncio.run(self.foo(1270733142906507279, 1271037292701548606))
 
         return phantom.APP_SUCCESS
 
