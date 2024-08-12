@@ -217,13 +217,15 @@ class Discord2Connector(BaseConnector):
         # )
 
         channels = self._loop.run_until_complete(self._guild.fetch_channels())
-
+        num_channels = 0
 
         for channel in channels:
-            add_chan = {}
-            add_chan['name'] = channel.name
-            add_chan['id'] = channel.id
-            action_result.add_data(add_chan)
+            if type(channel) == discord.TextChannel:
+                num_channels += 1
+                add_chan = {}
+                add_chan['name'] = channel.name
+                add_chan['id'] = channel.id
+                action_result.add_data(add_chan)
 
         # if phantom.is_fail(ret_val):
         #     # the call to the 3rd party device or service failed, action result should contain all the error details
@@ -237,8 +239,8 @@ class Discord2Connector(BaseConnector):
         # action_result.add_data(response)
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        # summary = action_result.update_summary({})
-        # summary['num_channels'] = len(response)
+        summary = action_result.update_summary({})
+        summary['num_channels'] = num_channels
 
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary

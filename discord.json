@@ -75,23 +75,21 @@
                     "column_name": "Channel ID",
                     "column_order": 1,
                     "contains": [
-                        "discord channel id"
+                        "channel id"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.name",
                     "data_type": "string",
                     "column_name": "Channel name",
-                    "column_order": 1,
+                    "column_order": 0,
                     "contains": [
-                        "discord channel name"
+                        "channel name"
                     ]
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 1
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
