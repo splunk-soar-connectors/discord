@@ -1,17 +1,17 @@
 [comment]: # "Auto-generated SOAR connector documentation"
-# discord_kczernik4
+# discord_kczernik5
 
 Publisher: discord  
 Connector Version: 1.0.0  
-Product Vendor: Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502  
-Product Name: Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502  
+Product Vendor: Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502_clone_1723463646231  
+Product Name: Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502_clone_1723463646231  
 Product Version Supported (regex): ".\*"  
 Minimum Product Version: 6.2.2.134  
 
 Integrate with Discord to post messages and attachments to channels
 
 ### Configuration Variables
-The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502 asset in SOAR.
+The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502_clone_1723463646231 asset in SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
@@ -22,7 +22,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
 [list guilds](#action-list-guilds) - List guilds of a Discord bot is a member of  
 [list channels](#action-list-channels) - List Channels of a specific guild  
-[get_message](#action-getmessage) - get chosen message  
+[get message](#action-get-message) - gets information about the message, such as: attachments, embeds, content, author and creation date timestamp  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -87,11 +87,11 @@ action_result.message | string |  |
 summary.total_objects | numeric |  |  
 summary.total_objects_successful | numeric |  |    
 
-## action: 'get_message'
-get chosen message
+## action: 'get message'
+gets information about the message, such as: attachments, embeds, content, author and creation date timestamp
 
 Type: **investigate**  
-Read only: **False**
+Read only: **True**
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
@@ -102,8 +102,15 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.parameter.channel_id | string |  |  
-action_result.parameter.message_id | string |  |  
+action_result.data.\*.message origin.channel id | numeric |  `channel id`  |  
+action_result.data.\*.message origin.channel name | string |  `channel name`  |  
+action_result.data.\*.message data.message id | numeric |  `message id`  |  
+action_result.data.\*.message data.date | numeric |  `message date`  |  
+action_result.data.\*.author data.author id | numeric |  `author id`  |  
+action_result.data.\*.author data.author name | string |  `author name`  |  
+action_result.data.\*.attachments | string |  `attachments`  |  
+action_result.data.\*.embeds | string |  `embeds`  |  
+action_result.data.\*.content | string |  `message content`  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
