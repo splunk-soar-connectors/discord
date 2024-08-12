@@ -1,21 +1,22 @@
 [comment]: # "Auto-generated SOAR connector documentation"
-# discord_kczernik
+# discord_kczernik4
 
 Publisher: discord  
 Connector Version: 1.0.0  
-Product Vendor: Discord_clone_1723108489099  
-Product Name: Discord_clone_1723108489099  
+Product Vendor: Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502  
+Product Name: Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502  
 Product Version Supported (regex): ".\*"  
 Minimum Product Version: 6.2.2.134  
 
 Integrate with Discord to post messages and attachments to channels
 
 ### Configuration Variables
-The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord_clone_1723108489099 asset in SOAR.
+The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502 asset in SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
-**token** |  required  | password | Discord bot token
+**token** |  required  | string | Discord bot token
+**guild_id** |  optional  | numeric | server/guild id
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
