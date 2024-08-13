@@ -162,34 +162,16 @@ class Discord2Connector(BaseConnector):
         return self._process_response(r, action_result)
 
     def _handle_test_connectivity(self, param):
-        # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # NOTE: test connectivity does _NOT_ take any parameters
-        # i.e. the param dictionary passed to this handler will be empty.
-        # Also typically it does not add any data into an action_result either.
-        # The status and progress messages are more important.
+        self._loop.run_until_complete(self._client.login(self._token))
 
-        self.save_progress("Connecting to endpoint")
-        # make rest call
-        headers = {"Authorization": "Bot " + self._token}
-
-        ret_val, response = self._make_rest_call(
-            '/gateway/bot', action_result, params=None, headers=headers
-        )
-
-        if phantom.is_fail(ret_val):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
+        if self._client.status != discord.Status.online:
             self.save_progress("Test Connectivity Failed.")
             return action_result.get_status()
 
-        # Return success
         self.save_progress("Test Connectivity Passed")
         return action_result.set_status(phantom.APP_SUCCESS)
-
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        # return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
 
     async def _handle_get_guild(self):
         await self._client.login(self._token)
