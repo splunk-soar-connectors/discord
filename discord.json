@@ -1,0 +1,123 @@
+{
+    "appid": "3df4aac3-ab56-42a1-8305-ea6155744509",
+    "name": "Discord",
+    "description": "Integrate with Discord to post messages and attachments to channels",
+    "contributors": [
+        {
+            "name": "Kacper Czernik"
+        },
+        {
+            "name": "Katarzyna Zuchowska"
+        }
+    ],
+    "type": "information",
+    "product_vendor": "Discord",
+    "logo": "discord.svg",
+    "logo_dark": "discord_dark.svg",
+    "product_name": "Discord",
+    "python_version": "3",
+    "product_version_regex": ".*",
+    "publisher": "discord",
+    "license": "Copyright (c) Discord, 2024",
+    "app_version": "1.0.0",
+    "utctime_updated": "2024-08-07T07:57:28.958868Z",
+    "package_name": "phantom_discord",
+    "main_module": "discord_connector.py",
+    "min_phantom_version": "6.2.2.134",
+    "app_wizard_version": "1.0.0",
+    "configuration": {
+        "token": {
+            "description": "Discord bot token",
+            "data_type": "password",
+            "required": true,
+            "order": 0,
+            "name": "token",
+            "id": 0
+        },
+        "guild_id": {
+            "description": "Guild ID",
+            "data_type": "numeric",
+            "required": true,
+            "order": 1,
+            "name": "guild_id",
+            "id": 1
+        }
+    },
+    "actions": [
+        {
+            "action": "test connectivity",
+            "identifier": "test_connectivity",
+            "description": "Tests authorization with Discord",
+            "verbose": "Checks that the provided bot token is valid.",
+            "type": "test",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "list channels",
+            "identifier": "list_channels",
+            "description": "List text channels of a guild",
+            "verbose": "The output of this action is a list of all text channels of a guild. The channels will be listed with their corresponding channel IDs.",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {},
+            "output": [
+                {
+                    "data_path": "action_result.parameter.guild_id",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.data.*.id",
+                    "data_type": "string",
+                    "column_name": "Channel ID",
+                    "column_order": 1,
+                    "contains": [
+                        "channel id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.name",
+                    "data_type": "string",
+                    "column_name": "Channel name",
+                    "column_order": 0,
+                    "contains": [
+                        "channel name"
+                    ]
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "width": 12,
+                "title": "List Channels",
+                "type": "table",
+                "height": 5
+            },
+            "versions": "EQ(*)"
+        }
+    ],
+    "pip3_dependencies": {
+        "pypi": [
+            {
+                "module": "discord"
+            }
+        ]
+    }
+}

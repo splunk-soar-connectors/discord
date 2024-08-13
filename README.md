@@ -1,43 +1,35 @@
 [comment]: # "Auto-generated SOAR connector documentation"
-# discord2
+# Discord
 
 Publisher: discord  
 Connector Version: 1.0.0  
-Product Vendor: discord  
-Product Name: discord  
+Product Vendor: Discord  
+Product Name: Discord  
 Product Version Supported (regex): ".\*"  
 Minimum Product Version: 6.2.2.134  
 
-discord
-
-# Splunk> Phantom
-
-Welcome to the open-source repository for Splunk> Phantom's discord App.
-
-Please have a look at our [Contributing Guide](https://github.com/Splunk-SOAR-Apps/.github/blob/main/.github/CONTRIBUTING.md) if you are interested in contributing, raising issues, or learning more about open-source Phantom apps.
-
-## Legal and License
-
-This Phantom App is licensed under the Apache 2.0 license. Please see our [Contributing Guide](https://github.com/Splunk-SOAR-Apps/.github/blob/main/.github/CONTRIBUTING.md#legal-notice) for further details.
-
+Integrate with Discord to post messages and attachments to channels
 
 ### Configuration Variables
-The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a discord asset in SOAR.
+The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord asset in SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
-**token** |  required  | password | discord bot token
+**token** |  required  | password | Discord bot token
+**guild_id** |  required  | numeric | Guild ID
 
 ### Supported Actions  
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration  
-[list gulds](#action-list-gulds) - ;list guild (channels)  
-[list channels](#action-list-channels) - list channels of specific guild  
+[test connectivity](#action-test-connectivity) - Tests authorization with Discord  
+[list channels](#action-list-channels) - List text channels of a guild  
 
 ## action: 'test connectivity'
-Validate the asset configuration for connectivity using supplied configuration
+Tests authorization with Discord
 
 Type: **test**  
 Read only: **True**
+
+
+Checks that the provided bot token is valid.
 
 #### Action Parameters
 No parameters are required for this action
@@ -45,11 +37,14 @@ No parameters are required for this action
 #### Action Output
 No Output  
 
-## action: 'list gulds'
-;list guild (channels)
 
-Type: **contain**  
-Read only: **False**
+## action: 'list channels'
+List text channels of a guild
+
+Type: **investigate**  
+Read only: **True**
+
+The output of this action is a list of all text channels of a guild. The channels will be listed with their corresponding channel IDs.
 
 #### Action Parameters
 No parameters are required for this action
@@ -57,26 +52,9 @@ No parameters are required for this action
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.status | string |  |  
-action_result.message | string |  |  
-summary.total_objects | numeric |  |  
-summary.total_objects_successful | numeric |  |    
-
-## action: 'list channels'
-list channels of specific guild
-
-Type: **contain**  
-Read only: **True**
-
-#### Action Parameters
-PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
---------- | -------- | ----------- | ---- | --------
-**guild_id** |  required  | guilds id | string | 
-
-#### Action Output
-DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
---------- | ---- | -------- | --------------
 action_result.parameter.guild_id | string |  |  
+action_result.data.\*.id | string |  `channel id`  |  
+action_result.data.\*.name | string |  `channel name`  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
