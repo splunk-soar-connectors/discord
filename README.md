@@ -28,7 +28,6 @@ Tests authorization with Discord
 Type: **test**  
 Read only: **True**
 
-
 Checks that the provided bot token is valid.
 
 #### Action Parameters
@@ -36,7 +35,6 @@ No parameters are required for this action
 
 #### Action Output
 No Output  
-
 
 ## action: 'list channels'
 List text channels of a guild
