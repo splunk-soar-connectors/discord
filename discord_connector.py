@@ -196,25 +196,12 @@ class Discord2Connector(BaseConnector):
         self._guild = await self._client.fetch_guild(self._guild_id)
 
     def _handle_list_channels(self, param):
-        # Implement the handler here
-        # use self.save_progress(...) to send progress messages back to the platform
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
 
         self.save_progress(str(type(self._guild)))
-        # Access action parameters passed in the 'param' dictionary
 
-        # Required values can be accessed directly
-        # guild_id = param['guild_id']
-
-        # Optional values should use the .get() function
-        # optional_parameter = param.get('optional_parameter', 'default_value')
-
-        # make rest call
-        # ret_val, response = self._make_rest_call(
-        #     '/guilds/' + self._guild_id + '/channels', action_result, params=None, headers=self._headers
-        # )
 
         channels = self._loop.run_until_complete(self._guild.fetch_channels())
         num_channels = 0
@@ -227,27 +214,12 @@ class Discord2Connector(BaseConnector):
                 add_chan['id'] = channel.id
                 action_result.add_data(add_chan)
 
-        # if phantom.is_fail(ret_val):
-        #     # the call to the 3rd party device or service failed, action result should contain all the error details
-        #     # for now the return is commented out, but after implementation, return from here
-        #     return action_result.get_status()
-        #     pass
 
-        # Now post process the data,  uncomment code as you deem fit
-
-        # Add the response into the data section
-        # action_result.add_data(response)
-
-        # Add a dictionary that is made up of the most important values from data into the summary
         summary = action_result.update_summary({})
         summary['num_channels'] = num_channels
 
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
         return action_result.set_status(phantom.APP_SUCCESS)
 
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        # return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS

@@ -38,9 +38,9 @@
             "description": "Guild ID",
             "data_type": "numeric",
             "required": true,
-            "order": 0,
+            "order": 1,
             "name": "guild_id",
-            "id": 0
+            "id": 1
         }
     },
     "actions": [
@@ -58,8 +58,8 @@
         {
             "action": "list channels",
             "identifier": "list_channels",
-            "description": "List Channels of a specific guild",
-            "verbose": "The output of this action is a list of all channels of a specific guild. The channels will be listed with their corresponding channel IDs.",
+            "description": "List text channels of a guild",
+            "verbose": "The output of this action is a list of all text channels of a guild. The channels will be listed with their corresponding channel IDs.",
             "type": "investigate",
             "read_only": true,
             "parameters": {},
