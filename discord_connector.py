@@ -243,18 +243,35 @@ class DiscordConnector(BaseConnector):
         message = await channel.fetch_message(message_id)
         self.save_progress("message: {}".format(str(message)))
 
-        # tmp data
-        self.save_progress("debug tmp msg type: {}".format(type(message)))
-        self.save_progress("debug tmp msg embeds: {}".format(message.embeds))
-        self.save_progress("debug tmp msg attachments: {}".format(message.attachments))
+        self.create_artifact(message)
 
         await self._client.close()
         return message
 
-    def parse_message(self, message):
+    def create_artifact(self, message):
 
-        attachments = len(message.attachments)
-        embeds = len(message.embeds)
+        tmp = {
+            "container_id": "13",
+            "name": "test artifact",
+            "data": {"string": "embed string"}
+        }
+        ret_val, msg, optional = BaseConnector.save_artifact(self, tmp)
+        self.save_progress("ret_val: {}, msg: {}, optional: {}".format(ret_val, msg, optional))
+
+        # tmp data gathering
+        self.save_progress("debug tmp msg embeds: {}".format(message.embeds))
+        self.save_progress("debug tmp msg attachments: {}".format(message.attachments))
+
+        self.save_progress("listing embeds")
+        for embed in message.embeds:
+            self.save_progress("embed: {}".format(embed.to_dict))
+
+        self.save_progress("listing attachments")
+        for attachment in message.attachments:
+            self.save_progress("attachment: {}".format(attachment.to_dict()))
+
+
+    def parse_message(self, message):
 
         json_message = {
             "message origin": {
@@ -269,9 +286,9 @@ class DiscordConnector(BaseConnector):
                 "author id": message.author.id,
                 "author name": message.author.name,
             },
-            "attachments": attachments,
-            "content": message.content,
-            "embeds": embeds,
+            "attachments": len(message.attachments),
+            "embeds": len(message.embeds),
+            "content": message.content
         }
 
         return json_message
