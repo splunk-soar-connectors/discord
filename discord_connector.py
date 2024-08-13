@@ -199,9 +199,7 @@ class Discord2Connector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-
         self.save_progress(str(type(self._guild)))
-
 
         channels = self._loop.run_until_complete(self._guild.fetch_channels())
         num_channels = 0
@@ -214,12 +212,10 @@ class Discord2Connector(BaseConnector):
                 add_chan['id'] = channel.id
                 action_result.add_data(add_chan)
 
-
         summary = action_result.update_summary({})
         summary['num_channels'] = num_channels
 
         return action_result.set_status(phantom.APP_SUCCESS)
-
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
@@ -270,13 +266,12 @@ class Discord2Connector(BaseConnector):
 
         try:
             self._loop.run_until_complete(self._handle_get_guild())
-        except discord.LoginFailure as e:
+        except discord.LoginFailure:
             self.save_progress("Login Failure")
-        except discord.NotFound as e:
+        except discord.NotFound:
             self.save_progress("Guild not found")
-        except discord.HTTPException as e:
+        except discord.HTTPException:
             self.save_progress("HTTP Exception")
-
 
         return phantom.APP_SUCCESS
 
