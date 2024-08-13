@@ -34,6 +34,12 @@ class DiscordConnector(BaseConnector):
         self._state = None
         self._base_url = "https://discord.com/api/v10"
 
+        self._async_loop = None
+        self._client = None
+        self._guild_id = None
+        self._token = None
+        self._headers = None
+
     def _process_empty_response(self, response, action_result):
         if response.status_code == 200:
             return RetVal(phantom.APP_SUCCESS, {})
@@ -216,11 +222,7 @@ class DiscordConnector(BaseConnector):
         channel_id = param['channel_id']
         message_id = param['message_id']
 
-        message = asyncio.run(self.fetch_message_info(channel_id, message_id))
-        if message is None:
-            return action_result.get_status()
-
-        message = self.parse_message(message)
+        message = self.parse_message(self._async_loop.run_until_complete(self.fetch_message(channel_id, message_id)))
 
         action_result.add_data(message)
         summary = action_result.update_summary({})
@@ -228,9 +230,8 @@ class DiscordConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    async def fetch_message_info(self, channel_id, message_id):
+    async def fetch_message(self, channel_id, message_id):
         await self._client.login(self._token)
-        message = None
 
         guild = await self._client.fetch_guild(self._guild_id)
         self.save_progress("fetched guild: {}".format(str(guild)))
@@ -242,10 +243,19 @@ class DiscordConnector(BaseConnector):
         message = await channel.fetch_message(message_id)
         self.save_progress("message: {}".format(str(message)))
 
+        # tmp data
+        self.save_progress("debug tmp msg type: {}".format(type(message)))
+        self.save_progress("debug tmp msg embeds: {}".format(message.embeds))
+        self.save_progress("debug tmp msg attachments: {}".format(message.attachments))
+
         await self._client.close()
         return message
 
     def parse_message(self, message):
+
+        attachments = len(message.attachments)
+        embeds = len(message.embeds)
+
         json_message = {
             "message origin": {
                 "channel id": message.channel.id,
@@ -259,9 +269,9 @@ class DiscordConnector(BaseConnector):
                 "author id": message.author.id,
                 "author name": message.author.name,
             },
-            "attachments": message.attachments,
+            "attachments": attachments,
             "content": message.content,
-            "embeds": message.embeds,
+            "embeds": embeds,
         }
 
         return json_message
@@ -299,6 +309,7 @@ class DiscordConnector(BaseConnector):
         self._token = config['token']
         self._guild_id = config['guild_id']
 
+        # obsolete:
         self._headers = {"Authorization": "Bot " + self._token}
 
         intents = discord.Intents.default()
@@ -307,10 +318,14 @@ class DiscordConnector(BaseConnector):
         intents.message_content = True
         self._client = discord.Client(intents=intents)
 
+        self._async_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._async_loop)
+
         return phantom.APP_SUCCESS
 
     def finalize(self):
         # Save the state, this data is saved across actions and app upgrades
+        self._async_loop.close()
         self.save_state(self._state)
         return phantom.APP_SUCCESS
 
