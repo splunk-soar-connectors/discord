@@ -111,6 +111,81 @@
                 "height": 5
             },
             "versions": "EQ(*)"
+        },
+        {
+            "action": "send message",
+            "identifier": "send_message",
+            "description": "Send a message to Discord",
+            "verbose": "Send a message to Discord",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "destination": {
+                    "description": "Discord channels ID",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "slack channel id"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "destination"
+                },
+                "message": {
+                    "description": "Message to send",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "message"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.destination",
+                    "data_type": "string",
+                    "contains": [
+                        "slack channel id",
+                        "slack channel name"
+                    ],
+                    "column_name": "destination",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.message",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "message",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
         }
     ],
     "pip3_dependencies": {

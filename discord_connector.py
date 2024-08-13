@@ -217,6 +217,19 @@ class Discord2Connector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _handle_send_message(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        destination = param['destination']
+        message = param['message']
+
+        channel = self._loop.run_until_complete(self._guild.fetch_channel(destination))
+        self._loop.run_until_complete(channel.send(message))
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
 
@@ -227,6 +240,9 @@ class Discord2Connector(BaseConnector):
 
         if action_id == 'list_channels':
             ret_val = self._handle_list_channels(param)
+
+        if action_id == 'send_message':
+            ret_val = self._handle_send_message(param)
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
