@@ -225,12 +225,17 @@ class DiscordConnector(BaseConnector):
         channel_id = param['channel_id']
         message_id = param['message_id']
 
+        attachments, embeds = None, None
+
         message = self._async_loop.run_until_complete(self.fetch_message(channel_id, message_id))
         # do we need to check if message is not none?
         if message is not None:
             if message.embeds is not None or message.attachments is not None:
-                self.create_artifact(message)
-            message = self.parse_message(message)
+                attachments, embeds = self.create_artifacts(message)
+            message = self.parse_message(message, attachments, embeds)
+        else:
+            # work on error code
+            return action_result.set_status(phantom.APP_ERROR)
 
         action_result.add_data(message)
         summary = action_result.update_summary({})
@@ -253,19 +258,45 @@ class DiscordConnector(BaseConnector):
         await self._client.close()
         return message
 
-    def create_artifact(self, message):
+    def create_artifacts(self, message):
 
         """
         ToDo:
             [X] get container id
-            [ ] get creating artifacts for embeds and attachments to their own methods to ensure single responsibility
-            [ ] create error management system
-                [ ] response 400: duplicate
-                [ ] parsing error ???
+            [x] make it return list of artifacts
+            [x] get creating artifacts for embeds and attachments to their own methods to ensure single responsibility
+            [ ] create error management system (where to show it???)
+                [x] response 400: duplicate (then it returns original id | no need to handle)
+                [?] parsing error ???
+                        rather impossible, handled on the discord api side
+                [ ] ...
+            [ ] test on all test cases
+                [x] attachment: image
+                [x] attachment: file
+                [x] attachment: mov
+                [x] attachment: mp3
+                [x] attachment: mp4
+                [ ] attachment:
+                ---------------
+                [x] embed: link
+                [x] embed: GIF or GIFV | handle_action exception occurred. Error string: 'can only concatenate str (not "NoneType") to str'
+                [x] embed: video
+                [x] embed: article
+                [???] embed: image ??
+                [???] embed: AutoModerationMessage | This embed type is currently not documented by Discord, but it is returned in the auto moderation system messages.
+                [???] embed: Rich | Generic embed rendered from embed attributes
+                [ ] embed:
+            check:
+                [ ] activity leaves empty: attachment, embed, content fields is it desired???
+
         """
 
         container_id = BaseConnector.get_container_id(self)
+        attachments = []
+        embeds = []
 
+        # passed as a reference or copy???
+        # do we need it there???
         artifact = {
             "container_id": container_id,
             "name": "name",
@@ -276,35 +307,36 @@ class DiscordConnector(BaseConnector):
             }
         }
 
-        # ret_val, msg, optional = BaseConnector.save_artifact(self, artifact)
-        # self.save_progress("current container {}".format(BaseConnector.get_container_id(self)))
-        # self.save_progress("ADDING ARTIFACT: ret_val: {}, msg: {}, optional: {}".format(ret_val, msg, optional))
-
-        # tmp data gathering
-        self.save_progress("debug tmp msg embeds: {}".format(message.embeds))
-        self.save_progress("debug tmp msg attachments: {}".format(message.attachments))
-
         self.save_progress("working on embeds")
         for embed in message.embeds:
             self.save_progress("embed: {}".format(embed.to_dict))
-
-            artifact["name"] = "embed: " + embed.title
-            artifact["cef"]["URL"] = embed.url
-            artifact["cef"]["Description"] = embed.description
-            BaseConnector.save_artifact(self, artifact)
+            embeds.append(self.create_embed_artifact(embed, artifact))
 
         self.save_progress("listing attachments")
         for attachment in message.attachments:
             self.save_progress("attachment: {}".format(attachment.to_dict()))
+            attachments.append(self.create_attachment_artifact(attachment, artifact))
 
-            artifact["name"] = "attachment: " + attachment.filename
-            artifact["cef"]["URL"] = attachment.url
-            artifact["cef"]["Description"] = attachment.description
-            artifact["cef"]["Type"] = attachment.content_type
-            BaseConnector.save_artifact(self, artifact)
+        return attachments, embeds
 
+    # convert to use strategy pattern???
 
-    def parse_message(self, message):
+    def create_embed_artifact(self, embed, artifact):
+        artifact["name"] = f"embed: {embed.title}"
+        artifact["cef"]["URL"] = embed.url
+        artifact["cef"]["Description"] = embed.description
+        status, creation_message, artifact_id = BaseConnector.save_artifact(self, artifact)
+        return artifact_id
+
+    def create_attachment_artifact(self, attachment, artifact):
+        artifact["name"] = f"attachment: {attachment.filename}"
+        artifact["cef"]["URL"] = attachment.url
+        artifact["cef"]["Description"] = attachment.description
+        artifact["cef"]["Type"] = attachment.content_type
+        status, creation_message, artifact_id = BaseConnector.save_artifact(self, artifact)
+        return artifact_id
+
+    def parse_message(self, message, attachments, embeds):
 
         json_message = {
             "message origin": {
@@ -319,8 +351,8 @@ class DiscordConnector(BaseConnector):
                 "author id": message.author.id,
                 "author name": message.author.name,
             },
-            "attachments": len(message.attachments),
-            "embeds": len(message.embeds),
+            "attachments": attachments,
+            "embeds": embeds,
             "content": message.content
         }
 
