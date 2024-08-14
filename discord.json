@@ -200,11 +200,24 @@
                     "data_type": "string",
                     "required": true,
                     "primary": true,
-                    "contains": [],
+                    "contains": [
+                        "discord user id"
+                    ],
                     "value_list": [],
                     "default": "",
                     "order": 0,
                     "name": "user_id"
+                },
+                "reason": {
+                    "description": "The reason the user got kicked.",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "reason"
                 }
             },
             "output": [

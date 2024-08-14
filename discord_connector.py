@@ -220,6 +220,7 @@ class DiscordConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param['user_id']
+        reason = param['reason']
 
         try:
             user = self._loop.run_until_complete(self._guild.fetch_member(user_id))
@@ -231,7 +232,7 @@ class DiscordConnector(BaseConnector):
             self.save_progress("The member could not be found")
 
         try:
-            self._loop.run_until_complete(self._guild.kick(user))
+            self._loop.run_until_complete(self._guild.kick(user, reason=reason))
         except discord.Forbidden:
             self.save_progress("You do not have the proper permissions to kick.")
         except discord.HTTPException:
