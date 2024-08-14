@@ -24,12 +24,12 @@ class RetVal(tuple):
         return tuple.__new__(RetVal, (val1, val2))
 
 
-class Discord2Connector(BaseConnector):
+class DiscordConnector(BaseConnector):
 
     def __init__(self):
 
         # Call the BaseConnectors init first
-        super(Discord2Connector, self).__init__()
+        super(DiscordConnector, self).__init__()
 
         self._state = None
 
@@ -212,6 +212,33 @@ class Discord2Connector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _handle_kick_user(self, param):
+
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        # Add an action result object to self (BaseConnector) to represent the action for this param
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        user_id = param['user_id']
+
+        try:
+            user = self._loop.run_until_complete(self._guild.fetch_member(user_id))
+        except discord.Forbidden:
+            self.save_progress("You do not have access to the guild.")
+        except discord.HTTPException:
+            self.save_progress("Fetching the member failed.")
+        except discord.NotFound:
+            self.save_progress("The member could not be found")
+
+        try:
+            self._loop.run_until_complete(self._guild.kick(user))
+        except discord.Forbidden:
+            self.save_progress("You do not have the proper permissions to kick.")
+        except discord.HTTPException:
+            self.save_progress("Kicking failed.")
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
 
@@ -225,6 +252,9 @@ class Discord2Connector(BaseConnector):
 
         if action_id == 'send_message':
             ret_val = self._handle_send_message(param)
+
+        if action_id == 'kick_user':
+            ret_val = self._handle_kick_user(param)
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
@@ -302,7 +332,7 @@ def main():
 
     if username and password:
         try:
-            login_url = Discord2Connector._get_phantom_base_url() + '/login'
+            login_url = DiscordConnector._get_phantom_base_url() + '/login'
 
             print("Accessing the Login page")
             r = requests.get(login_url, verify=False)
@@ -329,7 +359,7 @@ def main():
         in_json = json.loads(in_json)
         print(json.dumps(in_json, indent=4))
 
-        connector = Discord2Connector()
+        connector = DiscordConnector()
         connector.print_progress_message = True
 
         if session_id is not None:
