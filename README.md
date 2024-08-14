@@ -95,7 +95,8 @@ Kicks user from a guild
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**user_id** |  required  | User ID | string | 
+**user_id** |  required  | User ID | string |  `discord user id` 
+**reason** |  optional  | The reason the user got kicked. | string | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
