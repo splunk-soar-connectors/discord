@@ -3,6 +3,7 @@
 # -----------------------------------------
 # Phantom sample App Connector python file
 # -----------------------------------------
+from lib2to3.fixes.fix_input import context
 
 # Phantom App imports
 import phantom.app as phantom
@@ -225,8 +226,11 @@ class DiscordConnector(BaseConnector):
         message_id = param['message_id']
 
         message = self._async_loop.run_until_complete(self.fetch_message(channel_id, message_id))
-        self.create_artifact(message)
-        message = self.parse_message(message)
+        # do we need to check if message is not none?
+        if message is not None:
+            if message.embeds is not None or message.attachments is not None:
+                self.create_artifact(message)
+            message = self.parse_message(message)
 
         action_result.add_data(message)
         summary = action_result.update_summary({})
@@ -251,8 +255,19 @@ class DiscordConnector(BaseConnector):
 
     def create_artifact(self, message):
 
+        """
+        ToDo:
+            [X] get container id
+            [ ] get creating artifacts for embeds and attachments to their own methods to ensure single responsibility
+            [ ] create error management system
+                [ ] response 400: duplicate
+                [ ] parsing error ???
+        """
+
+        container_id = BaseConnector.get_container_id(self)
+
         artifact = {
-            "container_id": "13",
+            "container_id": container_id,
             "name": "name",
             "cef": {
                 "URL": "",
