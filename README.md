@@ -21,6 +21,8 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
 [list channels](#action-list-channels) - List text channels of a guild  
+[send message](#action-send-message) - Send a message to Discord  
+[kick user](#action-kick-user) - Kicks user from a guild  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -53,6 +55,52 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 action_result.parameter.guild_id | string |  |  
 action_result.data.\*.id | string |  `channel id`  |  
 action_result.data.\*.name | string |  `channel name`  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'send message'
+Send a message to Discord
+
+Type: **generic**  
+Read only: **False**
+
+Send a message to Discord
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**destination** |  required  | Discord channels ID | string |  `slack channel id` 
+**message** |  required  | Message to send | string | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.destination | string |  `slack channel id`  `slack channel name`  |  
+action_result.parameter.message | string |  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'kick user'
+Kicks user from a guild
+
+Type: **correct**  
+Read only: **False**
+
+Kicks user from a guild
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**user_id** |  required  | User ID | string | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.user_id | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
