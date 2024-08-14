@@ -9,6 +9,8 @@ import phantom.app as phantom
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
+import phantom.vault as vault
+
 # Usage of the consts file is recommended
 # from discord2_consts import *
 import requests
@@ -222,7 +224,9 @@ class DiscordConnector(BaseConnector):
         channel_id = param['channel_id']
         message_id = param['message_id']
 
-        message = self.parse_message(self._async_loop.run_until_complete(self.fetch_message(channel_id, message_id)))
+        message = self._async_loop.run_until_complete(self.fetch_message(channel_id, message_id))
+        self.create_artifact(message)
+        message = self.parse_message(message)
 
         action_result.add_data(message)
         summary = action_result.update_summary({})
@@ -234,8 +238,7 @@ class DiscordConnector(BaseConnector):
         await self._client.login(self._token)
 
         guild = await self._client.fetch_guild(self._guild_id)
-        self.save_progress("fetched guild: {}".format(str(guild)))
-        self.save_progress("fetched guild id: {}".format(str(guild.id)))
+        self.save_progress("fetched guild: {}, fetched guild id: {}".format(str(guild), str(guild.id)))
 
         channel = await guild.fetch_channel(channel_id)
         self.save_progress("channel: {}".format(str(channel)))
@@ -243,32 +246,47 @@ class DiscordConnector(BaseConnector):
         message = await channel.fetch_message(message_id)
         self.save_progress("message: {}".format(str(message)))
 
-        self.create_artifact(message)
-
         await self._client.close()
         return message
 
     def create_artifact(self, message):
 
-        tmp = {
+        artifact = {
             "container_id": "13",
-            "name": "test artifact",
-            "data": {"string": "embed string"}
+            "name": "name",
+            "cef": {
+                "URL": "",
+                "type": "",
+                "Description": ""
+            }
         }
-        ret_val, msg, optional = BaseConnector.save_artifact(self, tmp)
-        self.save_progress("ret_val: {}, msg: {}, optional: {}".format(ret_val, msg, optional))
+
+        # ret_val, msg, optional = BaseConnector.save_artifact(self, artifact)
+        # self.save_progress("current container {}".format(BaseConnector.get_container_id(self)))
+        # self.save_progress("ADDING ARTIFACT: ret_val: {}, msg: {}, optional: {}".format(ret_val, msg, optional))
 
         # tmp data gathering
         self.save_progress("debug tmp msg embeds: {}".format(message.embeds))
         self.save_progress("debug tmp msg attachments: {}".format(message.attachments))
 
-        self.save_progress("listing embeds")
+        self.save_progress("working on embeds")
         for embed in message.embeds:
             self.save_progress("embed: {}".format(embed.to_dict))
+
+            artifact["name"] = "embed: " + embed.title
+            artifact["cef"]["URL"] = embed.url
+            artifact["cef"]["Description"] = embed.description
+            BaseConnector.save_artifact(self, artifact)
 
         self.save_progress("listing attachments")
         for attachment in message.attachments:
             self.save_progress("attachment: {}".format(attachment.to_dict()))
+
+            artifact["name"] = "attachment: " + attachment.filename
+            artifact["cef"]["URL"] = attachment.url
+            artifact["cef"]["Description"] = attachment.description
+            artifact["cef"]["Type"] = attachment.content_type
+            BaseConnector.save_artifact(self, artifact)
 
 
     def parse_message(self, message):
