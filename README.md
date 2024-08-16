@@ -22,7 +22,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
 [list guilds](#action-list-guilds) - List guilds of a Discord bot is a member of  
 [list channels](#action-list-channels) - List Channels of a specific guild  
-[get message](#action-get-message) - gets information about the message, such as: attachments, embeds, content, author and creation date timestamp  
+[fetch message](#action-fetch-message) - gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -87,8 +87,8 @@ action_result.message | string |  |
 summary.total_objects | numeric |  |  
 summary.total_objects_successful | numeric |  |    
 
-## action: 'get message'
-gets information about the message, such as: attachments, embeds, content, author and creation date timestamp
+## action: 'fetch message'
+gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message
 
 Type: **investigate**  
 Read only: **True**
@@ -104,13 +104,15 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.data.\*.message origin.channel id | numeric |  `channel id`  |  
 action_result.data.\*.message origin.channel name | string |  `channel name`  |  
-action_result.data.\*.message data.message id | numeric |  `message id`  |  
-action_result.data.\*.message data.date | numeric |  `message date`  |  
+action_result.data.\*.message data.created at | numeric |  `date`  |  
+action_result.data.\*.message data.edited at | numeric |  `date`  |  
 action_result.data.\*.author data.author id | numeric |  `author id`  |  
 action_result.data.\*.author data.author name | string |  `author name`  |  
-action_result.data.\*.attachments | string |  `attachments`  |  
-action_result.data.\*.embeds | string |  `embeds`  |  
+action_result.data.\*.attachments | string |  `artifact id`  |  
+action_result.data.\*.embeds | string |  `artifact id`  |  
 action_result.data.\*.content | string |  `message content`  |  
+action_result.data.\*.jump url | string |  `url`  |  
+action_result.data.\*.flags | string |  `flags`  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
