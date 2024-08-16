@@ -209,9 +209,9 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "get message",
-            "identifier": "get_message",
-            "description": "gets information about the message, such as: attachments, embeds, content, author and creation date timestamp",
+            "action": "fetch message",
+            "identifier": "fetch_message",
+            "description": "gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message",
             "verbose": "",
             "type": "investigate",
             "read_only": true,
@@ -259,21 +259,21 @@
                     "column_order": 0
                 },
                 {
-                    "data_path": "action_result.data.*.message data.message id",
+                    "data_path": "action_result.data.*.message data.created at",
                     "data_type": "numeric",
                     "contains": [
-                        "message id"
-                    ],
-                    "column_name": "message_id",
-                    "column_order": 0
-                },
-                                {
-                    "data_path": "action_result.data.*.message data.date",
-                    "data_type": "numeric",
-                    "contains": [
-                        "message date"
+                        "date"
                     ],
                     "column_name": "message creation date",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.message data.edited at",
+                    "data_type": "numeric",
+                    "contains": [
+                        "date"
+                    ],
+                    "column_name": "message edition date",
                     "column_order": 0
                 },
                 {
@@ -298,18 +298,18 @@
                     "data_path": "action_result.data.*.attachments",
                     "data_type": "string",
                     "contains": [
-                        "attachments"
+                        "artifact id"
                     ],
-                    "column_name": "attachments",
+                    "column_name": "list of attachments",
                     "column_order": 0
                 },
                 {
                     "data_path": "action_result.data.*.embeds",
                     "data_type": "string",
                     "contains": [
-                        "embeds"
+                        "artifact id"
                     ],
-                    "column_name": "embeds",
+                    "column_name": "list of embeds",
                     "column_order": 0
                 },
                 {
@@ -319,6 +319,24 @@
                         "message content"
                     ],
                     "column_name": "content",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.jump url",
+                    "data_type": "string",
+                    "contains": [
+                        "url"
+                    ],
+                    "column_name": "jump url",
+                    "column_order": 0
+                },
+                                {
+                    "data_path": "action_result.data.*.flags",
+                    "data_type": "string",
+                    "contains": [
+                        "flags"
+                    ],
+                    "column_name": "message flags",
                     "column_order": 0
                 },
                 {

@@ -217,7 +217,7 @@ class DiscordConnector(BaseConnector):
         summary['num_channels'] = len(response)
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _handle_get_message(self, param):
+    def _handle_fetch_message(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -226,8 +226,8 @@ class DiscordConnector(BaseConnector):
         message_id = param['message_id']
 
         attachments, embeds = None, None
-
         message = self._async_loop.run_until_complete(self.fetch_message(channel_id, message_id))
+
         # do we need to check if message is not none?
         if message is not None:
             if message.embeds is not None or message.attachments is not None:
@@ -235,11 +235,13 @@ class DiscordConnector(BaseConnector):
             message = self.parse_message(message, attachments, embeds)
         else:
             # work on error code
+            summary = action_result.update_summary({})
+            summary['failure: '] = "unable to fetch the message: message is None"
             return action_result.set_status(phantom.APP_ERROR)
 
         action_result.add_data(message)
         summary = action_result.update_summary({})
-        summary['message'] = len(message)
+        summary['success: '] = "fetching message completed"
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -259,37 +261,6 @@ class DiscordConnector(BaseConnector):
         return message
 
     def create_artifacts(self, message):
-
-        """
-        ToDo:
-            [X] get container id
-            [x] make it return list of artifacts
-            [x] get creating artifacts for embeds and attachments to their own methods to ensure single responsibility
-            [ ] create error management system (where to show it???)
-                [x] response 400: duplicate (then it returns original id | no need to handle)
-                [?] parsing error ???
-                        rather impossible, handled on the discord api side
-                [ ] ...
-            [ ] test on all test cases
-                [x] attachment: image
-                [x] attachment: file
-                [x] attachment: mov
-                [x] attachment: mp3
-                [x] attachment: mp4
-                [ ] attachment:
-                ---------------
-                [x] embed: link
-                [x] embed: GIF or GIFV | handle_action exception occurred. Error string: 'can only concatenate str (not "NoneType") to str'
-                [x] embed: video
-                [x] embed: article
-                [???] embed: image ??
-                [???] embed: AutoModerationMessage | This embed type is currently not documented by Discord, but it is returned in the auto moderation system messages.
-                [???] embed: Rich | Generic embed rendered from embed attributes
-                [ ] embed:
-            check:
-                [ ] activity leaves empty: attachment, embed, content fields is it desired???
-
-        """
 
         container_id = BaseConnector.get_container_id(self)
         attachments = []
@@ -338,25 +309,25 @@ class DiscordConnector(BaseConnector):
 
     def parse_message(self, message, attachments, embeds):
 
-        json_message = {
+        return {
             "message origin": {
                 "channel id": message.channel.id,
                 "channel name": message.channel.name,
             },
             "message data": {
-                "message id": message.id,
-                "date": str(message.created_at)
+                "created at": str(message.created_at),
+                "edited at": str(message.edited_at),
             },
             "author data": {
                 "author id": message.author.id,
                 "author name": message.author.name,
             },
+            "jump url": message.jump_url,
+            "flags": message.flags.value,
             "attachments": attachments,
             "embeds": embeds,
             "content": message.content
         }
-
-        return json_message
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
@@ -372,8 +343,8 @@ class DiscordConnector(BaseConnector):
         if action_id == 'list_channels':
             ret_val = self._handle_list_channels(param)
 
-        if action_id == 'get_message':
-            ret_val = self._handle_get_message(param)
+        if action_id == 'fetch_message':
+            ret_val = self._handle_fetch_message(param)
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
