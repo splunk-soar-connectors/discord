@@ -10,10 +10,8 @@ import phantom.app as phantom
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-import phantom.vault as vault
-
 # Usage of the consts file is recommended
-# from discord2_consts import *
+# from discord_consts import *
 import requests
 import json
 import discord
@@ -234,7 +232,6 @@ class DiscordConnector(BaseConnector):
                 attachments, embeds = self.create_artifacts(message)
             message = self.parse_message(message, attachments, embeds)
         else:
-            # work on error code
             summary = action_result.update_summary({})
             summary['failure: '] = "unable to fetch the message: message is None"
             return action_result.set_status(phantom.APP_ERROR)
@@ -266,8 +263,7 @@ class DiscordConnector(BaseConnector):
         attachments = []
         embeds = []
 
-        # passed as a reference or copy???
-        # do we need it there???
+        # do we need it there or rather in consts???
         artifact = {
             "container_id": container_id,
             "name": "name",
@@ -283,7 +279,7 @@ class DiscordConnector(BaseConnector):
             self.save_progress("embed: {}".format(embed.to_dict))
             embeds.append(self.create_embed_artifact(embed, artifact))
 
-        self.save_progress("listing attachments")
+        self.save_progress("working on attachments")
         for attachment in message.attachments:
             self.save_progress("attachment: {}".format(attachment.to_dict()))
             attachments.append(self.create_attachment_artifact(attachment, artifact))
@@ -323,11 +319,25 @@ class DiscordConnector(BaseConnector):
                 "author name": message.author.name,
             },
             "jump url": message.jump_url,
-            "flags": message.flags.value,
+            "flags": self.parse_message_flags(message),
             "attachments": attachments,
             "embeds": embeds,
             "content": message.content
         }
+
+    def parse_message_flags(self, message):
+        true_flags = []
+
+        # is there a better way than iterating all flags?
+        # dir() returns too much
+        for flag in ['crossposted', 'ephemeral', 'failed_to_mention_some_roles_in_thread', 'has_thread',
+                     'is_crossposted', 'loading', 'silent', 'source_message_deleted', 'suppress_embeds',
+                     'suppress_notifications', 'urgent', 'voice']:
+
+            if getattr(message.flags, flag) is True:
+                true_flags.append(flag)
+
+        return true_flags
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS

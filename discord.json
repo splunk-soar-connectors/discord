@@ -214,7 +214,7 @@
             "description": "gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message",
             "verbose": "",
             "type": "investigate",
-            "read_only": true,
+            "read_only": false,
             "parameters": {
                 "channel_id": {
                     "description": "channel id",
