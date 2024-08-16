@@ -91,7 +91,7 @@ summary.total_objects_successful | numeric |  |
 gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message
 
 Type: **investigate**  
-Read only: **True**
+Read only: **False**
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
