@@ -1,6 +1,6 @@
 {
-    "appid": "0e4f8ac8-af3d-4fbd-802f-fd06607fe0b9",
-    "name": "discord_kczernik5",
+    "appid": "2fc257c2-84e4-4fbd-824d-0fe1693bb734",
+    "name": "discord",
     "description": "Integrate with Discord to post messages and attachments to channels",
     "contributors": [
         {
@@ -11,17 +11,17 @@
         }
     ],
     "type": "information",
-    "product_vendor": "Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502_clone_1723463646231",
+    "product_vendor": "Discord",
     "logo": "discord.svg",
     "logo_dark": "discord_dark.svg",
-    "product_name": "Discord_clone_1723108489099_clone_1723121852701_clone_1723198218502_clone_1723463646231",
+    "product_name": "Discord",
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "discord",
     "license": "Copyright (c) Discord, 2024",
-    "app_version": "1.0.0",
-    "utctime_updated": "2024-08-12T12:06:21.058775Z",
-    "package_name": "phantom_discord_kczernik5",
+    "app_version": "1.1.0",
+    "utctime_updated": "2024-08-16T13:44:54.747356Z",
+    "package_name": "phantom_discord",
     "main_module": "discord_connector.py",
     "min_phantom_version": "6.2.2.134",
     "app_wizard_version": "1.0.0",
@@ -330,7 +330,7 @@
                     "column_name": "jump url",
                     "column_order": 0
                 },
-                                {
+                {
                     "data_path": "action_result.data.*.flags",
                     "data_type": "string",
                     "contains": [
@@ -338,6 +338,76 @@
                     ],
                     "column_name": "message flags",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "delete message",
+            "identifier": "delete_message",
+            "description": "removes the message",
+            "verbose": "",
+            "type": "correct",
+            "read_only": false,
+            "parameters": {
+                "channel_id": {
+                    "description": "channel id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "channel_id"
+                },
+                "message_id": {
+                    "description": "message id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "message_id"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.channel_id",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "channel_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.message_id",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "message_id",
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.status",
@@ -371,9 +441,9 @@
             }
         ]
     },
-    "copied_from_id": 224,
+    "copied_from_id": 227,
     "copied_from_version": "1.0.0",
-    "directory": "discord_kczernik5_0e4f8ac8-af3d-4fbd-802f-fd06607fe0b9",
+    "directory": "discord",
     "version": 1,
     "appname": "-",
     "executable": "spawn3",

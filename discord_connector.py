@@ -339,6 +339,38 @@ class DiscordConnector(BaseConnector):
 
         return true_flags
 
+    def _handle_delete_message(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        channel_id = param['channel_id']
+        message_id = param['message_id']
+
+        ret_val = self._async_loop.run_until_complete(self.delete_message(channel_id, message_id))
+        self.save_progress("Deleted message {} with return value of: {}".format(message_id, ret_val))
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+
+        action_result.add_data("Deleted message {} with return value of: {}".format(message_id, ret_val))
+
+        summary = action_result.update_summary({})
+        summary['num_data'] = len(action_result['data'])
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    # we open and close connection 2 times
+    async def delete_message(self, channel_id, message_id):
+        await self._client.login(self._token)
+
+        guild = await self._client.fetch_guild(self._guild_id)
+        channel = await guild.fetch_channel(channel_id)
+        message = await channel.fetch_message(message_id)
+
+        ret_val = await message.delete()
+        await self._client.close()
+        return ret_val
+
+
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
 
@@ -355,6 +387,9 @@ class DiscordConnector(BaseConnector):
 
         if action_id == 'fetch_message':
             ret_val = self._handle_fetch_message(param)
+
+        if action_id == 'delete_message':
+            ret_val = self._handle_delete_message(param)
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
