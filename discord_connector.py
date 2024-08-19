@@ -346,29 +346,38 @@ class DiscordConnector(BaseConnector):
         channel_id = param['channel_id']
         message_id = param['message_id']
 
-        ret_val = self._async_loop.run_until_complete(self.delete_message(channel_id, message_id))
-        self.save_progress("Deleted message {} with return value of: {}".format(message_id, ret_val))
-
-        if phantom.is_fail(ret_val):
-            return action_result.get_status()
-
-        action_result.add_data("Deleted message {} with return value of: {}".format(message_id, ret_val))
+        message, ret_val = self._async_loop.run_until_complete(self.delete_message(channel_id, message_id))
+        self.save_progress("Action on message {} ended with return value of: {}: {}".format(message_id, ret_val, message))
 
         summary = action_result.update_summary({})
-        summary['num_data'] = len(action_result['data'])
+        summary['action result: '] = "Action on message {} ended with return value of: {}: {}".format(message_id, ret_val, message)
+
+        if ret_val is not 200:
+            return action_result.set_status(phantom.APP_ERROR)
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    # we open and close connection 2 times
     async def delete_message(self, channel_id, message_id):
         await self._client.login(self._token)
 
         guild = await self._client.fetch_guild(self._guild_id)
         channel = await guild.fetch_channel(channel_id)
-        message = await channel.fetch_message(message_id)
+        
+        try:
+            message = await channel.fetch_message(message_id)
+        except discord.NotFound as e:
+            self.save_progress("Failed to fetch message, it was deleted already or could not be found: {}".format(e))
+            return "Failed to fetch message, it was deleted already or could not be found", 404
 
-        ret_val = await message.delete()
+        try:
+            await message.delete()
+        except discord.Forbidden as e:
+            self.save_progress("You do not have proper permissions to delete the message: {}".format(e))
+            return "Forbidden, you do not have proper permissions to delete the message", 403
+        except discord.HTTPException as e:
+            self.save_progress("HTTP Exception: {}".format(str(e)))
+
         await self._client.close()
-        return ret_val
+        return "success", 200
 
 
     def handle_action(self, param):
