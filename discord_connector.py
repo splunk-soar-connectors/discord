@@ -352,7 +352,7 @@ class DiscordConnector(BaseConnector):
         summary = action_result.update_summary({})
         summary['action result: '] = "Action on message {} ended with return value of: {}: {}".format(message_id, ret_val, message)
 
-        if ret_val is not 200:
+        if ret_val != 200:
             return action_result.set_status(phantom.APP_ERROR)
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -361,7 +361,7 @@ class DiscordConnector(BaseConnector):
 
         guild = await self._client.fetch_guild(self._guild_id)
         channel = await guild.fetch_channel(channel_id)
-        
+
         try:
             message = await channel.fetch_message(message_id)
         except discord.NotFound as e:
@@ -378,7 +378,6 @@ class DiscordConnector(BaseConnector):
 
         await self._client.close()
         return "success", 200
-
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
