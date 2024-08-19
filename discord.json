@@ -229,6 +229,13 @@
                     "column_order": 0
                 },
                 {
+                    "data_path": "action_result.parameter.reason",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "reason",
+                    "column_order": 1
+                },
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "status",
