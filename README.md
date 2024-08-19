@@ -102,6 +102,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.user_id | string |  |  
+action_result.parameter.reason | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
