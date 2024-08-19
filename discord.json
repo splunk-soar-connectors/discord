@@ -59,7 +59,7 @@
             "action": "list channels",
             "identifier": "list_channels",
             "description": "List text channels of a guild",
-            "verbose": "The output of this action is a list of all text channels of a guild. The channels will be listed with their corresponding channel IDs.",
+            "verbose": "The output of this action is a list of all text channels for the guild. The channels will be listed with their corresponding channel IDs.",
             "type": "investigate",
             "read_only": true,
             "parameters": {},
