@@ -3,7 +3,7 @@
 # -----------------------------------------
 # Phantom sample App Connector python file
 # -----------------------------------------
-from lib2to3.fixes.fix_input import context
+# from lib2to3.fixes.fix_input import context
 
 # Phantom App imports
 import phantom.app as phantom
@@ -305,6 +305,7 @@ class DiscordConnector(BaseConnector):
 
     def parse_message(self, message, attachments, embeds):
 
+        # not sure if those ifs are necessary or if those are not breaking return types
         return {
             "message origin": {
                 "channel id": message.channel.id,
@@ -312,16 +313,16 @@ class DiscordConnector(BaseConnector):
             },
             "message data": {
                 "created at": str(message.created_at),
-                "edited at": str(message.edited_at),
+                "edited at": str(message.edited_at) if message.edited_at is not None else "message was not edited",
             },
             "author data": {
                 "author id": message.author.id,
                 "author name": message.author.name,
             },
             "jump url": message.jump_url,
-            "flags": self.parse_message_flags(message),
-            "attachments": attachments,
-            "embeds": embeds,
+            "flags": self.parse_message_flags(message) if [] else "no flags",
+            "attachments": attachments if attachments else "no attachments",
+            "embeds": embeds if embeds else "no embeds",
             "content": message.content
         }
 
