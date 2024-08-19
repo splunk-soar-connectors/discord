@@ -216,7 +216,6 @@ class DiscordConnector(BaseConnector):
 
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
-        # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param['user_id']
@@ -224,19 +223,25 @@ class DiscordConnector(BaseConnector):
 
         try:
             user = self._loop.run_until_complete(self._guild.fetch_member(user_id))
-        except discord.Forbidden:
-            self.save_progress("You do not have access to the guild.")
-        except discord.HTTPException:
-            self.save_progress("Fetching the member failed.")
-        except discord.NotFound:
-            self.save_progress("The member could not be found")
+        except Exception as e:
+            if isinstance(e, discord.Forbidden):
+                self.save_progress("You do not have access to the guild.")
+            elif isinstance(e, discord.HTTPException):
+                self.save_progress("Fetching the member failed.")
+            elif isinstance(e, discord.NotFound):
+                self.save_progress("The member could not be found")
+
+            return action_result.get_status()
 
         try:
             self._loop.run_until_complete(self._guild.kick(user, reason=reason))
-        except discord.Forbidden:
-            self.save_progress("You do not have the proper permissions to kick.")
-        except discord.HTTPException:
-            self.save_progress("Kicking failed.")
+        except Exception as e:
+            if isinstance(e, discord.Forbidden):
+                self.save_progress("You do not have the proper permissions to kick.")
+            elif isinstance(e, discord.HTTPException):
+                self.save_progress("Kicking failed.")
+
+            return action_result.get_status()
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
