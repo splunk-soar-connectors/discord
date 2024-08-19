@@ -44,6 +44,33 @@ class DiscordConnector(BaseConnector):
         self._guild_id = None
         self._headers = None
 
+    def _get_error_message_from_exception(self, e):
+        """ This method is used to get appropriate error message from the exception.
+        :param e: Exception object
+        :return: error message
+        """
+        error_code = None
+        error_message = "Error message unnavigable"
+
+        self.error_print("Error occurred.", e)
+
+        try:
+            if hasattr(e, "args"):
+                if len(e.args) > 1:
+                    error_code = e.args[0]
+                    error_message = e.args[1]
+                elif len(e.args) == 1:
+                    error_message = e.args[0]
+        except Exception as e:
+            self.error_print("Error occurred while fetching exception information. Details: {}".format(str(e)))
+
+        if not error_code:
+            error_text = "Error Message: {}".format(error_message)
+        else:
+            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_message)
+
+        return error_text
+
     def _process_empty_response(self, response, action_result):
         if response.status_code == 200:
             return RetVal(phantom.APP_SUCCESS, {})
@@ -223,25 +250,10 @@ class DiscordConnector(BaseConnector):
 
         try:
             user = self._loop.run_until_complete(self._guild.fetch_member(user_id))
-        except Exception as e:
-            if isinstance(e, discord.Forbidden):
-                self.save_progress("You do not have access to the guild.")
-            elif isinstance(e, discord.HTTPException):
-                self.save_progress("Fetching the member failed.")
-            elif isinstance(e, discord.NotFound):
-                self.save_progress("The member could not be found")
-
-            return action_result.get_status()
-
-        try:
             self._loop.run_until_complete(self._guild.kick(user, reason=reason))
         except Exception as e:
-            if isinstance(e, discord.Forbidden):
-                self.save_progress("You do not have the proper permissions to kick.")
-            elif isinstance(e, discord.HTTPException):
-                self.save_progress("Kicking failed.")
-
-            return action_result.get_status()
+            err = self._get_error_message_from_exception(e)
+            return action_result.set_status(phantom.APP_ERROR, err)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
