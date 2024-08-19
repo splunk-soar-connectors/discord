@@ -189,10 +189,10 @@ class Discord2Connector(BaseConnector):
         for channel in channels:
             if type(channel) == discord.TextChannel:
                 num_channels += 1
-                add_chan = {}
-                add_chan['name'] = channel.name
-                add_chan['id'] = channel.id
-                action_result.add_data(add_chan)
+                action_result.add_data({
+                    "name": channel.name,
+                    "id": channel.id
+                })
 
         summary = action_result.update_summary({})
         summary['num_channels'] = num_channels
