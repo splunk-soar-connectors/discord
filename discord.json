@@ -18,7 +18,7 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "Splunk",
-    "license": "Copyright (c) Discord, 2024",
+    "license": "Copyright (c) 2024 Splunk Inc.",
     "app_version": "1.0.0",
     "utctime_updated": "2024-08-07T07:57:28.958868Z",
     "package_name": "phantom_discord",
