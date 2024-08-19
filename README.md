@@ -43,7 +43,7 @@ List text channels of a guild
 Type: **investigate**  
 Read only: **True**
 
-The output of this action is a list of all text channels of a guild. The channels will be listed with their corresponding channel IDs.
+The output of this action is a list of all text channels for the guild. The channels will be listed with their corresponding channel IDs.
 
 #### Action Parameters
 No parameters are required for this action
