@@ -234,8 +234,12 @@ class DiscordConnector(BaseConnector):
         destination = param['destination']
         message = param['message']
 
-        channel = self._loop.run_until_complete(self._guild.fetch_channel(destination))
-        self._loop.run_until_complete(channel.send(message))
+        try:
+            channel = self._loop.run_until_complete(self._guild.fetch_channel(destination))
+            self._loop.run_until_complete(channel.send(message))
+        except Exception as e:
+            err = self._get_error_message_from_exception(e)
+            return action_result.set_status(phantom.APP_ERROR, err)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
