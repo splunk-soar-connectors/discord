@@ -115,7 +115,7 @@
         {
             "action": "send message",
             "identifier": "send_message",
-            "description": "Send a message to Discord",
+            "description": "Send a message to the Discord channel",
             "verbose": "Send a message to Discord",
             "type": "generic",
             "read_only": false,
@@ -168,6 +168,78 @@
                     "data_type": "string",
                     "column_name": "status",
                     "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "kick user",
+            "identifier": "kick_user",
+            "description": "Kicks user from a guild",
+            "verbose": "Kicks user from a guild",
+            "type": "correct",
+            "read_only": false,
+            "parameters": {
+                "user_id": {
+                    "description": "User ID",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "discord user id"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "user_id"
+                },
+                "reason": {
+                    "description": "The reason the user got kicked.",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "reason"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.user_id",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "user_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.reason",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "reason",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.message",
