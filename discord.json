@@ -115,7 +115,7 @@
         {
             "action": "send message",
             "identifier": "send_message",
-            "description": "Send a message to Discord",
+            "description": "Send a message to the Discord channel",
             "verbose": "Send a message to Discord",
             "type": "generic",
             "read_only": false,
