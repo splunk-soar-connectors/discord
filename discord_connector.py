@@ -29,7 +29,7 @@ class DiscordConnector(BaseConnector):
     def __init__(self):
 
         # Call the BaseConnectors init first
-        super(DiscordConnector, self).__init__()
+        super().__init__()
 
         self._state = None
 
@@ -43,6 +43,7 @@ class DiscordConnector(BaseConnector):
         self._token = None
         self._guild_id = None
         self._headers = None
+        self._loop = None
 
     def _process_empty_response(self, response, action_result):
         if response.status_code == 200:
