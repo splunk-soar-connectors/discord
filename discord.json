@@ -17,7 +17,7 @@
     "product_name": "Discord",
     "python_version": "3",
     "product_version_regex": ".*",
-    "publisher": "discord",
+    "publisher": "Splunk",
     "license": "Copyright (c) Discord, 2024",
     "app_version": "1.0.0",
     "utctime_updated": "2024-08-07T07:57:28.958868Z",
