@@ -1,7 +1,7 @@
 [comment]: # "Auto-generated SOAR connector documentation"
 # Discord
 
-Publisher: discord  
+Publisher: Splunk  
 Connector Version: 1.0.0  
 Product Vendor: Discord  
 Product Name: Discord  
@@ -21,7 +21,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
 [list channels](#action-list-channels) - List text channels of a guild  
-[send message](#action-send-message) - Send a message to Discord  
+[send message](#action-send-message) - Send a message to the Discord channel  
 [kick user](#action-kick-user) - Kicks user from a guild  
 
 ## action: 'test connectivity'
@@ -44,7 +44,7 @@ List text channels of a guild
 Type: **investigate**  
 Read only: **True**
 
-The output of this action is a list of all text channels of a guild. The channels will be listed with their corresponding channel IDs.
+The output of this action is a list of all text channels for the guild. The channels will be listed with their corresponding channel IDs.
 
 #### Action Parameters
 No parameters are required for this action
@@ -61,7 +61,7 @@ summary.total_objects | numeric |  |
 summary.total_objects_successful | numeric |  |    
 
 ## action: 'send message'
-Send a message to Discord
+Send a message to the Discord channel
 
 Type: **generic**  
 Read only: **False**

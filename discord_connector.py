@@ -10,7 +10,7 @@ from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 # Usage of the consts file is recommended
-# from discord2_consts import *
+# from discord_consts import *
 import requests
 import json
 from bs4 import BeautifulSoup
@@ -200,7 +200,7 @@ class DiscordConnector(BaseConnector):
         self.save_progress("Test Connectivity Passed")
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    async def _handle_get_guild(self):
+    async def _load_guild(self):
         await self._client.login(self._token)
         self._guild = await self._client.fetch_guild(self._guild_id)
 
@@ -216,10 +216,10 @@ class DiscordConnector(BaseConnector):
         for channel in channels:
             if type(channel) == discord.TextChannel:
                 num_channels += 1
-                add_chan = {}
-                add_chan['name'] = channel.name
-                add_chan['id'] = channel.id
-                action_result.add_data(add_chan)
+                action_result.add_data({
+                    "name": channel.name,
+                    "id": channel.id
+                })
 
         summary = action_result.update_summary({})
         summary['num_channels'] = num_channels
@@ -315,7 +315,7 @@ class DiscordConnector(BaseConnector):
         asyncio.set_event_loop(self._loop)
 
         try:
-            self._loop.run_until_complete(self._handle_get_guild())
+            self._loop.run_until_complete(self._load_guild())
         except discord.LoginFailure:
             self.save_progress("Login Failure")
         except discord.NotFound:
