@@ -44,6 +44,33 @@ class DiscordConnector(BaseConnector):
         self._guild_id = None
         self._headers = None
 
+    def _get_error_message_from_exception(self, e):
+        """ This method is used to get appropriate error message from the exception.
+        :param e: Exception object
+        :return: error message
+        """
+        error_code = None
+        error_message = "Error message unnavigable"
+
+        self.error_print("Error occurred.", e)
+
+        try:
+            if hasattr(e, "args"):
+                if len(e.args) > 1:
+                    error_code = e.args[0]
+                    error_message = e.args[1]
+                elif len(e.args) == 1:
+                    error_message = e.args[0]
+        except Exception as e:
+            self.error_print("Error occurred while fetching exception information. Details: {}".format(str(e)))
+
+        if not error_code:
+            error_text = "Error Message: {}".format(error_message)
+        else:
+            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_message)
+
+        return error_text
+
     def _process_empty_response(self, response, action_result):
         if response.status_code == 200:
             return RetVal(phantom.APP_SUCCESS, {})
@@ -207,8 +234,30 @@ class DiscordConnector(BaseConnector):
         destination = param['destination']
         message = param['message']
 
-        channel = self._loop.run_until_complete(self._guild.fetch_channel(destination))
-        self._loop.run_until_complete(channel.send(message))
+        try:
+            channel = self._loop.run_until_complete(self._guild.fetch_channel(destination))
+            self._loop.run_until_complete(channel.send(message))
+        except Exception as e:
+            err = self._get_error_message_from_exception(e)
+            return action_result.set_status(phantom.APP_ERROR, err)
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_kick_user(self, param):
+
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        user_id = param['user_id']
+        reason = param['reason']
+
+        try:
+            user = self._loop.run_until_complete(self._guild.fetch_member(user_id))
+            self._loop.run_until_complete(self._guild.kick(user, reason=reason))
+        except Exception as e:
+            err = self._get_error_message_from_exception(e)
+            return action_result.set_status(phantom.APP_ERROR, err)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -225,6 +274,9 @@ class DiscordConnector(BaseConnector):
 
         if action_id == 'send_message':
             ret_val = self._handle_send_message(param)
+
+        if action_id == 'kick_user':
+            ret_val = self._handle_kick_user(param)
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)

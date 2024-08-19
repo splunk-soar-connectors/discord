@@ -22,6 +22,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
 [list channels](#action-list-channels) - List text channels of a guild  
 [send message](#action-send-message) - Send a message to the Discord channel  
+[kick user](#action-kick-user) - Kicks user from a guild  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -78,6 +79,30 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.destination | string |  `slack channel id`  `slack channel name`  |  
 action_result.parameter.message | string |  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'kick user'
+Kicks user from a guild
+
+Type: **correct**  
+Read only: **False**
+
+Kicks user from a guild
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**user_id** |  required  | User ID | string |  `discord user id` 
+**reason** |  optional  | The reason the user got kicked. | string | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.user_id | string |  |  
+action_result.parameter.reason | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
