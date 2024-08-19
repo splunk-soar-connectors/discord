@@ -1,7 +1,7 @@
 [comment]: # "Auto-generated SOAR connector documentation"
 # Discord
 
-Publisher: discord  
+Publisher: Splunk
 Connector Version: 1.0.0  
 Product Vendor: Discord  
 Product Name: Discord  
