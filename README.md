@@ -21,7 +21,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
 [list channels](#action-list-channels) - List text channels of a guild  
-[send message](#action-send-message) - Send a message to Discord  
+[send message](#action-send-message) - Send a message to the Discord channel  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -60,7 +60,7 @@ summary.total_objects | numeric |  |
 summary.total_objects_successful | numeric |  |    
 
 ## action: 'send message'
-Send a message to Discord
+Send a message to the Discord channel
 
 Type: **generic**  
 Read only: **False**
