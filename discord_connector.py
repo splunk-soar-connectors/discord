@@ -10,7 +10,7 @@ from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 # Usage of the consts file is recommended
-# from discord2_consts import *
+# from discord_consts import *
 import requests
 import json
 from bs4 import BeautifulSoup
@@ -24,12 +24,12 @@ class RetVal(tuple):
         return tuple.__new__(RetVal, (val1, val2))
 
 
-class Discord2Connector(BaseConnector):
+class DiscordConnector(BaseConnector):
 
     def __init__(self):
 
         # Call the BaseConnectors init first
-        super(Discord2Connector, self).__init__()
+        super(DiscordConnector, self).__init__()
 
         self._state = None
 
@@ -173,7 +173,7 @@ class Discord2Connector(BaseConnector):
         self.save_progress("Test Connectivity Passed")
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    async def _handle_get_guild(self):
+    async def _load_guild(self):
         await self._client.login(self._token)
         self._guild = await self._client.fetch_guild(self._guild_id)
 
@@ -263,7 +263,7 @@ class Discord2Connector(BaseConnector):
         asyncio.set_event_loop(self._loop)
 
         try:
-            self._loop.run_until_complete(self._handle_get_guild())
+            self._loop.run_until_complete(self._load_guild())
         except discord.LoginFailure:
             self.save_progress("Login Failure")
         except discord.NotFound:
@@ -302,7 +302,7 @@ def main():
 
     if username and password:
         try:
-            login_url = Discord2Connector._get_phantom_base_url() + '/login'
+            login_url = DiscordConnector._get_phantom_base_url() + '/login'
 
             print("Accessing the Login page")
             r = requests.get(login_url, verify=False)
@@ -329,7 +329,7 @@ def main():
         in_json = json.loads(in_json)
         print(json.dumps(in_json, indent=4))
 
-        connector = Discord2Connector()
+        connector = DiscordConnector()
         connector.print_progress_message = True
 
         if session_id is not None:
