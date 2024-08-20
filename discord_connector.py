@@ -11,7 +11,7 @@ from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 # Usage of the consts file is recommended
-# from discord_consts import *
+from discord_consts import *
 import requests
 import json
 import discord
@@ -305,7 +305,6 @@ class DiscordConnector(BaseConnector):
 
     def parse_message(self, message, attachments, embeds):
 
-        # not sure if those ifs are necessary or if those are not breaking return types
         return {
             "message origin": {
                 "channel id": message.channel.id,
@@ -320,25 +319,11 @@ class DiscordConnector(BaseConnector):
                 "author name": message.author.name,
             },
             "jump url": message.jump_url,
-            "flags": self.parse_message_flags(message) if [] else "no flags",
-            "attachments": attachments if attachments else "no attachments",
-            "embeds": embeds if embeds else "no embeds",
+            "flags": list(filter(lambda flag: getattr(message.flags, flag), MESSAGE_FLAGS)) or "no flags",
+            "attachments": attachments or "no attachments",
+            "embeds": embeds or "no embeds",
             "content": message.content
         }
-
-    def parse_message_flags(self, message):
-        true_flags = []
-
-        # is there a better way than iterating all flags?
-        # dir() returns too much
-        for flag in ['crossposted', 'ephemeral', 'failed_to_mention_some_roles_in_thread', 'has_thread',
-                     'is_crossposted', 'loading', 'silent', 'source_message_deleted', 'suppress_embeds',
-                     'suppress_notifications', 'urgent', 'voice']:
-
-            if getattr(message.flags, flag) is True:
-                true_flags.append(flag)
-
-        return true_flags
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
@@ -373,7 +358,6 @@ class DiscordConnector(BaseConnector):
         self._token = config['token']
         self._guild_id = config['guild_id']
 
-        # obsolete:
         self._headers = {"Authorization": "Bot " + self._token}
 
         intents = discord.Intents.default()
