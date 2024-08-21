@@ -23,6 +23,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [list guilds](#action-list-guilds) - List guilds of a Discord bot is a member of  
 [list channels](#action-list-channels) - List Channels of a specific guild  
 [fetch message](#action-fetch-message) - gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message  
+[delete message](#action-delete-message) - removes the message  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -113,6 +114,28 @@ action_result.data.\*.embeds | string |  `artifact id`  |
 action_result.data.\*.content | string |  `message content`  |  
 action_result.data.\*.jump url | string |  `url`  |  
 action_result.data.\*.flags | string |  `flags`  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'delete message'
+removes the message
+
+Type: **correct**  
+Read only: **False**
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**channel_id** |  required  | channel id | string | 
+**message_id** |  required  | message id | string | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.channel_id | numeric |  |  
+action_result.parameter.message_id | numeric |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  

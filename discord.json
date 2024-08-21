@@ -330,7 +330,7 @@
                     "column_name": "jump url",
                     "column_order": 0
                 },
-                                {
+                {
                     "data_path": "action_result.data.*.flags",
                     "data_type": "string",
                     "contains": [
@@ -338,6 +338,76 @@
                     ],
                     "column_name": "message flags",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "delete message",
+            "identifier": "delete_message",
+            "description": "removes the message",
+            "verbose": "",
+            "type": "correct",
+            "read_only": false,
+            "parameters": {
+                "channel_id": {
+                    "description": "channel id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "channel_id"
+                },
+                "message_id": {
+                    "description": "message id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "message_id"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.channel_id",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "channel_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.message_id",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "message_id",
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.status",
@@ -371,7 +441,7 @@
             }
         ]
     },
-    "copied_from_id": 224,
+    "copied_from_id": 227,
     "copied_from_version": "1.0.0",
     "directory": "discord",
     "version": 1,
