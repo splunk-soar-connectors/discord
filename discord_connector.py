@@ -17,6 +17,8 @@ import discord
 import asyncio
 from bs4 import BeautifulSoup
 
+from discord_artifact import Artifact, artifact_to_dict
+
 
 class RetVal(tuple):
 
@@ -256,45 +258,38 @@ class DiscordConnector(BaseConnector):
         attachments = []
         embeds = []
 
-        artifact = {
-            "container_id": container_id,
-            "name": "name",
-            "cef": {
-                "URL": "",
-                "type": "",
-                "Description": ""
-            }
-        }
-
         if message.embeds:
             self.save_progress("working on embeds")
             for embed in message.embeds:
-                self.save_progress("embed: {}".format(embed.to_dict))
-                embeds.append(self.create_embed_artifact(embed, artifact))
+                embeds.append(self.create_embed_artifact(embed, container_id))
 
         if message.attachments:
             self.save_progress("working on attachments")
             for attachment in message.attachments:
-                self.save_progress("attachment: {}".format(attachment.to_dict()))
-                attachments.append(self.create_attachment_artifact(attachment, artifact))
+                attachments.append(self.create_attachment_artifact(attachment, container_id))
 
         return attachments, embeds
 
-    # convert to use strategy pattern???
+    def create_embed_artifact(self, embed, container_id):
+        artifact = Artifact(
+            container_id=container_id,
+            name=f"embed: {embed.title}",
+            cef={"URL": embed.url, "Description": embed.description}
+        )
+        return self.save_artifact_to_soar(artifact_to_dict(artifact))
 
-    def create_embed_artifact(self, embed, artifact):
-        artifact["name"] = f"embed: {embed.title}"
-        artifact["cef"]["URL"] = embed.url
-        artifact["cef"]["Description"] = embed.description
-        status, creation_message, artifact_id = self.save_artifact(artifact)
-        return artifact_id
+    def create_attachment_artifact(self, attachment, container_id):
+        artifact = Artifact(
+            container_id=container_id,
+            name=f"embed: {attachment.title}",
+            cef={"URL": attachment.url, "Description": attachment.description, "Type": attachment.content_type}
+        )
+        return self.save_artifact_to_soar(artifact_to_dict(artifact))
 
-    def create_attachment_artifact(self, attachment, artifact):
-        artifact["name"] = f"attachment: {attachment.filename}"
-        artifact["cef"]["URL"] = attachment.url
-        artifact["cef"]["Description"] = attachment.description
-        artifact["cef"]["Type"] = attachment.content_type
+    def save_artifact_to_soar(self, artifact):
         status, creation_message, artifact_id = self.save_artifact(artifact)
+        self.save_progress("creating artifact: status: {}, creation message: {}, artifact id {}"
+                           .format(status, creation_message, artifact_id))
         return artifact_id
 
     def parse_message(self, message, attachments, embeds):
