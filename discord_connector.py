@@ -10,7 +10,6 @@ import phantom.app as phantom
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-# Usage of the consts file is recommended
 from discord_consts import *
 import requests
 import json
@@ -38,6 +37,7 @@ class DiscordConnector(BaseConnector):
         self._async_loop = None
         self._client = None
         self._guild_id = None
+        self._guild = None
         self._token = None
         self._headers = None
 
@@ -223,18 +223,12 @@ class DiscordConnector(BaseConnector):
         channel_id = param['channel_id']
         message_id = param['message_id']
 
-        attachments, embeds = None, None
         message = self._async_loop.run_until_complete(self.fetch_message(channel_id, message_id))
+        if message is None:
+            return action_result.set_status(phantom.APP_ERROR, "Failed to fetch message")
 
-        # do we need to check if message is not none?
-        if message is not None:
-            if message.embeds is not None or message.attachments is not None:
-                attachments, embeds = self.create_artifacts(message)
-            message = self.parse_message(message, attachments, embeds)
-        else:
-            summary = action_result.update_summary({})
-            summary['failure: '] = "unable to fetch the message: message is None"
-            return action_result.set_status(phantom.APP_ERROR)
+        attachments, embeds = self.create_artifacts(message)
+        message = self.parse_message(message, attachments, embeds)
 
         action_result.add_data(message)
         summary = action_result.update_summary({})
@@ -243,18 +237,17 @@ class DiscordConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     async def fetch_message(self, channel_id, message_id):
-        await self._client.login(self._token)
 
-        guild = await self._client.fetch_guild(self._guild_id)
-        self.save_progress("fetched guild: {}, fetched guild id: {}".format(str(guild), str(guild.id)))
+        try:
+            channel = await self._guild.fetch_channel(channel_id)
+            self.save_progress("channel: {}".format(str(channel)))
+            message = await channel.fetch_message(message_id)
+            self.save_progress("message: {}".format(str(message)))
 
-        channel = await guild.fetch_channel(channel_id)
-        self.save_progress("channel: {}".format(str(channel)))
+        except discord.HTTPException as e:
+            self.save_progress("Failed to fetch message: {}".format(str(e)))
+            return None
 
-        message = await channel.fetch_message(message_id)
-        self.save_progress("message: {}".format(str(message)))
-
-        await self._client.close()
         return message
 
     def create_artifacts(self, message):
@@ -274,15 +267,17 @@ class DiscordConnector(BaseConnector):
             }
         }
 
-        self.save_progress("working on embeds")
-        for embed in message.embeds:
-            self.save_progress("embed: {}".format(embed.to_dict))
-            embeds.append(self.create_embed_artifact(embed, artifact))
+        if message.embeds:
+            self.save_progress("working on embeds")
+            for embed in message.embeds:
+                self.save_progress("embed: {}".format(embed.to_dict))
+                embeds.append(self.create_embed_artifact(embed, artifact))
 
-        self.save_progress("working on attachments")
-        for attachment in message.attachments:
-            self.save_progress("attachment: {}".format(attachment.to_dict()))
-            attachments.append(self.create_attachment_artifact(attachment, artifact))
+        if message.attachments:
+            self.save_progress("working on attachments")
+            for attachment in message.attachments:
+                self.save_progress("attachment: {}".format(attachment.to_dict()))
+                attachments.append(self.create_attachment_artifact(attachment, artifact))
 
         return attachments, embeds
 
@@ -324,6 +319,16 @@ class DiscordConnector(BaseConnector):
             "embeds": embeds or "no embeds",
             "content": message.content
         }
+
+    async def fetch_guild(self):
+        try:
+            guild = await self._client.fetch_guild(self._guild_id)
+        except discord.HTTPException as e:
+            self.save_progress(str(e))
+            action_result = self.add_action_result(ActionResult(dict()))
+            action_result.set_status(phantom.APP_ERROR, "Fetching the guild failed")
+            return None
+        return guild
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
@@ -368,11 +373,14 @@ class DiscordConnector(BaseConnector):
 
         self._async_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._async_loop)
+        self._async_loop.run_until_complete(self._client.login(self._token))
+        self._guild = self._async_loop.run_until_complete(self.fetch_guild())
 
         return phantom.APP_SUCCESS
 
     def finalize(self):
         # Save the state, this data is saved across actions and app upgrades
+        self._client.close()
         self._async_loop.close()
         self.save_state(self._state)
         return phantom.APP_SUCCESS
