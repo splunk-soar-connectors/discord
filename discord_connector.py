@@ -252,11 +252,10 @@ class DiscordConnector(BaseConnector):
 
     def create_artifacts(self, message):
 
-        container_id = BaseConnector.get_container_id(self)
+        container_id = self.get_container_id()
         attachments = []
         embeds = []
 
-        # do we need it there or rather in consts???
         artifact = {
             "container_id": container_id,
             "name": "name",
@@ -287,7 +286,7 @@ class DiscordConnector(BaseConnector):
         artifact["name"] = f"embed: {embed.title}"
         artifact["cef"]["URL"] = embed.url
         artifact["cef"]["Description"] = embed.description
-        status, creation_message, artifact_id = BaseConnector.save_artifact(self, artifact)
+        status, creation_message, artifact_id = self.save_artifact(artifact)
         return artifact_id
 
     def create_attachment_artifact(self, attachment, artifact):
@@ -295,7 +294,7 @@ class DiscordConnector(BaseConnector):
         artifact["cef"]["URL"] = attachment.url
         artifact["cef"]["Description"] = attachment.description
         artifact["cef"]["Type"] = attachment.content_type
-        status, creation_message, artifact_id = BaseConnector.save_artifact(self, artifact)
+        status, creation_message, artifact_id = self.save_artifact(artifact)
         return artifact_id
 
     def parse_message(self, message, attachments, embeds):
