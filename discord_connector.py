@@ -3,20 +3,21 @@
 # -----------------------------------------
 # Phantom sample App Connector python file
 # -----------------------------------------
-from lib2to3.fixes.fix_input import context
+# from lib2to3.fixes.fix_input import context
 
 # Phantom App imports
 import phantom.app as phantom
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-# Usage of the consts file is recommended
-# from discord_consts import *
+from discord_consts import *
 import requests
 import json
 import discord
 import asyncio
 from bs4 import BeautifulSoup
+
+from discord_artifact import Artifact, artifact_to_dict
 
 
 class RetVal(tuple):
@@ -38,6 +39,7 @@ class DiscordConnector(BaseConnector):
         self._async_loop = None
         self._client = None
         self._guild_id = None
+        self._guild = None
         self._token = None
         self._headers = None
 
@@ -223,18 +225,12 @@ class DiscordConnector(BaseConnector):
         channel_id = param['channel_id']
         message_id = param['message_id']
 
-        attachments, embeds = None, None
         message = self._async_loop.run_until_complete(self.fetch_message(channel_id, message_id))
+        if message is None:
+            return action_result.set_status(phantom.APP_ERROR, "Failed to fetch message")
 
-        # do we need to check if message is not none?
-        if message is not None:
-            if message.embeds is not None or message.attachments is not None:
-                attachments, embeds = self.create_artifacts(message)
-            message = self.parse_message(message, attachments, embeds)
-        else:
-            summary = action_result.update_summary({})
-            summary['failure: '] = "unable to fetch the message: message is None"
-            return action_result.set_status(phantom.APP_ERROR)
+        attachments, embeds = self.create_artifacts(message)
+        message = self.parse_message(message, attachments, embeds)
 
         action_result.add_data(message)
         summary = action_result.update_summary({})
@@ -243,64 +239,57 @@ class DiscordConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     async def fetch_message(self, channel_id, message_id):
-        await self._client.login(self._token)
 
-        guild = await self._client.fetch_guild(self._guild_id)
-        self.save_progress("fetched guild: {}, fetched guild id: {}".format(str(guild), str(guild.id)))
+        try:
+            channel = await self._guild.fetch_channel(channel_id)
+            self.save_progress("channel: {}".format(str(channel)))
+            message = await channel.fetch_message(message_id)
+            self.save_progress("message: {}".format(str(message)))
 
-        channel = await guild.fetch_channel(channel_id)
-        self.save_progress("channel: {}".format(str(channel)))
+        except discord.HTTPException as e:
+            self.save_progress("Failed to fetch message: {}".format(str(e)))
+            return None
 
-        message = await channel.fetch_message(message_id)
-        self.save_progress("message: {}".format(str(message)))
-
-        await self._client.close()
         return message
 
     def create_artifacts(self, message):
 
-        container_id = BaseConnector.get_container_id(self)
+        container_id = self.get_container_id()
         attachments = []
         embeds = []
 
-        # do we need it there or rather in consts???
-        artifact = {
-            "container_id": container_id,
-            "name": "name",
-            "cef": {
-                "URL": "",
-                "type": "",
-                "Description": ""
-            }
-        }
+        if message.embeds:
+            self.save_progress("working on embeds")
+            for embed in message.embeds:
+                embeds.append(self.create_embed_artifact(embed, container_id))
 
-        self.save_progress("working on embeds")
-        for embed in message.embeds:
-            self.save_progress("embed: {}".format(embed.to_dict))
-            embeds.append(self.create_embed_artifact(embed, artifact))
-
-        self.save_progress("working on attachments")
-        for attachment in message.attachments:
-            self.save_progress("attachment: {}".format(attachment.to_dict()))
-            attachments.append(self.create_attachment_artifact(attachment, artifact))
+        if message.attachments:
+            self.save_progress("working on attachments")
+            for attachment in message.attachments:
+                attachments.append(self.create_attachment_artifact(attachment, container_id))
 
         return attachments, embeds
 
-    # convert to use strategy pattern???
+    def create_embed_artifact(self, embed, container_id):
+        artifact = Artifact(
+            container_id=container_id,
+            name=f"embed: {embed.title}",
+            cef={"URL": embed.url, "Description": embed.description}
+        )
+        return self.save_artifact_to_soar(artifact_to_dict(artifact))
 
-    def create_embed_artifact(self, embed, artifact):
-        artifact["name"] = f"embed: {embed.title}"
-        artifact["cef"]["URL"] = embed.url
-        artifact["cef"]["Description"] = embed.description
-        status, creation_message, artifact_id = BaseConnector.save_artifact(self, artifact)
-        return artifact_id
+    def create_attachment_artifact(self, attachment, container_id):
+        artifact = Artifact(
+            container_id=container_id,
+            name=f"embed: {attachment.title}",
+            cef={"URL": attachment.url, "Description": attachment.description, "Type": attachment.content_type}
+        )
+        return self.save_artifact_to_soar(artifact_to_dict(artifact))
 
-    def create_attachment_artifact(self, attachment, artifact):
-        artifact["name"] = f"attachment: {attachment.filename}"
-        artifact["cef"]["URL"] = attachment.url
-        artifact["cef"]["Description"] = attachment.description
-        artifact["cef"]["Type"] = attachment.content_type
-        status, creation_message, artifact_id = BaseConnector.save_artifact(self, artifact)
+    def save_artifact_to_soar(self, artifact):
+        status, creation_message, artifact_id = self.save_artifact(artifact)
+        self.save_progress("creating artifact: status: {}, creation message: {}, artifact id {}"
+                           .format(status, creation_message, artifact_id))
         return artifact_id
 
     def parse_message(self, message, attachments, embeds):
@@ -312,32 +301,28 @@ class DiscordConnector(BaseConnector):
             },
             "message data": {
                 "created at": str(message.created_at),
-                "edited at": str(message.edited_at),
+                "edited at": str(message.edited_at) if message.edited_at is not None else "message was not edited",
             },
             "author data": {
                 "author id": message.author.id,
                 "author name": message.author.name,
             },
             "jump url": message.jump_url,
-            "flags": self.parse_message_flags(message),
-            "attachments": attachments,
-            "embeds": embeds,
+            "flags": list(filter(lambda flag: getattr(message.flags, flag), MESSAGE_FLAGS)) or "no flags",
+            "attachments": attachments or "no attachments",
+            "embeds": embeds or "no embeds",
             "content": message.content
         }
 
-    def parse_message_flags(self, message):
-        true_flags = []
-
-        # is there a better way than iterating all flags?
-        # dir() returns too much
-        for flag in ['crossposted', 'ephemeral', 'failed_to_mention_some_roles_in_thread', 'has_thread',
-                     'is_crossposted', 'loading', 'silent', 'source_message_deleted', 'suppress_embeds',
-                     'suppress_notifications', 'urgent', 'voice']:
-
-            if getattr(message.flags, flag) is True:
-                true_flags.append(flag)
-
-        return true_flags
+    async def fetch_guild(self):
+        try:
+            guild = await self._client.fetch_guild(self._guild_id)
+        except discord.HTTPException as e:
+            self.save_progress(str(e))
+            action_result = self.add_action_result(ActionResult(dict()))
+            action_result.set_status(phantom.APP_ERROR, "Fetching the guild failed")
+            return None
+        return guild
 
     def _handle_delete_message(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -415,7 +400,6 @@ class DiscordConnector(BaseConnector):
         self._token = config['token']
         self._guild_id = config['guild_id']
 
-        # obsolete:
         self._headers = {"Authorization": "Bot " + self._token}
 
         intents = discord.Intents.default()
@@ -426,11 +410,14 @@ class DiscordConnector(BaseConnector):
 
         self._async_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._async_loop)
+        self._async_loop.run_until_complete(self._client.login(self._token))
+        self._guild = self._async_loop.run_until_complete(self.fetch_guild())
 
         return phantom.APP_SUCCESS
 
     def finalize(self):
         # Save the state, this data is saved across actions and app upgrades
+        self._client.close()
         self._async_loop.close()
         self.save_state(self._state)
         return phantom.APP_SUCCESS

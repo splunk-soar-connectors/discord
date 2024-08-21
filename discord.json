@@ -1,5 +1,5 @@
 {
-    "appid": "2fc257c2-84e4-4fbd-824d-0fe1693bb734",
+    "appid": "0e4f8ac8-af3d-4fbd-802f-fd06607fe0b9",
     "name": "discord",
     "description": "Integrate with Discord to post messages and attachments to channels",
     "contributors": [
@@ -19,9 +19,9 @@
     "product_version_regex": ".*",
     "publisher": "discord",
     "license": "Copyright (c) Discord, 2024",
-    "app_version": "1.1.0",
-    "utctime_updated": "2024-08-16T13:44:54.747356Z",
-    "package_name": "phantom_discord",
+    "app_version": "1.0.0",
+    "utctime_updated": "2024-08-12T12:06:21.058775Z",
+    "package_name": "phantom",
     "main_module": "discord_connector.py",
     "min_phantom_version": "6.2.2.134",
     "app_wizard_version": "1.0.0",

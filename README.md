@@ -2,7 +2,7 @@
 # discord
 
 Publisher: discord  
-Connector Version: 1.1.0  
+Connector Version: 1.0.0  
 Product Vendor: Discord  
 Product Name: Discord  
 Product Version Supported (regex): ".\*"  
