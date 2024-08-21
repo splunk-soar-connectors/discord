@@ -17,7 +17,8 @@ import discord
 import asyncio
 from bs4 import BeautifulSoup
 
-from discord_artifact import Artifact, artifact_to_dict
+from discord_artifact import Artifact
+import dataclasses
 
 
 class RetVal(tuple):
@@ -238,7 +239,7 @@ class DiscordConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    async def fetch_message(self, channel_id, message_id):
+    async def fetch_message(self, channel_id, message_id) -> discord.Message or None:
 
         try:
             channel = await self._guild.fetch_channel(channel_id)
@@ -275,7 +276,7 @@ class DiscordConnector(BaseConnector):
             name=f"embed: {embed.title}",
             cef={"URL": embed.url, "Description": embed.description}
         )
-        return self.save_artifact_to_soar(artifact_to_dict(artifact))
+        return self.save_artifact_to_soar(dataclasses.asdict(artifact))
 
     def create_attachment_artifact(self, attachment, container_id):
         artifact = Artifact(
@@ -283,7 +284,7 @@ class DiscordConnector(BaseConnector):
             name=f"embed: {attachment.title}",
             cef={"URL": attachment.url, "Description": attachment.description, "Type": attachment.content_type}
         )
-        return self.save_artifact_to_soar(artifact_to_dict(artifact))
+        return self.save_artifact_to_soar(dataclasses.asdict(artifact))
 
     def save_artifact_to_soar(self, artifact):
         status, creation_message, artifact_id = self.save_artifact(artifact)
