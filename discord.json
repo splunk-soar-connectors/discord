@@ -1,6 +1,6 @@
 {
     "appid": "0e4f8ac8-af3d-4fbd-802f-fd06607fe0b9",
-    "name": "discord",
+    "name": "Discord",
     "description": "Integrate with Discord to post messages and attachments to channels",
     "contributors": [
         {
@@ -71,7 +71,9 @@
                 {
                     "data_path": "action_result.parameter.guild_id",
                     "data_type": "string",
-                    "contains": []
+                    "contains": [
+                        "discord guild id"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.id",
@@ -79,7 +81,7 @@
                     "column_name": "Channel ID",
                     "column_order": 1,
                     "contains": [
-                        "channel id"
+                        "discord channel id"
                     ]
                 },
                 {
@@ -88,7 +90,7 @@
                     "column_name": "Channel name",
                     "column_order": 0,
                     "contains": [
-                        "channel name"
+                        "discord channel name"
                     ]
                 },
                 {
@@ -130,7 +132,7 @@
                     "required": true,
                     "primary": true,
                     "contains": [
-                        "slack channel id"
+                        "discord channel id"
                     ],
                     "value_list": [],
                     "default": "",
@@ -154,8 +156,7 @@
                     "data_path": "action_result.parameter.destination",
                     "data_type": "string",
                     "contains": [
-                        "slack channel id",
-                        "slack channel name"
+                        "discord channel id"
                     ],
                     "column_name": "destination",
                     "column_order": 0
@@ -228,7 +229,9 @@
                 {
                     "data_path": "action_result.parameter.user_id",
                     "data_type": "string",
-                    "contains": [],
+                    "contains": [
+                        "discord user id"
+                    ],
                     "column_name": "user_id",
                     "column_order": 0
                 },
@@ -368,7 +371,9 @@
                     "data_type": "string",
                     "required": true,
                     "primary": true,
-                    "contains": [],
+                    "contains": [
+                        "discord channel id"
+                    ],
                     "value_list": [],
                     "default": "",
                     "order": 0,
@@ -379,7 +384,9 @@
                     "data_type": "string",
                     "required": true,
                     "primary": false,
-                    "contains": [],
+                    "contains": [
+                        "discord message id"
+                    ],
                     "value_list": [],
                     "default": "",
                     "order": 1,
@@ -391,7 +398,7 @@
                     "data_path": "action_result.data.*.message origin.channel id",
                     "data_type": "numeric",
                     "contains": [
-                        "channel id"
+                        "discord channel id"
                     ],
                     "column_name": "channel id",
                     "column_order": 0
@@ -400,7 +407,7 @@
                     "data_path": "action_result.data.*.message origin.channel name",
                     "data_type": "string",
                     "contains": [
-                        "channel name"
+                        "discord channel name"
                     ],
                     "column_name": "channel name",
                     "column_order": 0
@@ -523,7 +530,9 @@
                     "data_type": "string",
                     "required": true,
                     "primary": true,
-                    "contains": [],
+                    "contains": [
+                        "discord channel id"
+                    ],
                     "value_list": [],
                     "default": "",
                     "order": 0,
@@ -534,7 +543,9 @@
                     "data_type": "string",
                     "required": true,
                     "primary": true,
-                    "contains": [],
+                    "contains": [
+                        "discord message id"
+                    ],
                     "value_list": [],
                     "default": "",
                     "order": 1,
@@ -545,14 +556,18 @@
                 {
                     "data_path": "action_result.parameter.channel_id",
                     "data_type": "numeric",
-                    "contains": [],
+                    "contains": [
+                        "discord channel id"
+                    ],
                     "column_name": "channel_id",
                     "column_order": 0
                 },
                 {
                     "data_path": "action_result.parameter.message_id",
                     "data_type": "numeric",
-                    "contains": [],
+                    "contains": [
+                        "discord message id"
+                    ],
                     "column_name": "message_id",
                     "column_order": 1
                 },
