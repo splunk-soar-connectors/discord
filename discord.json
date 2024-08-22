@@ -260,10 +260,47 @@
             "versions": "EQ(*)"
         }
     ],
-    "pip3_dependencies": {
-        "pypi": [
+    "pip39_dependencies": {
+        "wheel": [
             {
-                "module": "discord"
+                "module": "aiohappyeyeballs",
+                "input_file": "wheels/py3/aiohappyeyeballs-2.3.7-py3-none-any.whl"
+            },
+            {
+                "module": "aiohttp",
+                "input_file": "wheels/py39/aiohttp-3.10.4-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+            },
+            {
+                "module": "aiosignal",
+                "input_file": "wheels/py3/aiosignal-1.3.1-py3-none-any.whl"
+            },
+            {
+                "module": "async_timeout",
+                "input_file": "wheels/py3/async_timeout-4.0.3-py3-none-any.whl"
+            },
+            {
+                "module": "attrs",
+                "input_file": "wheels/py3/attrs-24.2.0-py3-none-any.whl"
+            },
+            {
+                "module": "discord.py",
+                "input_file": "wheels/py3/discord.py-2.4.0-py3-none-any.whl"
+            },
+            {
+                "module": "frozenlist",
+                "input_file": "wheels/py39/frozenlist-1.4.1-cp39-cp39-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl"
+            },
+            {
+                "module": "idna",
+                "input_file": "wheels/py3/idna-3.7-py3-none-any.whl"
+            },
+            {
+                "module": "multidict",
+                "input_file": "wheels/py39/multidict-6.0.5-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+            },
+            {
+                "module": "yarl",
+                "input_file": "wheels/py39/yarl-1.9.4-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
             }
         ]
     }

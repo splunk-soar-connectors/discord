@@ -4,18 +4,19 @@
 # Phantom sample App Connector python file
 # -----------------------------------------
 
+import asyncio
+import json
+
 # Phantom App imports
 import phantom.app as phantom
-from phantom.action_result import ActionResult
-from phantom.base_connector import BaseConnector
-
 # Usage of the consts file is recommended
 # from discord_consts import *
 import requests
-import json
 from bs4 import BeautifulSoup
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
+
 import discord
-import asyncio
 
 
 class RetVal(tuple):
@@ -192,11 +193,13 @@ class DiscordConnector(BaseConnector):
     def _handle_test_connectivity(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        self._loop.run_until_complete(self._client.login(self._token))
-
-        if self._client.status != discord.Status.online:
-            self.save_progress("Test Connectivity Failed.")
-            return action_result.get_status()
+        try:
+            self._loop.run_until_complete(self._client.login(self._token))
+            if self._client.status != discord.Status.online:
+                self.save_progress("Test Connectivity Failed.")
+        except Exception as e:
+            err = self._get_error_message_from_exception(e)
+            return action_result.set_status(phantom.APP_ERROR, err)
 
         self.save_progress("Test Connectivity Passed")
         return action_result.set_status(phantom.APP_SUCCESS)
@@ -209,9 +212,8 @@ class DiscordConnector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        self.save_progress(str(type(self._guild)))
+        status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result, message = "Cannot fetch channel from Discord.")
 
-        channels = self._loop.run_until_complete(self._guild.fetch_channels())
         num_channels = 0
 
         for channel in channels:
@@ -225,7 +227,7 @@ class DiscordConnector(BaseConnector):
         summary = action_result.update_summary({})
         summary['num_channels'] = num_channels
 
-        return action_result.set_status(phantom.APP_SUCCESS)
+        return status
 
     def _handle_send_message(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -235,14 +237,11 @@ class DiscordConnector(BaseConnector):
         destination = param['destination']
         message = param['message']
 
-        try:
-            channel = self._loop.run_until_complete(self._guild.fetch_channel(destination))
-            self._loop.run_until_complete(channel.send(message))
-        except Exception as e:
-            err = self._get_error_message_from_exception(e)
-            return action_result.set_status(phantom.APP_ERROR, err)
+        status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result, message = "Cannot fetch channel from Discord.")
+        status, result = self.run_in_loop(channel.send(message), action_result,
+                                           message="Cannot send message to Discord.")
 
-        return action_result.set_status(phantom.APP_SUCCESS)
+        return status
 
     def _handle_kick_user(self, param):
 
@@ -253,14 +252,20 @@ class DiscordConnector(BaseConnector):
         user_id = param['user_id']
         reason = param['reason']
 
-        try:
-            user = self._loop.run_until_complete(self._guild.fetch_member(user_id))
-            self._loop.run_until_complete(self._guild.kick(user, reason=reason))
-        except Exception as e:
-            err = self._get_error_message_from_exception(e)
-            return action_result.set_status(phantom.APP_ERROR, err)
+        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, message = "Cannot fetch member from Discord.")
+        status, result = self.run_in_loop(self._guild.kick(user, reason=reason), action_result, message = "Cannot kick the user from Discord.")
 
-        return action_result.set_status(phantom.APP_SUCCESS)
+        return status
+
+    def run_in_loop(self, coroutine, action_result=None, message = ""):
+        try:
+            return action_result.set_status(phantom.APP_SUCCESS), self._loop.run_until_complete(coroutine)
+        except discord.DiscordException as e:
+            err = self._get_error_message_from_exception(e)
+            self.save_progress(f"Exception found type: {e.__class__.__name__}")
+            return action_result.set_status(phantom.APP_ERROR, f"{message} Error type: {e.__class__.__name__} Details: {err}")
+        except Exception as e:
+            return action_result.set_status(phantom.APP_ERROR, f"Other exception. Error type: {e.__class__.__name__} Details: {str(e)}")
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
@@ -317,12 +322,11 @@ class DiscordConnector(BaseConnector):
 
         try:
             self._loop.run_until_complete(self._load_guild())
-        except discord.LoginFailure:
-            self.save_progress("Login Failure")
-        except discord.NotFound:
-            self.save_progress("Guild not found")
-        except discord.HTTPException:
-            self.save_progress("HTTP Exception")
+        except discord.DiscordException as e:
+            self.save_progress(f"Exception found type: {e.__class__.__name__}")
+            return phantom.APP_ERROR
+        except Exception as e:
+            return phantom.APP_ERROR
 
         return phantom.APP_SUCCESS
 
@@ -331,7 +335,6 @@ class DiscordConnector(BaseConnector):
         self._loop.close()
         self.save_state(self._state)
         return phantom.APP_SUCCESS
-
 
 def main():
     import argparse
