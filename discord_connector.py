@@ -394,6 +394,26 @@ class DiscordConnector(BaseConnector):
 
         return status
 
+    def _handle_get_user(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        user_id = param['user_id']
+
+        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, message = "Cannot fetch member from Discord.")
+
+        action_result.add_data({
+            "display_name": user.display_name,
+            "name": user.name,
+            "created_at": str(user.created_at),
+            "system": user.system,
+            "public_flags": user.public_flags.all()
+        })
+
+
+        return status
+
     def run_in_loop(self, coroutine, action_result, message = ""):
         try:
             return action_result.set_status(phantom.APP_SUCCESS), self._loop.run_until_complete(coroutine)
@@ -430,6 +450,9 @@ class DiscordConnector(BaseConnector):
 
         if action_id == 'ban_user':
             ret_val = self._handle_ban_user(param)
+
+        if action_id == 'get_user':
+            ret_val = self._handle_get_user(param)
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
