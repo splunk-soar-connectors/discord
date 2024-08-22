@@ -375,7 +375,22 @@ class DiscordConnector(BaseConnector):
 
         return status
 
-    def run_in_loop(self, coroutine, action_result=None, message = ""):
+    def _handle_ban_user(self, param):
+
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        user_id = param['user_id']
+        reason = param['reason']
+        delete_message_seconds = param['delete_message_seconds']
+
+        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, message = "Cannot fetch member from Discord.")
+        status, result = self.run_in_loop(self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result, message = "Cannot ban the user from Discord.")
+
+        return status
+
+    def run_in_loop(self, coroutine, action_result, message = ""):
         try:
             return action_result.set_status(phantom.APP_SUCCESS), self._loop.run_until_complete(coroutine)
         except discord.DiscordException as e:
@@ -399,6 +414,7 @@ class DiscordConnector(BaseConnector):
 
         if action_id == 'delete_message':
             ret_val = self._handle_delete_message(param)
+
         if action_id == 'list_channels':
             ret_val = self._handle_list_channels(param)
 
@@ -407,6 +423,9 @@ class DiscordConnector(BaseConnector):
 
         if action_id == 'kick_user':
             ret_val = self._handle_kick_user(param)
+
+        if action_id == 'ban_user':
+            ret_val = self._handle_ban_user(param)
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
