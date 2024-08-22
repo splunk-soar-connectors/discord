@@ -1,5 +1,5 @@
 [comment]: # "Auto-generated SOAR connector documentation"
-# Discord
+# discord
 
 Publisher: Splunk  
 Connector Version: 1.0.0  
@@ -16,7 +16,7 @@ The below configuration variables are required for this Connector to operate.  T
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **token** |  required  | string | Discord bot token
-**guild_id** |  optional  | numeric | server/guild id
+**guild_id** |  required  | numeric | server/guild id
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
@@ -62,30 +62,6 @@ action_result.message | string |  |
 summary.total_objects | numeric |  |  
 summary.total_objects_successful | numeric |  |    
 
-## action: 'fetch message'
-gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message
-
-Type: **investigate**  
-Read only: **False**
-
-#### Action Parameters
-PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
---------- | -------- | ----------- | ---- | --------
-**channel_id** |  required  | channel id | string | 
-**message_id** |  required  | message id | string | 
-action_result.data.\*.message origin.channel id | numeric |  `channel id`  |  
-action_result.data.\*.message origin.channel name | string |  `channel name`  |  
-action_result.data.\*.message data.created at | numeric |  `date`  |  
-action_result.data.\*.message data.edited at | numeric |  `date`  |  
-action_result.data.\*.author data.author id | numeric |  `author id`  |  
-action_result.data.\*.author data.author name | string |  `author name`  |  
-action_result.data.\*.attachments | string |  `artifact id`  |  
-action_result.data.\*.embeds | string |  `artifact id`  |  
-action_result.data.\*.content | string |  `message content`  |  
-action_result.data.\*.jump url | string |  `url`  |  
-action_result.data.\*.flags | string |  `flags`  |  
-
-
 ## action: 'send message'
 Send a message to the Discord channel
 
@@ -97,31 +73,18 @@ Send a message to Discord
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**destination** |  required  | Discord channels ID | string |  `channel id` 
+**destination** |  required  | Discord channels ID | string |  `slack channel id` 
 **message** |  required  | Message to send | string | 
-
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.parameter.destination | string |  `channel id`  `channel name`  |  
+action_result.parameter.destination | string |  `slack channel id`  `slack channel name`  |  
 action_result.parameter.message | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
 summary.total_objects_successful | numeric |  |    
-
-
-## action: 'delete message'
-removes the message
-
-#### Action Parameters
-PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
---------- | -------- | ----------- | ---- | --------
-**channel_id** |  required  | channel id | string | 
-**message_id** |  required  | message id | string | 
-ction_result.parameter.channel_id | numeric |  |  
-action_result.parameter.message_id | numeric |  |  
 
 ## action: 'kick user'
 Kicks user from a guild
@@ -129,17 +92,72 @@ Kicks user from a guild
 Type: **correct**  
 Read only: **False**
 
+Kicks user from a guild
+
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **user_id** |  required  | User ID | string |  `discord user id` 
 **reason** |  optional  | The reason the user got kicked. | string | 
-action_result.parameter.user_id | string |  |  
-action_result.parameter.reason | string |  | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
+action_result.parameter.user_id | string |  |  
+action_result.parameter.reason | string |  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'fetch message'
+gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message
+
+Type: **investigate**  
+Read only: **False**
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**channel_id** |  required  | channel id | string | 
+**message_id** |  required  | message id | string | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.data.\*.message origin.channel id | numeric |  `channel id`  |  
+action_result.data.\*.message origin.channel name | string |  `channel name`  |  
+action_result.data.\*.message data.created at | numeric |  `date`  |  
+action_result.data.\*.message data.edited at | numeric |  `date`  |  
+action_result.data.\*.author data.author id | numeric |  `author id`  |  
+action_result.data.\*.author data.author name | string |  `author name`  |  
+action_result.data.\*.attachments | string |  `artifact id`  |  
+action_result.data.\*.embeds | string |  `artifact id`  |  
+action_result.data.\*.content | string |  `message content`  |  
+action_result.data.\*.jump url | string |  `url`  |  
+action_result.data.\*.flags | string |  `flags`  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'delete message'
+removes the message
+
+Type: **correct**  
+Read only: **False**
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**channel_id** |  required  | channel id | string | 
+**message_id** |  required  | message id | string | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.channel_id | numeric |  |  
+action_result.parameter.message_id | numeric |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
