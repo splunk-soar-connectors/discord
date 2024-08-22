@@ -1,5 +1,5 @@
 [comment]: # "Auto-generated SOAR connector documentation"
-# discord
+# Discord
 
 Publisher: Splunk  
 Connector Version: 1.0.0  
@@ -55,9 +55,9 @@ No parameters are required for this action
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.parameter.guild_id | string |  |  
-action_result.data.\*.id | string |  `channel id`  |  
-action_result.data.\*.name | string |  `channel name`  |  
+action_result.parameter.guild_id | string |  `discord guild id`  |  
+action_result.data.\*.id | string |  `discord channel id`  |  
+action_result.data.\*.name | string |  `discord channel name`  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
@@ -74,13 +74,13 @@ Send a message to Discord
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**destination** |  required  | Discord channels ID | string |  `slack channel id` 
+**destination** |  required  | Discord channels ID | string |  `discord channel id` 
 **message** |  required  | Message to send | string | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.parameter.destination | string |  `slack channel id`  `slack channel name`  |  
+action_result.parameter.destination | string |  `discord channel id`  |  
 action_result.parameter.message | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
@@ -104,7 +104,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.parameter.user_id | string |  |  
+action_result.parameter.user_id | string |  `discord user id`  |  
 action_result.parameter.reason | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
@@ -146,14 +146,14 @@ Read only: **False**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**channel_id** |  required  | channel id | string | 
-**message_id** |  required  | message id | string | 
+**channel_id** |  required  | channel id | string |  `discord channel id` 
+**message_id** |  required  | message id | string |  `discord message id` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.data.\*.message origin.channel id | numeric |  `channel id`  |  
-action_result.data.\*.message origin.channel name | string |  `channel name`  |  
+action_result.data.\*.message origin.channel id | numeric |  `discord channel id`  |  
+action_result.data.\*.message origin.channel name | string |  `discord channel name`  |  
 action_result.data.\*.message data.created at | numeric |  `date`  |  
 action_result.data.\*.message data.edited at | numeric |  `date`  |  
 action_result.data.\*.author data.author id | numeric |  `author id`  |  
@@ -177,14 +177,14 @@ Read only: **False**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**channel_id** |  required  | channel id | string | 
-**message_id** |  required  | message id | string | 
+**channel_id** |  required  | channel id | string |  `discord channel id` 
+**message_id** |  required  | message id | string |  `discord message id` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.parameter.channel_id | numeric |  |  
-action_result.parameter.message_id | numeric |  |  
+action_result.parameter.channel_id | numeric |  `discord channel id`  |  
+action_result.parameter.message_id | numeric |  `discord message id`  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
