@@ -5,20 +5,20 @@
 # -----------------------------------------
 # from lib2to3.fixes.fix_input import context
 
+import asyncio
+import dataclasses
+import json
+
 # Phantom App imports
 import phantom.app as phantom
+import requests
+from bs4 import BeautifulSoup
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-from discord_consts import *
-import requests
-import json
 import discord
-import asyncio
-from bs4 import BeautifulSoup
-
 from discord_artifact import Artifact
-import dataclasses
+from discord_consts import *
 
 
 class RetVal(tuple):
@@ -64,7 +64,7 @@ class DiscordConnector(BaseConnector):
             split_lines = error_text.split('\n')
             split_lines = [x.strip() for x in split_lines if x.strip()]
             error_text = '\n'.join(split_lines)
-        except:
+        except BaseException:
             error_text = "Cannot parse error details"
 
         message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code, error_text)
@@ -326,7 +326,7 @@ class DiscordConnector(BaseConnector):
         summary = action_result.update_summary({})
         summary['action result: '] = "Deleting message {} ended with {}".format(message_id, ret_message)
 
-        return action_result.set_status(phantom.APP_SUCCESS) if ret_message is "success" \
+        return action_result.set_status(phantom.APP_SUCCESS) if ret_message == "success" \
             else action_result.set_status(phantom.APP_ERROR)
 
     async def delete_message(self, channel_id, message_id):
