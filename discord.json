@@ -284,7 +284,7 @@
                     "order": 0,
                     "name": "user_id"
                 },
-                "delete_message_second": {
+                "delete_message_seconds": {
                     "description": "The number of seconds worth of messages to delete from the user in the guild. The minimum is 0 and the maximum is 604800 (7 days). Defaults to 1 day.",
                     "data_type": "numeric",
                     "required": false,
