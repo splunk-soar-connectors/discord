@@ -396,9 +396,9 @@ class DiscordConnector(BaseConnector):
         except discord.DiscordException as e:
             err = self._get_error_message_from_exception(e)
             self.save_progress(f"Exception found type: {e.__class__.__name__}")
-            return action_result.set_status(phantom.APP_ERROR, f"{message} Error type: {e.__class__.__name__} Details: {err}")
+            return action_result.set_status(phantom.APP_ERROR, f"{message} Error type: {e.__class__.__name__} Details: {err}"), None
         except Exception as e:
-            return action_result.set_status(phantom.APP_ERROR, f"Other exception. Error type: {e.__class__.__name__} Details: {str(e)}")
+            return action_result.set_status(phantom.APP_ERROR, f"Other exception. Error type: {e.__class__.__name__} Details: {str(e)}"), None
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS

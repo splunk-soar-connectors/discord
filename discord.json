@@ -291,7 +291,7 @@
                     "primary": false,
                     "contains": [],
                     "value_list": [],
-                    "default": "",
+                    "default": "86400",
                     "order": 0,
                     "name": "user_id"
                 },
