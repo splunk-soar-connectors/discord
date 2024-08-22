@@ -82,6 +82,7 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.destination | string |  `discord channel id`  |  
 action_result.parameter.message | string |  |  
+action_result.data.\*.message_id | string |  `discord message id`  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
