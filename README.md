@@ -26,6 +26,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [ban user](#action-ban-user) - Bans user from a guild  
 [fetch message](#action-fetch-message) - gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message  
 [delete message](#action-delete-message) - removes the message  
+[get user](#action-get-user) - Get information about a user of a Discord guild/server  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -82,6 +83,7 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.destination | string |  `discord channel id`  |  
 action_result.parameter.message | string |  |  
+action_result.data.\*.message_id | string |  `discord message id`  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
@@ -185,6 +187,33 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.channel_id | numeric |  `discord channel id`  |  
 action_result.parameter.message_id | numeric |  `discord message id`  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'get user'
+Get information about a user of a Discord guild/server
+
+Type: **investigate**  
+Read only: **True**
+
+This action will get information about a user.
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**user_id** |  required  | user id | string |  `discord user id` 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.user_id | string |  `discord user id`  |  
+action_result.data.\*.display_name | string |  |  
+action_result.data.\*.name | string |  |  
+action_result.data.\*.created_at | string |  |  
+action_result.data.\*.system | string |  |  
+action_result.data.\*.public_flags | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
