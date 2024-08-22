@@ -23,6 +23,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [list channels](#action-list-channels) - List text channels of a guild  
 [send message](#action-send-message) - Send a message to the Discord channel  
 [kick user](#action-kick-user) - Kicks user from a guild  
+[ban user](#action-ban-user) - Bans user from a guild  
 [fetch message](#action-fetch-message) - gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message  
 [delete message](#action-delete-message) - removes the message  
 
@@ -104,6 +105,32 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.user_id | string |  |  
+action_result.parameter.reason | string |  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'ban user'
+Bans user from a guild
+
+Type: **correct**  
+Read only: **False**
+
+Bans user from a guild and deletes specific number of seconds worth of messages
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**user_id** |  required  | User ID | string |  `discord user id` 
+**delete_message_seconds** |  optional  | The number of seconds worth of messages to delete from the user in the guild. The minimum is 0 and the maximum is 604800 (7 days). Defaults to 1 day. | numeric | 
+**reason** |  optional  | The reason the user got kicked. | string | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.user_id | string |  `discord user id`  |  
+action_result.parameter.delete_message_seconds | numeric |  |  
 action_result.parameter.reason | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
