@@ -356,8 +356,12 @@ class DiscordConnector(BaseConnector):
         message = param['message']
 
         status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result, message = "Cannot fetch channel from Discord.")
-        status, result = self.run_in_loop(channel.send(message), action_result,
+        status, message = self.run_in_loop(channel.send(message), action_result,
                                            message="Cannot send message to Discord.")
+
+        action_result.add_data({
+            "message_id": message.id
+        })
 
         return status
 
