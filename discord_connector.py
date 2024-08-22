@@ -358,10 +358,13 @@ def _handle_send_message(self, param):
     destination = param['destination']
     message = param['message']
 
-    status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result,
-                                       message="Cannot fetch channel from Discord.")
-    status, result = self.run_in_loop(channel.send(message), action_result,
-                                      message="Cannot send message to Discord.")
+    status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result, message = "Cannot fetch channel from Discord.")
+    status, message = self.run_in_loop(channel.send(message), action_result,
+                                           message="Cannot send message to Discord.")
+
+    action_result.add_data({
+        "message_id": message.id
+    })
 
     return status
 
@@ -380,8 +383,24 @@ def _handle_kick_user(self, param):
                                       message="Cannot kick the user from Discord.")
 
     return status
+  
+  
+def _handle_ban_user(self, param):
 
+    self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
+    action_result = self.add_action_result(ActionResult(dict(param)))
+
+    user_id = param['user_id']
+    reason = param['reason']
+    delete_message_seconds = param['delete_message_seconds']
+
+    status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, message = "Cannot fetch member from Discord.")
+    status, result = self.run_in_loop(self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result, message = "Cannot ban the user from Discord.")
+
+    return status  
+
+  
 def run_in_loop(self, coroutine, action_result, message=""):
     try:
         return action_result.set_status(phantom.APP_SUCCESS), self._loop.run_until_complete(coroutine)
@@ -405,18 +424,16 @@ def handle_action(self, param):
 
     if action_id == 'fetch_message':
         ret_val = self._handle_fetch_message(param)
-
     if action_id == 'delete_message':
         ret_val = self._handle_delete_message(param)
     if action_id == 'list_channels':
         ret_val = self._handle_list_channels(param)
-
     if action_id == 'send_message':
         ret_val = self._handle_send_message(param)
-
     if action_id == 'kick_user':
         ret_val = self._handle_kick_user(param)
-
+    if action_id == 'ban_user':
+        ret_val = self._handle_ban_user(param)
     if action_id == 'test_connectivity':
         ret_val = self._handle_test_connectivity(param)
 
@@ -426,7 +443,6 @@ def handle_action(self, param):
 def initialize(self):
     # Load the state in initialize, use it to store data
     self._state = self.load_state()
-
     # get the asset config
     config = self.get_config()
 
