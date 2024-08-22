@@ -1,6 +1,6 @@
 {
-    "appid": "3df4aac3-ab56-42a1-8305-ea6155744509",
-    "name": "Discord",
+    "appid": "0e4f8ac8-af3d-4fbd-802f-fd06607fe0b9",
+    "name": "discord",
     "description": "Integrate with Discord to post messages and attachments to channels",
     "contributors": [
         {
@@ -20,24 +20,28 @@
     "publisher": "Splunk",
     "license": "Copyright (c) 2024 Splunk Inc.",
     "app_version": "1.0.0",
-    "utctime_updated": "2024-08-07T07:57:28.958868Z",
-    "package_name": "phantom_discord",
+    "utctime_updated": "2024-08-12T12:06:21.058775Z",
+    "package_name": "phantom",
     "main_module": "discord_connector.py",
     "min_phantom_version": "6.2.2.134",
     "app_wizard_version": "1.0.0",
     "configuration": {
         "token": {
             "description": "Discord bot token",
-            "data_type": "password",
+            "data_type": "string",
             "required": true,
+            "value_list": [],
+            "default": "",
             "order": 0,
             "name": "token",
             "id": 0
         },
         "guild_id": {
-            "description": "Guild ID",
+            "description": "server/guild id",
             "data_type": "numeric",
             "required": true,
+            "value_list": [],
+            "default": "",
             "order": 1,
             "name": "guild_id",
             "id": 1
@@ -240,6 +244,231 @@
                     "data_type": "string",
                     "column_name": "status",
                     "column_order": 1
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "fetch message",
+            "identifier": "fetch_message",
+            "description": "gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message",
+            "verbose": "",
+            "type": "investigate",
+            "read_only": false,
+            "parameters": {
+                "channel_id": {
+                    "description": "channel id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "channel_id"
+                },
+                "message_id": {
+                    "description": "message id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "message_id"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.data.*.message origin.channel id",
+                    "data_type": "numeric",
+                    "contains": [
+                        "channel id"
+                    ],
+                    "column_name": "channel id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.message origin.channel name",
+                    "data_type": "string",
+                    "contains": [
+                        "channel name"
+                    ],
+                    "column_name": "channel name",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.message data.created at",
+                    "data_type": "numeric",
+                    "contains": [
+                        "date"
+                    ],
+                    "column_name": "message creation date",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.message data.edited at",
+                    "data_type": "numeric",
+                    "contains": [
+                        "date"
+                    ],
+                    "column_name": "message edition date",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.author data.author id",
+                    "data_type": "numeric",
+                    "contains": [
+                        "author id"
+                    ],
+                    "column_name": "author id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.author data.author name",
+                    "data_type": "string",
+                    "contains": [
+                        "author name"
+                    ],
+                    "column_name": "author name",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.attachments",
+                    "data_type": "string",
+                    "contains": [
+                        "artifact id"
+                    ],
+                    "column_name": "list of attachments",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.embeds",
+                    "data_type": "string",
+                    "contains": [
+                        "artifact id"
+                    ],
+                    "column_name": "list of embeds",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.content",
+                    "data_type": "string",
+                    "contains": [
+                        "message content"
+                    ],
+                    "column_name": "content",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.jump url",
+                    "data_type": "string",
+                    "contains": [
+                        "url"
+                    ],
+                    "column_name": "jump url",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.flags",
+                    "data_type": "string",
+                    "contains": [
+                        "flags"
+                    ],
+                    "column_name": "message flags",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "delete message",
+            "identifier": "delete_message",
+            "description": "removes the message",
+            "verbose": "",
+            "type": "correct",
+            "read_only": false,
+            "parameters": {
+                "channel_id": {
+                    "description": "channel id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "channel_id"
+                },
+                "message_id": {
+                    "description": "message id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "message_id"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.channel_id",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "channel_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.message_id",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "message_id",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.message",

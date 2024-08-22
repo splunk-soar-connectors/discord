@@ -3,20 +3,22 @@
 # -----------------------------------------
 # Phantom sample App Connector python file
 # -----------------------------------------
+# from lib2to3.fixes.fix_input import context
 
 import asyncio
+import dataclasses
 import json
 
 # Phantom App imports
 import phantom.app as phantom
-# Usage of the consts file is recommended
-# from discord_consts import *
 import requests
 from bs4 import BeautifulSoup
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 import discord
+from discord_artifact import Artifact
+from discord_consts import *
 
 
 class RetVal(tuple):
@@ -28,15 +30,9 @@ class RetVal(tuple):
 class DiscordConnector(BaseConnector):
 
     def __init__(self):
-
-        # Call the BaseConnectors init first
         super().__init__()
 
         self._state = None
-
-        # Variable to hold a base_url in case the app makes REST calls
-        # Do note that the app json defines the asset config, so please
-        # modify this as you deem fit.
         self._base_url = "https://discord.com/api/v10"
         self._session = None
         self._guild = None
@@ -93,7 +89,7 @@ class DiscordConnector(BaseConnector):
             split_lines = error_text.split('\n')
             split_lines = [x.strip() for x in split_lines if x.strip()]
             error_text = '\n'.join(split_lines)
-        except:
+        except BaseException:
             error_text = "Cannot parse error details"
 
         message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code, error_text)
@@ -204,6 +200,128 @@ class DiscordConnector(BaseConnector):
         self.save_progress("Test Connectivity Passed")
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _handle_fetch_message(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        channel_id = param['channel_id']
+        message_id = param['message_id']
+
+        message = self._loop.run_until_complete(self.fetch_message(channel_id, message_id))
+        if message is None:
+            return action_result.set_status(phantom.APP_ERROR, "Failed to fetch message")
+
+        attachments, embeds = self.create_artifacts(message)
+        message = self.parse_message(message, attachments, embeds)
+
+        action_result.add_data(message)
+        summary = action_result.update_summary({})
+        summary['success: '] = "fetching message completed"
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    async def fetch_message(self, channel_id, message_id) -> discord.Message or None:
+
+        try:
+            channel = await self._guild.fetch_channel(channel_id)
+            self.save_progress("channel: {}".format(str(channel)))
+            message = await channel.fetch_message(message_id)
+            self.save_progress("message: {}".format(str(message)))
+        except Exception as e:
+            self.save_progress("Failed to fetch message: {}".format(str(e)))
+            return None
+
+        return message
+
+    def create_artifacts(self, message):
+
+        container_id = self.get_container_id()
+        attachments = []
+        embeds = []
+
+        if message.embeds:
+            self.save_progress("working on embeds")
+            for embed in message.embeds:
+                embeds.append(self.create_embed_artifact(embed, container_id))
+
+        if message.attachments:
+            self.save_progress("working on attachments")
+            for attachment in message.attachments:
+                attachments.append(self.create_attachment_artifact(attachment, container_id))
+
+        return attachments, embeds
+
+    def create_embed_artifact(self, embed, container_id):
+        artifact = Artifact(
+            container_id=container_id,
+            name=f"embed: {embed.title}",
+            cef={"URL": embed.url, "Description": embed.description}
+        )
+        return self.save_artifact_to_soar(dataclasses.asdict(artifact))
+
+    def create_attachment_artifact(self, attachment, container_id):
+        artifact = Artifact(
+            container_id=container_id,
+            name=f"embed: {attachment.title}",
+            cef={"URL": attachment.url, "Description": attachment.description, "Type": attachment.content_type}
+        )
+        return self.save_artifact_to_soar(dataclasses.asdict(artifact))
+
+    def save_artifact_to_soar(self, artifact):
+        status, creation_message, artifact_id = self.save_artifact(artifact)
+        self.save_progress("creating artifact: status: {}, creation message: {}, artifact id {}"
+                           .format(status, creation_message, artifact_id))
+        return artifact_id
+
+    def parse_message(self, message, attachments, embeds):
+
+        return {
+            "message origin": {
+                "channel id": message.channel.id,
+                "channel name": message.channel.name,
+            },
+            "message data": {
+                "created at": str(message.created_at),
+                "edited at": str(message.edited_at) if message.edited_at is not None else "message was not edited",
+            },
+            "author data": {
+                "author id": message.author.id,
+                "author name": message.author.name,
+            },
+            "jump url": message.jump_url,
+            "flags": list(filter(lambda flag: getattr(message.flags, flag), MESSAGE_FLAGS)) or "no flags",
+            "attachments": attachments or "no attachments",
+            "embeds": embeds or "no embeds",
+            "content": message.content
+        }
+
+    def _handle_delete_message(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        channel_id = param['channel_id']
+        message_id = param['message_id']
+
+        ret_message = self._loop.run_until_complete(self.delete_message(channel_id, message_id))
+
+        summary = action_result.update_summary({})
+        summary['action result: '] = "Deleting message {} ended with {}".format(message_id, ret_message)
+
+        return action_result.set_status(phantom.APP_SUCCESS) if ret_message == "success" \
+            else action_result.set_status(phantom.APP_ERROR)
+
+    async def delete_message(self, channel_id, message_id):
+
+        try:
+            message = await self.fetch_message(channel_id, message_id)
+            await message.delete()
+        except Exception as e:
+            self.save_progress("Failed to delete message: {}".format(str(e)))
+            return "failure"
+
+        return "success"
+
     async def _load_guild(self):
         await self._client.login(self._token)
         self._guild = await self._client.fetch_guild(self._guild_id)
@@ -275,6 +393,12 @@ class DiscordConnector(BaseConnector):
 
         self.debug_print("action_id", self.get_action_identifier())
 
+
+        if action_id == 'fetch_message':
+            ret_val = self._handle_fetch_message(param)
+
+        if action_id == 'delete_message':
+            ret_val = self._handle_delete_message(param)
         if action_id == 'list_channels':
             ret_val = self._handle_list_channels(param)
 
@@ -291,20 +415,10 @@ class DiscordConnector(BaseConnector):
 
     def initialize(self):
         # Load the state in initialize, use it to store data
-        # that needs to be accessed across actions
         self._state = self.load_state()
 
         # get the asset config
         config = self.get_config()
-        """
-        # Access values in asset config by the name
-
-        # Required values can be accessed directly
-        required_config_name = config['required_config_name']
-
-        # Optional values should use the .get() function
-        optional_config_name = config.get('optional_config_name')
-        """
 
         self._base_url = "https://discord.com/api/v10"
         self._token = config['token']
@@ -332,6 +446,7 @@ class DiscordConnector(BaseConnector):
 
     def finalize(self):
         # Save the state, this data is saved across actions and app upgrades
+        self._client.close()
         self._loop.close()
         self.save_state(self._state)
         return phantom.APP_SUCCESS
