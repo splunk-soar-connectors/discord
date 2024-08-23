@@ -605,7 +605,7 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "fetch_message_history",
+            "action": "fetch message history",
             "identifier": "fetch_message_history",
             "description": "fetches message history",
             "verbose": "",

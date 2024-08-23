@@ -401,18 +401,24 @@ class DiscordConnector(BaseConnector):
         before = param.get('before', None)
         limit = param.get('limit', None)
 
-        messages = self._loop.run_until_complete(
-            self.fetch_message_history(channel_id, action_result, after, before, limit))
+        msgs = self.fetch_message_history(channel_id, action_result, after, before, limit)
 
-        self.save_progress("messages {}".format(len(messages)))
+        self.save_progress("messages {}".format(len(msgs)))
 
-        return action_result.set_status(phantom.APP_ERROR, "messages {}".format(messages))
+        return action_result.set_status(phantom.APP_ERROR, "messages {}".format(msgs))
 
-    async def fetch_message_history(self, channel_id, action_result, after, before, limit):
-        channel = await self._guild.fetch_channel(channel_id)
-        self.save_progress("channel {}".format(channel.name))
-        messages = [message async for message in channel.history(limit=limit, after=after, before=before)]
-        return messages
+    def fetch_message_history(self, channel_id, action_result, after, before, limit):
+        status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
+                                           "Cannot fetch channel from Discord.")
+
+        status, msgs = self.run_in_loop(self.gather_messages(channel, after, before, limit), action_result,
+                                        "Cannot fetch messages from Discord.")
+        return msgs
+
+    async def gather_messages(self, channel, after, before, limit):
+        msgs = [message async for message in channel.history(limit=limit, after=after, before=before)]
+        self.save_progress("gathered messages: {}".format(len(msgs)))
+        return msgs
 
     def run_in_loop(self, coroutine, action_result, message=""):
         try:
