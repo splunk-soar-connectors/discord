@@ -210,10 +210,11 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.parameter.channel_id | string |  `discord channel id`  |  
-action_result.parameter.after | string |  |  
-action_result.parameter.before | string |  |  
-action_result.parameter.limit | numeric |  |  
+action_result.data.\*.message id | string |  `discord message id`  |  
+action_result.data.\*.author id | string |  `discord message author id`  |  
+action_result.data.\*.created at | string |  `discord message creation date`  |  
+action_result.data.\*.embeds/attachments | string |  `discord message embeds/attachments`  |  
+action_result.data.\*.content | string |  `discord message content`  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
