@@ -8,7 +8,7 @@ Product Name: Discord
 Product Version Supported (regex): ".\*"  
 Minimum Product Version: 6.2.2.134  
 
-Integrate with Discord to post messages and attachments to channels
+Integrate with Discord to post messages and analyze attachments sent to channels
 
 ### Configuration Variables
 The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord asset in SOAR.
