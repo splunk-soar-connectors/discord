@@ -8,7 +8,7 @@ Product Name: Discord
 Product Version Supported (regex): ".\*"  
 Minimum Product Version: 6.2.2.134  
 
-Integrate with Discord to post messages and attachments to channels
+Integrate with Discord to post messages and analyze attachments sent to channels
 
 ### Configuration Variables
 The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord asset in SOAR.
@@ -16,7 +16,14 @@ The below configuration variables are required for this Connector to operate.  T
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **token** |  required  | string | Discord bot token
-**guild_id** |  required  | numeric | server/guild id
+**guild_id** |  required  | numeric | Guild aka server ID
+
+Where to find bot token: https://support-dev.discord.com/hc/en-us/articles/6470840524311-Why-can-t-I-copy-my-bot-s-token
+
+What is guild: https://support.discord.com/hc/en-us/articles/23187611406999-Guilds-FAQ
+
+Where to find guild ID: https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID#h_01HRSTXPS5FSFA0VWMY2CKGZXA
+
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
