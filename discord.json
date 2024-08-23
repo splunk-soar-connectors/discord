@@ -672,34 +672,49 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.parameter.channel_id",
+                    "data_path": "action_result.data.*.message id",
                     "data_type": "string",
+                    "column_name": "message ID",
+                    "column_order": 1,
                     "contains": [
-                        "discord channel id"
-                    ],
-                    "column_name": "channel_id",
-                    "column_order": 0
+                        "discord message id"
+                    ]
                 },
                 {
-                    "data_path": "action_result.parameter.after",
+                    "data_path": "action_result.data.*.author id",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "after",
-                    "column_order": 1
+                    "column_name": "Author ID",
+                    "column_order": 1,
+                    "contains": [
+                        "discord message author id"
+                    ]
                 },
                 {
-                    "data_path": "action_result.parameter.before",
+                    "data_path": "action_result.data.*.created at",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "before",
-                    "column_order": 2
+                    "column_name": "Creation date",
+                    "column_order": 1,
+                    "contains": [
+                        "discord message creation date"
+                    ]
                 },
                 {
-                    "data_path": "action_result.parameter.limit",
-                    "data_type": "numeric",
-                    "contains": [],
-                    "column_name": "limit",
-                    "column_order": 3
+                    "data_path": "action_result.data.*.embeds/attachments",
+                    "data_type": "string",
+                    "column_name": "Embeds/Attachments",
+                    "column_order": 1,
+                    "contains": [
+                        "discord message embeds/attachments"
+                    ]
+                },
+                                {
+                    "data_path": "action_result.data.*.content",
+                    "data_type": "string",
+                    "column_name": "content",
+                    "column_order": 1,
+                    "contains": [
+                        "discord message content"
+                    ]
                 },
                 {
                     "data_path": "action_result.status",
