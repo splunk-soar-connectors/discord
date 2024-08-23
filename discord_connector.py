@@ -8,6 +8,7 @@
 import asyncio
 import dataclasses
 import json
+from datetime import datetime
 
 # Phantom App imports
 import phantom.app as phantom
@@ -397,10 +398,19 @@ class DiscordConnector(BaseConnector):
 
         channel_id = param['channel_id']
 
-        after = param.get('after', None)
-        before = param.get('before', None)
+        status_after, after = self.parse_date(param.get('after', None))
+        status_before, before = self.parse_date(param.get('before', None))
+        # one liner?
         limit = param.get('limit', None)
+        if limit == 0:
+            limit = None
         oldest_first = param.get('oldest_first', False)
+
+        self.save_progress("status_after {}: {} | status_before {}: {}".format(status_after, after, status_before, before))
+        if not (status_after and status_before):
+            return action_result.set_status(phantom.APP_ERROR,
+                                            "action result: fetching messages from {} channel ended with failure, unable to format date"
+                                            .format(channel_id))
 
         status, messages = self.fetch_message_history(channel_id, action_result, after, before, oldest_first, limit)
         if not status:
@@ -412,13 +422,22 @@ class DiscordConnector(BaseConnector):
                 "message id": message.id,
                 "author id": message.author.id,
                 "created at": str(message.created_at),
-                "embeds/attachments": True if (message.attachments or message.embeds) else False,
+                "embeds_attachments": True if (message.attachments or message.embeds) else False,
                 "content": message.content
             })
 
         summary = action_result.update_summary({})
         summary['action result: '] = "action result: fetching messages from {} channel ended with success".format(channel_id)
         return action_result.set_status(phantom.APP_SUCCESS)
+
+    def parse_date(self, date_string):
+        # this can be irritating for user but it works
+        if date_string is None:
+            return True, None
+        try:
+            return True, datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            return False, None
 
     # if the method does not work check the imports some of them can overshadow 'messages' variable
     def fetch_message_history(self, channel_id, action_result, after, before, oldest_first, limit):
@@ -430,6 +449,7 @@ class DiscordConnector(BaseConnector):
         return status, messages
 
     async def gather_messages(self, channel, after, before, oldest_first, limit):
+        # before = datetime(2024,8,23,00,00,00)
         messages = [message async for message in channel.history(limit=limit, after=after, before=before, oldest_first=oldest_first)]
         self.save_progress("gathered messages: {}".format(len(messages)))
         return messages
