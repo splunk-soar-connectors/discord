@@ -401,24 +401,30 @@ class DiscordConnector(BaseConnector):
         before = param.get('before', None)
         limit = param.get('limit', None)
 
-        msgs = self.fetch_message_history(channel_id, action_result, after, before, limit)
+        status, messages = self.fetch_message_history(channel_id, action_result, after, before, limit)
+        if not status:
+            return action_result.set_status(phantom.APP_ERROR, "action result: fetching messages from {} ended with failure".format(channel_id))
 
-        self.save_progress("messages {}".format(len(msgs)))
+        self.save_progress("messages {}".format(len(messages)))
 
-        return action_result.set_status(phantom.APP_ERROR, "messages {}".format(msgs))
+        summary = action_result.update_summary({})
+        summary['action result: '] = "action result: fetching messages from {} ended with success".format(channel_id)
+        return action_result.set_status(phantom.APP_SUCCESS, "messages {}".format(messages))
 
+    # if the method does not work check the imports some of them can overshadow 'messages' variable
     def fetch_message_history(self, channel_id, action_result, after, before, limit):
         status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
                                            "Cannot fetch channel from Discord.")
-
-        status, msgs = self.run_in_loop(self.gather_messages(channel, after, before, limit), action_result,
+        if not status:
+            return status
+        status, messages = self.run_in_loop(self.gather_messages(channel, after, before, limit), action_result,
                                         "Cannot fetch messages from Discord.")
-        return msgs
+        return status, messages
 
     async def gather_messages(self, channel, after, before, limit):
-        msgs = [message async for message in channel.history(limit=limit, after=after, before=before)]
-        self.save_progress("gathered messages: {}".format(len(msgs)))
-        return msgs
+        messages = [message async for message in channel.history(limit=limit, after=after, before=before)]
+        self.save_progress("gathered messages: {}".format(len(messages)))
+        return messages
 
     def run_in_loop(self, coroutine, action_result, message=""):
         try:
