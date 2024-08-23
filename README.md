@@ -202,9 +202,9 @@ Read only: **False**
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **channel_id** |  required  | discord channel id | string |  `discord channel id` 
-**after** |  optional  | start date | string | 
-**before** |  optional  | end date | string | 
-**limit** |  optional  | messages limit | numeric | 
+**after** |  optional  | start date: %Y-%m-%d %H:%M:%S | string | 
+**before** |  optional  | end date: %Y-%m-%d %H:%M:%S | string | 
+**limit** |  optional  | messages limit: 0 is equal to None | numeric | 
 **oldest_first** |  optional  | oldest first | boolean | 
 
 #### Action Output
@@ -213,7 +213,7 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 action_result.data.\*.message id | string |  `discord message id`  |  
 action_result.data.\*.author id | string |  `discord message author id`  |  
 action_result.data.\*.created at | string |  `discord message creation date`  |  
-action_result.data.\*.embeds/attachments | string |  `discord message embeds/attachments`  |  
+action_result.data.\*.embeds_attachments | string |  `discord message embeds/attachments`  |  
 action_result.data.\*.content | string |  `discord message content`  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
