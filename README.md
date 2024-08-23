@@ -205,6 +205,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 **after** |  optional  | start date | string | 
 **before** |  optional  | end date | string | 
 **limit** |  optional  | messages limit | numeric | 
+**oldest_first** |  optional  | oldest first | boolean | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
