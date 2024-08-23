@@ -26,7 +26,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [ban user](#action-ban-user) - Bans user from a guild  
 [fetch message](#action-fetch-message) - gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message  
 [delete message](#action-delete-message) - removes the message  
-[fetch_message_history](#action-fetchmessagehistory) - fetches message history  
+[fetch message history](#action-fetch-message-history) - fetches message history  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -192,7 +192,7 @@ action_result.message | string |  |
 summary.total_objects | numeric |  |  
 summary.total_objects_successful | numeric |  |    
 
-## action: 'fetch_message_history'
+## action: 'fetch message history'
 fetches message history
 
 Type: **investigate**  
