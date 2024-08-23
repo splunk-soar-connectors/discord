@@ -603,6 +603,116 @@
                 "type": "table"
             },
             "versions": "EQ(*)"
+        },
+        {
+            "action": "fetch_message_history",
+            "identifier": "fetch_message_history",
+            "description": "fetches message history",
+            "verbose": "",
+            "type": "investigate",
+            "read_only": false,
+            "parameters": {
+                "channel_id": {
+                    "description": "discord channel id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "discord channel id"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "channel_id"
+                },
+                "after": {
+                    "description": "start date",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "after"
+                },
+                "before": {
+                    "description": "end date",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 2,
+                    "name": "before"
+                },
+                "limit": {
+                    "description": "messages limit",
+                    "data_type": "numeric",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 3,
+                    "name": "limit"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.channel_id",
+                    "data_type": "string",
+                    "contains": [
+                        "discord channel id"
+                    ],
+                    "column_name": "channel_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.after",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "after",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.parameter.before",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "before",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.parameter.limit",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "limit",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 4
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
         }
     ],
     "pip39_dependencies": {

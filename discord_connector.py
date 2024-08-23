@@ -222,7 +222,6 @@ class DiscordConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-
     def fetch_message(self, channel_id, message_id, action_result) -> discord.Message or None:
         status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
                                            message="Cannot fetch channel from Discord.")
@@ -232,7 +231,6 @@ class DiscordConnector(BaseConnector):
                                            message="Cannot fetch message from Discord.")
 
         return status, message
-
 
     def create_artifacts(self, message):
         container_id = self.get_container_id()
@@ -251,7 +249,6 @@ class DiscordConnector(BaseConnector):
 
         return attachments, embeds
 
-
     def create_embed_artifact(self, embed, container_id):
         artifact = Artifact(
             container_id=container_id,
@@ -259,7 +256,6 @@ class DiscordConnector(BaseConnector):
             cef={"URL": embed.url, "Description": embed.description}
         )
         return self.save_artifact_to_soar(dataclasses.asdict(artifact))
-
 
     def create_attachment_artifact(self, attachment, container_id):
         artifact = Artifact(
@@ -269,13 +265,11 @@ class DiscordConnector(BaseConnector):
         )
         return self.save_artifact_to_soar(dataclasses.asdict(artifact))
 
-
     def save_artifact_to_soar(self, artifact):
         status, creation_message, artifact_id = self.save_artifact(artifact)
         self.save_progress("creating artifact: status: {}, creation message: {}, artifact id {}"
                            .format(status, creation_message, artifact_id))
         return artifact_id
-
 
     def parse_message(self, message, attachments, embeds):
         return {
@@ -298,7 +292,6 @@ class DiscordConnector(BaseConnector):
             "content": message.content
         }
 
-
     def _handle_delete_message(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -313,7 +306,6 @@ class DiscordConnector(BaseConnector):
                                                                                 "success" if status else "failure")
         return action_result.set_status(phantom.APP_SUCCESS) if status else action_result.set_status(phantom.APP_ERROR)
 
-
     def delete_message(self, channel_id, message_id, action_result):
         status, message = self.fetch_message(channel_id, message_id, action_result)
         if not status:
@@ -321,11 +313,9 @@ class DiscordConnector(BaseConnector):
         status, result = self.run_in_loop(message.delete(), action_result, message="Unable to delete message.")
         return status
 
-
     async def _load_guild(self):
         await self._client.login(self._token)
         self._guild = await self._client.fetch_guild(self._guild_id)
-
 
     def _handle_list_channels(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -337,7 +327,7 @@ class DiscordConnector(BaseConnector):
         num_channels = 0
 
         for channel in channels:
-            if type(channel) == discord.TextChannel:
+            if isinstance(channel, discord.TextChannel):
                 num_channels += 1
                 action_result.add_data({
                     "name": channel.name,
@@ -349,7 +339,6 @@ class DiscordConnector(BaseConnector):
 
         return status
 
-
     def _handle_send_message(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
@@ -358,16 +347,16 @@ class DiscordConnector(BaseConnector):
         destination = param['destination']
         message = param['message']
 
-        status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result, message = "Cannot fetch channel from Discord.")
+        status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result,
+                                           message="Cannot fetch channel from Discord.")
         status, message = self.run_in_loop(channel.send(message), action_result,
-                                               message="Cannot send message to Discord.")
+                                           message="Cannot send message to Discord.")
 
         action_result.add_data({
             "message_id": message.id
         })
 
         return status
-
 
     def _handle_kick_user(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -384,7 +373,6 @@ class DiscordConnector(BaseConnector):
 
         return status
 
-
     def _handle_ban_user(self, param):
 
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -395,11 +383,36 @@ class DiscordConnector(BaseConnector):
         reason = param['reason']
         delete_message_seconds = param['delete_message_seconds']
 
-        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, message = "Cannot fetch member from Discord.")
-        status, result = self.run_in_loop(self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result, message = "Cannot ban the user from Discord.")
+        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
+                                        message="Cannot fetch member from Discord.")
+        status, result = self.run_in_loop(
+            self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result,
+            message="Cannot ban the user from Discord.")
 
         return status
 
+    def _handle_fetch_message_history(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        channel_id = param['channel_id']
+
+        after = param.get('after', None)
+        before = param.get('before', None)
+        limit = param.get('limit', None)
+
+        messages = self._loop.run_until_complete(
+            self.fetch_message_history(channel_id, action_result, after, before, limit))
+
+        self.save_progress("messages {}".format(len(messages)))
+
+        return action_result.set_status(phantom.APP_ERROR, "messages {}".format(messages))
+
+    async def fetch_message_history(self, channel_id, action_result, after, before, limit):
+        channel = await self._guild.fetch_channel(channel_id)
+        self.save_progress("channel {}".format(channel.name))
+        messages = [message async for message in channel.history(limit=limit, after=after, before=before)]
+        return messages
 
     def run_in_loop(self, coroutine, action_result, message=""):
         try:
@@ -412,7 +425,6 @@ class DiscordConnector(BaseConnector):
         except Exception as e:
             return action_result.set_status(phantom.APP_ERROR,
                                             f"Other exception. Error type: {e.__class__.__name__} Details: {str(e)}"), None
-
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
@@ -434,11 +446,12 @@ class DiscordConnector(BaseConnector):
             ret_val = self._handle_kick_user(param)
         if action_id == 'ban_user':
             ret_val = self._handle_ban_user(param)
+        if action_id == 'fetch_message_history':
+            ret_val = self._handle_fetch_message_history(param)
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
 
         return ret_val
-
 
     def initialize(self):
         # Load the state in initialize, use it to store data
@@ -469,7 +482,6 @@ class DiscordConnector(BaseConnector):
             return phantom.APP_ERROR
 
         return phantom.APP_SUCCESS
-
 
     def finalize(self):
         # Save the state, this data is saved across actions and app upgrades
