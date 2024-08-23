@@ -334,18 +334,15 @@ class DiscordConnector(BaseConnector):
         status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result,
                                             message="Cannot fetch channel from Discord.")
 
-        num_channels = 0
-
         for channel in channels:
-            if type(channel) == discord.TextChannel:
-                num_channels += 1
+            if isinstance(channel, discord.TextChannel):
                 action_result.add_data({
                     "name": channel.name,
                     "id": channel.id
                 })
 
         summary = action_result.update_summary({})
-        summary['num_channels'] = num_channels
+        summary['num_channels'] = sum(isinstance(channel, discord.TextChannel) for channel in channels)
 
         return status
 
