@@ -26,6 +26,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [ban user](#action-ban-user) - Bans user from a guild  
 [fetch message](#action-fetch-message) - gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message  
 [delete message](#action-delete-message) - removes the message  
+[fetch_message_history](#action-fetchmessagehistory) - fetches message history  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -186,6 +187,32 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.channel_id | numeric |  `discord channel id`  |  
 action_result.parameter.message_id | numeric |  `discord message id`  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'fetch_message_history'
+fetches message history
+
+Type: **investigate**  
+Read only: **False**
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**channel_id** |  required  | discord channel id | string |  `discord channel id` 
+**after** |  optional  | start date | string | 
+**before** |  optional  | end date | string | 
+**limit** |  optional  | messages limit | numeric | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.channel_id | string |  `discord channel id`  |  
+action_result.parameter.after | string |  |  
+action_result.parameter.before | string |  |  
+action_result.parameter.limit | numeric |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
