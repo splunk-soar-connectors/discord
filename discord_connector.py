@@ -224,11 +224,11 @@ class DiscordConnector(BaseConnector):
 
     def fetch_message(self, channel_id, message_id, action_result) -> discord.Message or None:
         status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
-                                           message="Cannot fetch channel from Discord.")
+                                           error_message="Cannot fetch channel from Discord.")
         if not status:
             return status, None
         status, message = self.run_in_loop(channel.fetch_message(message_id), action_result,
-                                           message="Cannot fetch message from Discord.")
+                                           error_message="Cannot fetch message from Discord.")
 
         return status, message
 
@@ -317,7 +317,7 @@ class DiscordConnector(BaseConnector):
         status, message = self.fetch_message(channel_id, message_id, action_result)
         if not status:
             return status
-        status, result = self.run_in_loop(message.delete(), action_result, message="Unable to delete message.")
+        status, result = self.run_in_loop(message.delete(), action_result, error_message="Unable to delete message.")
         return status
 
 
@@ -331,7 +331,7 @@ class DiscordConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result,
-                                            message="Cannot fetch channel from Discord.")
+                                            error_message="Cannot fetch channel from Discord.")
 
         for channel in channels:
             if isinstance(channel, discord.TextChannel):
@@ -354,9 +354,9 @@ class DiscordConnector(BaseConnector):
         destination = param['destination']
         message = param['message']
 
-        status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result, message = "Cannot fetch channel from Discord.")
+        status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result, error_message = "Cannot fetch channel from Discord.")
         status, message = self.run_in_loop(channel.send(message), action_result,
-                                               message="Cannot send message to Discord.")
+                                               error_message="Cannot send message to Discord.")
 
         action_result.add_data({
             "message_id": message.id
@@ -374,9 +374,9 @@ class DiscordConnector(BaseConnector):
         reason = param['reason']
 
         status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
-                                        message="Cannot fetch member from Discord.")
+                                        error_message="Cannot fetch member from Discord.")
         status, result = self.run_in_loop(self._guild.kick(user, reason=reason), action_result,
-                                          message="Cannot kick the user from Discord.")
+                                          error_message="Cannot kick the user from Discord.")
 
         return status
 
@@ -391,8 +391,8 @@ class DiscordConnector(BaseConnector):
         reason = param['reason']
         delete_message_seconds = param['delete_message_seconds']
 
-        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, message = "Cannot fetch member from Discord.")
-        status, result = self.run_in_loop(self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result, message = "Cannot ban the user from Discord.")
+        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, error_message = "Cannot fetch member from Discord.")
+        status, result = self.run_in_loop(self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result, error_message = "Cannot ban the user from Discord.")
 
         return status
 
@@ -403,7 +403,7 @@ class DiscordConnector(BaseConnector):
 
         user_id = param['user_id']
 
-        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, message = "Cannot fetch member from Discord.")
+        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, error_message = "Cannot fetch member from Discord.")
 
         action_result.add_data({
             "display_name": user.display_name,
@@ -416,14 +416,14 @@ class DiscordConnector(BaseConnector):
 
         return status
 
-    def run_in_loop(self, coroutine, action_result, message = ""):
+    def run_in_loop(self, coroutine, action_result, error_message = ""):
         try:
             return action_result.set_status(phantom.APP_SUCCESS), self._loop.run_until_complete(coroutine)
         except discord.DiscordException as e:
             err = self._get_error_message_from_exception(e)
             self.save_progress(f"Exception found type: {e.__class__.__name__}")
             return action_result.set_status(phantom.APP_ERROR,
-                                            f"{message} Error type: {e.__class__.__name__} Details: {err}"), None
+                                            f"{error_message} Error type: {e.__class__.__name__} Details: {err}"), None
         except Exception as e:
             return action_result.set_status(phantom.APP_ERROR,
                                             f"Other exception. Error type: {e.__class__.__name__} Details: {str(e)}"), None
