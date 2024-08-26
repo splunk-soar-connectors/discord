@@ -27,6 +27,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [fetch message](#action-fetch-message) - gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message  
 [delete message](#action-delete-message) - removes the message  
 [fetch message history](#action-fetch-message-history) - fetches message history  
+[on poll](#action-on-poll) - handles data ingestion from discord servers  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -215,6 +216,23 @@ action_result.data.\*.author id | string |  `discord message author id`  |
 action_result.data.\*.created at | string |  `discord message creation date`  |  
 action_result.data.\*.embeds_attachments | string |  `discord message embeds/attachments`  |  
 action_result.data.\*.content | string |  `discord message content`  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'on poll'
+handles data ingestion from discord servers
+
+Type: **investigate**  
+Read only: **False**
+
+#### Action Parameters
+No parameters are required for this action
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
