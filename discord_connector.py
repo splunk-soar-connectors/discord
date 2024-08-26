@@ -476,26 +476,29 @@ class DiscordConnector(BaseConnector):
         status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result,
                                             message="Cannot fetch channel from Discord.")
         if not status:
-            self.save_progress("action result: Cannot Poll messages")
+            self.debug_print("action result: Cannot Poll messages, unable to fetch channels ")
             return action_result.set_status(phantom.APP_ERROR, "action result: Cannot Poll messages")
 
         for channel in channels:
             if isinstance(channel, discord.TextChannel):
                 self.save_progress("checking channel: {} | {}".format(channel.name, channel.id))
 
-                # why this does not work?
-                last_poll = self.load_state().get('x')
-                self.save_state({'x': datetime.now})
+                self._status = self.load_state()
+                last_poll = self._state.get("last poll", None)
+                if last_poll is not None:
+                    _, last_poll = self.parse_date(last_poll)
+                self._state["last poll"] = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                self.save_state(self._state)
 
                 status, messages = self.fetch_message_history(channel.id, action_result, last_poll, None, None, None)
                 if not status:
-                    self.save_progress("action result: Cannot Poll messages")
+                    self.debug_print("action result: Cannot Poll messages from {} {}".format(channel.name, channel.id))
                     return action_result.set_status(phantom.APP_ERROR, "action result: Cannot Poll messages")
 
                 self.save_progress("saving the containers")
                 for message in messages:
                     contains_embeds_or_attachments = True if (message.attachments or message.embeds) else False
-                    # I would like to set severity to low but adding artifact seams to change it to medium
+                    # I would like to set severity to Low but adding artifact seams to change it to medium
 
                     # We can also change it to comments instead of artifacts but those are going to be harder to manage
                     # in playbooks I believe
@@ -560,7 +563,20 @@ class DiscordConnector(BaseConnector):
 
     def initialize(self):
         # Load the state in initialize, use it to store data
+
         self._state = self.load_state()
+        if not isinstance(self._state, dict):
+            self.debug_print("State file format is not valid")
+            self._state = {}
+            self.save_state(self._state)
+            self.debug_print("Recreated the state file with current app_version")
+            self._state = self.load_state()
+            if self._state is None:
+                self.debug_print("Please check the owner, owner group, and the permissions of the state file")
+                self.debug_print("The Splunk SOAR user should have correct access rights and ownership for the \
+                    corresponding state file (refer readme file for more information)")
+                return phantom.APP_ERROR
+
         # get the asset config
         config = self.get_config()
 
@@ -592,7 +608,8 @@ class DiscordConnector(BaseConnector):
         # Save the state, this data is saved across actions and app upgrades
         self._loop.run_until_complete(self.end_connection())
         self._loop.close()
-        self.save_state(self._state)
+        if self._state is not None:
+            self.save_state(self._state)
         return phantom.APP_SUCCESS
 
     async def end_connection(self):
