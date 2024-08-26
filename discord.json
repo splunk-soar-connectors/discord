@@ -443,7 +443,8 @@
                     "data_path": "action_result.data.*.author data.author id",
                     "data_type": "numeric",
                     "contains": [
-                        "author id"
+                        "author id",
+                        "discord user id"
                     ],
                     "column_name": "author id",
                     "column_order": 0
