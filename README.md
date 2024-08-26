@@ -158,7 +158,7 @@ action_result.data.\*.message origin.channel id | numeric |  `discord channel id
 action_result.data.\*.message origin.channel name | string |  `discord channel name`  |  
 action_result.data.\*.message data.created at | numeric |  `date`  |  
 action_result.data.\*.message data.edited at | numeric |  `date`  |  
-action_result.data.\*.author data.author id | numeric |  `author id`  |  
+action_result.data.\*.author data.author id | numeric |  `author id`  `discord user id`  |  
 action_result.data.\*.author data.author name | string |  `author name`  |  
 action_result.data.\*.attachments | string |  `artifact id`  |  
 action_result.data.\*.embeds | string |  `artifact id`  |  
