@@ -39,7 +39,6 @@ class DiscordConnector(BaseConnector):
         self._client = None
         self._token = None
         self._guild_id = None
-        self._headers = None
         self._loop = None
 
     def _get_error_message_from_exception(self, e):
@@ -467,12 +466,8 @@ class DiscordConnector(BaseConnector):
         self._base_url = "https://discord.com/api/v10"
         self._token = config['token']
         self._guild_id = config['guild_id']
-        self._headers = {"Authorization": "Bot " + self._token}
 
-        intents = discord.Intents.default()
-        intents.presences = True
-        intents.members = True
-        intents.message_content = True
+        intents = discord.Intents.all()
         self._client = discord.Client(intents=intents)
 
         self._loop = asyncio.new_event_loop()
