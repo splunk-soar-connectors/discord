@@ -8,7 +8,7 @@ Product Name: Discord
 Product Version Supported (regex): ".\*"  
 Minimum Product Version: 6.2.2.134  
 
-Integrate with Discord to post messages and analyze attachments sent to channels
+Integrate with Discord to post messages and attachments to channels
 
 ### Configuration Variables
 The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord asset in SOAR.
@@ -16,14 +16,7 @@ The below configuration variables are required for this Connector to operate.  T
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **token** |  required  | string | Discord bot token
-**guild_id** |  required  | numeric | Guild aka server ID
-
-Where to find bot token: https://support-dev.discord.com/hc/en-us/articles/6470840524311-Why-can-t-I-copy-my-bot-s-token
-
-What is guild: https://support.discord.com/hc/en-us/articles/23187611406999-Guilds-FAQ
-
-Where to find guild ID: https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID#h_01HRSTXPS5FSFA0VWMY2CKGZXA
-
+**guild_id** |  required  | numeric | server/guild id
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
@@ -33,6 +26,7 @@ Where to find guild ID: https://support.discord.com/hc/en-us/articles/206346498-
 [ban user](#action-ban-user) - Bans user from a guild  
 [fetch message](#action-fetch-message) - gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message  
 [delete message](#action-delete-message) - removes the message  
+[get user](#action-get-user) - Get information about a user of a Discord guild/server  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -193,6 +187,33 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.channel_id | numeric |  `discord channel id`  |  
 action_result.parameter.message_id | numeric |  `discord message id`  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
+## action: 'get user'
+Get information about a user of a Discord guild/server
+
+Type: **investigate**  
+Read only: **True**
+
+This action will get information about a user.
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**user_id** |  required  | user id | string |  `discord user id` 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.user_id | string |  `discord user id`  |  
+action_result.data.\*.display_name | string |  |  
+action_result.data.\*.name | string |  |  
+action_result.data.\*.created_at | string |  |  
+action_result.data.\*.system | string |  |  
+action_result.data.\*.public_flags | string |  |  
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
