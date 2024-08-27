@@ -242,7 +242,7 @@ class DiscordConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param['user_id']
-        reason = param['reason']
+        reason = param.get('reason', "")
 
         status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
                                         error_message=DISCORD_ERROR_FETCHING_MEMBER)
@@ -258,8 +258,8 @@ class DiscordConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param['user_id']
-        reason = param['reason']
-        delete_message_seconds = param['delete_message_seconds']
+        reason = param.get('reason', "")
+        delete_message_seconds = param.get('delete_message_seconds', 86400)
 
         status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
                                         error_message=DISCORD_ERROR_FETCHING_MEMBER)
