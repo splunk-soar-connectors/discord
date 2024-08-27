@@ -141,7 +141,7 @@ class DiscordConnector(BaseConnector):
     def create_attachment_artifact(self, attachment, container_id):
         artifact = Artifact(
             container_id=container_id,
-            name=f"embed: {attachment.title}",
+            name=f"attachment: {attachment.filename}",
             cef={"URL": attachment.url, "Description": attachment.description, "Type": attachment.content_type}
         )
         return self.save_artifact_to_soar(dataclasses.asdict(artifact))
@@ -167,7 +167,7 @@ class DiscordConnector(BaseConnector):
                 "author name": message.author.name,
             },
             "jump url": message.jump_url,
-            "flags": list(filter(lambda flag: getattr(message.flags, flag), MESSAGE_FLAGS)) or "no flags",
+            "flags": [flag[:1] for flag in list(filter((lambda flag: flag[1]), message.flags))] or "no flags",
             "attachments": attachments or "no attachments",
             "embeds": embeds or "no embeds",
             "content": message.content
