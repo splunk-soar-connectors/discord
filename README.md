@@ -15,8 +15,8 @@ The below configuration variables are required for this Connector to operate.  T
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
-**token** |  required  | string | Discord bot token
-**guild_id** |  required  | numeric | server/guild id
+**token** |  required  | password | Discord bot token
+**guild_id** |  required  | numeric | Server aka Guild ID
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
@@ -24,8 +24,8 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [send message](#action-send-message) - Send a message to the Discord channel  
 [kick user](#action-kick-user) - Kicks user from a guild  
 [ban user](#action-ban-user) - Bans user from a guild  
-[fetch message](#action-fetch-message) - gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message  
-[delete message](#action-delete-message) - removes the message  
+[fetch message](#action-fetch-message) - Gets information about the message  
+[delete message](#action-delete-message) - Removes a message from a channel  
 [get user](#action-get-user) - Get information about a user of a Discord guild/server  
 
 ## action: 'test connectivity'
@@ -70,12 +70,12 @@ Send a message to the Discord channel
 Type: **generic**  
 Read only: **False**
 
-Send a message to Discord
+Send a message to the Discord channel.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**destination** |  required  | Discord channels ID | string |  `discord channel id` 
+**destination** |  required  | Discord channel ID to send message to | string |  `discord channel id` 
 **message** |  required  | Message to send | string | 
 
 #### Action Output
@@ -95,12 +95,12 @@ Kicks user from a guild
 Type: **correct**  
 Read only: **False**
 
-Kicks user from a guild
+Kicks user from a guild.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**user_id** |  required  | User ID | string |  `discord user id` 
+**user_id** |  required  | The ID of a user to kick from a guild | string |  `discord user id` 
 **reason** |  optional  | The reason the user got kicked. | string | 
 
 #### Action Output
@@ -119,12 +119,12 @@ Bans user from a guild
 Type: **correct**  
 Read only: **False**
 
-Bans user from a guild and deletes specific number of seconds worth of messages
+Bans user from a guild and deletes specific number of seconds worth of messages.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**user_id** |  required  | User ID | string |  `discord user id` 
+**user_id** |  required  | The ID of a user to ban from a guild | string |  `discord user id` 
 **delete_message_seconds** |  optional  | The number of seconds worth of messages to delete from the user in the guild. The minimum is 0 and the maximum is 604800 (7 days). Defaults to 1 day. | numeric | 
 **reason** |  optional  | The reason the user got kicked. | string | 
 
@@ -140,20 +140,24 @@ summary.total_objects | numeric |  |
 summary.total_objects_successful | numeric |  |    
 
 ## action: 'fetch message'
-gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message
+Gets information about the message
 
 Type: **investigate**  
 Read only: **False**
 
+Gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message.
+
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**channel_id** |  required  | channel id | string |  `discord channel id` 
-**message_id** |  required  | message id | string |  `discord message id` 
+**channel_id** |  required  | The ID of a channel to fetch message from | string |  `discord channel id` 
+**message_id** |  required  | The ID of a message to get information of | string |  `discord message id` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
+action_result.parameter.channel_id | string |  `discord channel id`  |  
+action_result.parameter.message_id | string |  `discord message id`  |  
 action_result.data.\*.message origin.channel id | numeric |  `discord channel id`  |  
 action_result.data.\*.message origin.channel name | string |  `discord channel name`  |  
 action_result.data.\*.message data.created at | numeric |  `date`  |  
@@ -171,16 +175,18 @@ summary.total_objects | numeric |  |
 summary.total_objects_successful | numeric |  |    
 
 ## action: 'delete message'
-removes the message
+Removes a message from a channel
 
 Type: **correct**  
 Read only: **False**
 
+Removes a message from a channel.
+
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**channel_id** |  required  | channel id | string |  `discord channel id` 
-**message_id** |  required  | message id | string |  `discord message id` 
+**channel_id** |  required  | The ID of a channel to delete message from | string |  `discord channel id` 
+**message_id** |  required  | The ID of a message to delete | string |  `discord message id` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
@@ -203,7 +209,7 @@ This action will get information about a user.
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**user_id** |  required  | user id | string |  `discord user id` 
+**user_id** |  required  | The ID of a user to get information of | string |  `discord user id` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
