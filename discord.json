@@ -404,6 +404,20 @@
             },
             "output": [
                 {
+                    "data_path": "action_result.parameter.channel_id",
+                    "data_type": "string",
+                    "contains": [
+                        "discord channel id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.message_id",
+                    "data_type": "string",
+                    "contains": [
+                        "discord message id"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.message origin.channel id",
                     "data_type": "numeric",
                     "contains": [
@@ -419,7 +433,7 @@
                         "discord channel name"
                     ],
                     "column_name": "channel name",
-                    "column_order": 0
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.message data.created at",
@@ -428,7 +442,7 @@
                         "date"
                     ],
                     "column_name": "message creation date",
-                    "column_order": 0
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.message data.edited at",
@@ -437,7 +451,7 @@
                         "date"
                     ],
                     "column_name": "message edition date",
-                    "column_order": 0
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.author data.author id",
@@ -447,7 +461,7 @@
                         "discord user id"
                     ],
                     "column_name": "author id",
-                    "column_order": 0
+                    "column_order": 4
                 },
                 {
                     "data_path": "action_result.data.*.author data.author name",
@@ -456,7 +470,7 @@
                         "author name"
                     ],
                     "column_name": "author name",
-                    "column_order": 0
+                    "column_order": 5
                 },
                 {
                     "data_path": "action_result.data.*.attachments",
@@ -465,7 +479,7 @@
                         "artifact id"
                     ],
                     "column_name": "list of attachments",
-                    "column_order": 0
+                    "column_order": 6
                 },
                 {
                     "data_path": "action_result.data.*.embeds",
@@ -474,7 +488,7 @@
                         "artifact id"
                     ],
                     "column_name": "list of embeds",
-                    "column_order": 0
+                    "column_order": 7
                 },
                 {
                     "data_path": "action_result.data.*.content",
@@ -483,7 +497,7 @@
                         "message content"
                     ],
                     "column_name": "content",
-                    "column_order": 0
+                    "column_order": 8
                 },
                 {
                     "data_path": "action_result.data.*.jump url",
@@ -492,7 +506,7 @@
                         "url"
                     ],
                     "column_name": "jump url",
-                    "column_order": 0
+                    "column_order": 9
                 },
                 {
                     "data_path": "action_result.data.*.flags",
@@ -501,13 +515,13 @@
                         "flags"
                     ],
                     "column_name": "message flags",
-                    "column_order": 0
+                    "column_order": 10
                 },
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "status",
-                    "column_order": 2
+                    "column_order": 11
                 },
                 {
                     "data_path": "action_result.message",
