@@ -12,7 +12,6 @@ import json
 # Phantom App imports
 import phantom.app as phantom
 import requests
-from bs4 import BeautifulSoup
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
@@ -68,123 +67,6 @@ class DiscordConnector(BaseConnector):
 
         return error_text
 
-    def _process_empty_response(self, response, action_result):
-        if response.status_code == 200:
-            return RetVal(phantom.APP_SUCCESS, {})
-
-        return RetVal(
-            action_result.set_status(
-                phantom.APP_ERROR, "Empty response and no information in the header"
-            ), None
-        )
-
-    def _process_html_response(self, response, action_result):
-        # An html response, treat it like an error
-        status_code = response.status_code
-
-        try:
-            soup = BeautifulSoup(response.text, "html.parser")
-            error_text = soup.text
-            split_lines = error_text.split('\n')
-            split_lines = [x.strip() for x in split_lines if x.strip()]
-            error_text = '\n'.join(split_lines)
-        except BaseException:
-            error_text = "Cannot parse error details"
-
-        message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code, error_text)
-
-        message = message.replace(u'{', '{{').replace(u'}', '}}')
-        return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
-
-    def _process_json_response(self, r, action_result):
-        # Try a json parse
-        try:
-            resp_json = r.json()
-        except Exception as e:
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(str(e))
-                ), None
-            )
-
-        # Please specify the status codes here
-        if 200 <= r.status_code < 399:
-            return RetVal(phantom.APP_SUCCESS, resp_json)
-
-        # You should process the error returned in the json
-        message = "Error from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code,
-            r.text.replace(u'{', '{{').replace(u'}', '}}')
-        )
-
-        return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
-
-    def _process_response(self, r, action_result):
-        # store the r_text in debug data, it will get dumped in the logs if the action fails
-        if hasattr(action_result, 'add_debug_data'):
-            action_result.add_debug_data({'r_status_code': r.status_code})
-            action_result.add_debug_data({'r_text': r.text})
-            action_result.add_debug_data({'r_headers': r.headers})
-
-        # Process each 'Content-Type' of response separately
-
-        # Process a json response
-        if 'json' in r.headers.get('Content-Type', ''):
-            return self._process_json_response(r, action_result)
-
-        # Process an HTML response, Do this no matter what the api talks.
-        # There is a high chance of a PROXY in between phantom and the rest of
-        # world, in case of errors, PROXY's return HTML, this function parses
-        # the error and adds it to the action_result.
-        if 'html' in r.headers.get('Content-Type', ''):
-            return self._process_html_response(r, action_result)
-
-        # it's not content-type that is to be parsed, handle an empty response
-        if not r.text:
-            return self._process_empty_response(r, action_result)
-
-        # everything else is actually an error at this point
-        message = "Can't process response from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code,
-            r.text.replace('{', '{{').replace('}', '}}')
-        )
-
-        return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
-
-    def _make_rest_call(self, endpoint, action_result, method="get", **kwargs):
-        # **kwargs can be any additional parameters that requests.request accepts
-
-        config = self.get_config()
-
-        resp_json = None
-
-        try:
-            request_func = getattr(requests, method)
-        except AttributeError:
-            return RetVal(
-                action_result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)),
-                resp_json
-            )
-
-        # Create a URL to connect to
-        url = self._base_url + endpoint
-
-        try:
-            r = request_func(
-                url,
-                # auth=(username, password),  # basic authentication
-                verify=config.get('verify_server_cert', False),
-                **kwargs
-            )
-        except Exception as e:
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(str(e))
-                ), resp_json
-            )
-
-        return self._process_response(r, action_result)
-
     def _handle_test_connectivity(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -221,17 +103,15 @@ class DiscordConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-
     def fetch_message(self, channel_id, message_id, action_result) -> discord.Message or None:
         status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
-                                           error_message="Cannot fetch channel from Discord.")
+                                           error_message=DISCORD_ERROR_FETCHING_CHANNEL)
         if not status:
             return status, None
         status, message = self.run_in_loop(channel.fetch_message(message_id), action_result,
-                                           error_message="Cannot fetch message from Discord.")
+                                           error_message=DISCORD_ERROR_FETCHING_MESSAGE)
 
         return status, message
-
 
     def create_artifacts(self, message):
         container_id = self.get_container_id()
@@ -250,7 +130,6 @@ class DiscordConnector(BaseConnector):
 
         return attachments, embeds
 
-
     def create_embed_artifact(self, embed, container_id):
         artifact = Artifact(
             container_id=container_id,
@@ -258,7 +137,6 @@ class DiscordConnector(BaseConnector):
             cef={"URL": embed.url, "Description": embed.description}
         )
         return self.save_artifact_to_soar(dataclasses.asdict(artifact))
-
 
     def create_attachment_artifact(self, attachment, container_id):
         artifact = Artifact(
@@ -268,13 +146,11 @@ class DiscordConnector(BaseConnector):
         )
         return self.save_artifact_to_soar(dataclasses.asdict(artifact))
 
-
     def save_artifact_to_soar(self, artifact):
         status, creation_message, artifact_id = self.save_artifact(artifact)
         self.save_progress("creating artifact: status: {}, creation message: {}, artifact id {}"
                            .format(status, creation_message, artifact_id))
         return artifact_id
-
 
     def parse_message(self, message, attachments, embeds):
         return {
@@ -297,7 +173,6 @@ class DiscordConnector(BaseConnector):
             "content": message.content
         }
 
-
     def _handle_delete_message(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -312,26 +187,23 @@ class DiscordConnector(BaseConnector):
                                                                                 "success" if status else "failure")
         return action_result.set_status(phantom.APP_SUCCESS) if status else action_result.set_status(phantom.APP_ERROR)
 
-
     def delete_message(self, channel_id, message_id, action_result):
         status, message = self.fetch_message(channel_id, message_id, action_result)
         if not status:
             return status
-        status, result = self.run_in_loop(message.delete(), action_result, error_message="Unable to delete message.")
+        status, result = self.run_in_loop(message.delete(), action_result, error_message=DISCORD_ERROR_DELETING_MESSAGE)
         return status
-
 
     async def _load_guild(self):
         await self._client.login(self._token)
         self._guild = await self._client.fetch_guild(self._guild_id)
-
 
     def _handle_list_channels(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result,
-                                            error_message="Cannot fetch channel from Discord.")
+                                            error_message=DISCORD_ERROR_FETCHING_CHANNEL)
 
         for channel in channels:
             if isinstance(channel, discord.TextChannel):
@@ -345,7 +217,6 @@ class DiscordConnector(BaseConnector):
 
         return status
 
-
     def _handle_send_message(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
@@ -354,16 +225,16 @@ class DiscordConnector(BaseConnector):
         destination = param['destination']
         message = param['message']
 
-        status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result, error_message = "Cannot fetch channel from Discord.")
+        status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result,
+                                           error_message=DISCORD_ERROR_FETCHING_CHANNEL)
         status, message = self.run_in_loop(channel.send(message), action_result,
-                                               error_message="Cannot send message to Discord.")
+                                           error_message=DISCORD_ERROR_SENDING_MESSAGE)
 
         action_result.add_data({
             "message_id": message.id
         })
 
         return status
-
 
     def _handle_kick_user(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -374,12 +245,11 @@ class DiscordConnector(BaseConnector):
         reason = param['reason']
 
         status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
-                                        error_message="Cannot fetch member from Discord.")
+                                        error_message=DISCORD_ERROR_FETCHING_MEMBER)
         status, result = self.run_in_loop(self._guild.kick(user, reason=reason), action_result,
-                                          error_message="Cannot kick the user from Discord.")
+                                          error_message=DISCORD_ERROR_KICKING_MEMBER)
 
         return status
-
 
     def _handle_ban_user(self, param):
 
@@ -391,8 +261,11 @@ class DiscordConnector(BaseConnector):
         reason = param['reason']
         delete_message_seconds = param['delete_message_seconds']
 
-        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, error_message = "Cannot fetch member from Discord.")
-        status, result = self.run_in_loop(self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result, error_message = "Cannot ban the user from Discord.")
+        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
+                                        error_message=DISCORD_ERROR_FETCHING_MEMBER)
+        status, result = self.run_in_loop(
+            self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result,
+            error_message=DISCORD_ERROR_BANING_MEMBER)
 
         return status
 
@@ -403,7 +276,8 @@ class DiscordConnector(BaseConnector):
 
         user_id = param['user_id']
 
-        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result, error_message = "Cannot fetch member from Discord.")
+        status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
+                                        error_message=DISCORD_ERROR_FETCHING_MEMBER)
 
         action_result.add_data({
             "display_name": user.display_name,
@@ -413,10 +287,9 @@ class DiscordConnector(BaseConnector):
             "public_flags": user.public_flags.all()
         })
 
-
         return status
 
-    def run_in_loop(self, coroutine, action_result, error_message = ""):
+    def run_in_loop(self, coroutine, action_result, error_message=""):
         try:
             return action_result.set_status(phantom.APP_SUCCESS), self._loop.run_until_complete(coroutine)
         except discord.DiscordException as e:
@@ -427,7 +300,6 @@ class DiscordConnector(BaseConnector):
         except Exception as e:
             return action_result.set_status(phantom.APP_ERROR,
                                             f"Other exception. Error type: {e.__class__.__name__} Details: {str(e)}"), None
-
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
@@ -456,7 +328,6 @@ class DiscordConnector(BaseConnector):
 
         return ret_val
 
-
     def initialize(self):
         # Load the state in initialize, use it to store data
         self._state = self.load_state()
@@ -482,7 +353,6 @@ class DiscordConnector(BaseConnector):
             return phantom.APP_ERROR
 
         return phantom.APP_SUCCESS
-
 
     def finalize(self):
         # Save the state, this data is saved across actions and app upgrades
