@@ -37,7 +37,7 @@
             "id": 0
         },
         "guild_id": {
-            "description": "server/guild id",
+            "description": "Server aka Guild ID",
             "data_type": "numeric",
             "required": true,
             "value_list": [],
@@ -122,12 +122,12 @@
             "action": "send message",
             "identifier": "send_message",
             "description": "Send a message to the Discord channel",
-            "verbose": "Send a message to Discord",
+            "verbose": "Send a message to the Discord channel",
             "type": "generic",
             "read_only": false,
             "parameters": {
                 "destination": {
-                    "description": "Discord channels ID",
+                    "description": "Discord channel ID to send message to",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -210,7 +210,7 @@
             "read_only": false,
             "parameters": {
                 "user_id": {
-                    "description": "User ID",
+                    "description": "The ID of a user to kick from a guild",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -284,7 +284,7 @@
             "read_only": false,
             "parameters": {
                 "user_id": {
-                    "description": "User ID",
+                    "description": "The ID of a user to ban from a guild",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -370,13 +370,13 @@
         {
             "action": "fetch message",
             "identifier": "fetch_message",
-            "description": "gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message",
-            "verbose": "",
+            "description": "Gets information about the message",
+            "verbose": "Gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message",
             "type": "investigate",
             "read_only": false,
             "parameters": {
                 "channel_id": {
-                    "description": "channel id",
+                    "description": "The ID of a channel to fetch message from",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -389,7 +389,7 @@
                     "name": "channel_id"
                 },
                 "message_id": {
-                    "description": "message id",
+                    "description": "The ID of a message to get information of",
                     "data_type": "string",
                     "required": true,
                     "primary": false,
@@ -544,13 +544,13 @@
         {
             "action": "delete message",
             "identifier": "delete_message",
-            "description": "removes the message",
+            "description": "Removes a message from a channel",
             "verbose": "",
             "type": "correct",
             "read_only": false,
             "parameters": {
                 "channel_id": {
-                    "description": "channel id",
+                    "description": "The ID of a channel to delete message from",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -563,7 +563,7 @@
                     "name": "channel_id"
                 },
                 "message_id": {
-                    "description": "message id",
+                    "description": "The ID of a message to delete",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -628,7 +628,7 @@
             "read_only": true,
             "parameters": {
                 "user_id": {
-                    "description": "user id",
+                    "description": "The ID of a user to get information of",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
