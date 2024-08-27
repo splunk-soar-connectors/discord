@@ -28,10 +28,8 @@
     "configuration": {
         "token": {
             "description": "Discord bot token",
-            "data_type": "string",
+            "data_type": "password",
             "required": true,
-            "value_list": [],
-            "default": "",
             "order": 0,
             "name": "token",
             "id": 0
@@ -122,7 +120,7 @@
             "action": "send message",
             "identifier": "send_message",
             "description": "Send a message to the Discord channel",
-            "verbose": "Send a message to the Discord channel",
+            "verbose": "Send a message to the Discord channel.",
             "type": "generic",
             "read_only": false,
             "parameters": {
@@ -205,7 +203,7 @@
             "action": "kick user",
             "identifier": "kick_user",
             "description": "Kicks user from a guild",
-            "verbose": "Kicks user from a guild",
+            "verbose": "Kicks user from a guild.",
             "type": "correct",
             "read_only": false,
             "parameters": {
@@ -279,7 +277,7 @@
             "action": "ban user",
             "identifier": "ban_user",
             "description": "Bans user from a guild",
-            "verbose": "Bans user from a guild and deletes specific number of seconds worth of messages",
+            "verbose": "Bans user from a guild and deletes specific number of seconds worth of messages.",
             "type": "correct",
             "read_only": false,
             "parameters": {
@@ -371,7 +369,7 @@
             "action": "fetch message",
             "identifier": "fetch_message",
             "description": "Gets information about the message",
-            "verbose": "Gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message",
+            "verbose": "Gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message.",
             "type": "investigate",
             "read_only": false,
             "parameters": {
@@ -545,7 +543,7 @@
             "action": "delete message",
             "identifier": "delete_message",
             "description": "Removes a message from a channel",
-            "verbose": "",
+            "verbose": "Removes a message from a channel.",
             "type": "correct",
             "read_only": false,
             "parameters": {
