@@ -203,8 +203,8 @@ Read only: **False**
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **channel_id** |  required  | discord channel id | string |  `discord channel id` 
-**after** |  optional  | start date: %Y-%m-%d %H:%M:%S | string | 
-**before** |  optional  | end date: %Y-%m-%d %H:%M:%S | string | 
+**after** |  optional  | fetching start date: %Y-%m-%d %H:%M:%S | string | 
+**before** |  optional  | fetching end date: %Y-%m-%d %H:%M:%S | string | 
 **limit** |  optional  | messages limit | numeric | 
 **oldest_first** |  optional  | oldest first | boolean | 
 
