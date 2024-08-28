@@ -398,9 +398,9 @@ class DiscordConnector(BaseConnector):
 
         channel_id = param['channel_id']
 
-        status_after, fetching_start_date = self.parse_date(param.get('after', None))
-        status_before, fetching_end_date = self.parse_date(param.get('before', None))
-        # one liner?
+        status_after, fetching_start_date = self.parse_date(param.get('fetching_start_date', None))
+        status_before, fetching_end_date = self.parse_date(param.get('fetching_end_date', None))
+
         limit = param.get('limit', None)
         if limit == 0:
             limit = None

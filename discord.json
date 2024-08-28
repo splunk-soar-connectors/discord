@@ -625,7 +625,7 @@
                     "order": 0,
                     "name": "channel_id"
                 },
-                "after": {
+                "fetching_start_date": {
                     "description": "fetching start date: %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
@@ -634,9 +634,11 @@
                     "value_list": [],
                     "default": "",
                     "order": 1,
-                    "name": "fetching start date"
+                    "name": "fetching_start_date",
+                    "id": 2,
+                    "param_name": "fetching_start_date"
                 },
-                "before": {
+                "fetching_end_date": {
                     "description": "fetching end date: %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
@@ -645,7 +647,9 @@
                     "value_list": [],
                     "default": "",
                     "order": 2,
-                    "name": "fetching end date"
+                    "name": "fetching_end_date",
+                    "id": 3,
+                    "param_name": "fetching_end_date"
                 },
                 "limit": {
                     "description": "messages limit",
