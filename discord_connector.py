@@ -480,9 +480,9 @@ class DiscordConnector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        if not self.is_poll_now():
-            self.save_progress("Maximum number of containers have been reached")
-            return action_result.set_status(phantom.APP_ERROR)
+        # if not self.is_poll_now():
+        #     self.save_progress("Maximum number of containers have been reached")
+        #     return action_result.set_status(phantom.APP_ERROR)
 
         container_count = param.get('container_count', None)
 
@@ -517,9 +517,10 @@ class DiscordConnector(BaseConnector):
                 if newest_message < message_creation_date:
                     newest_message = message_creation_date
 
-                ret_val = self.save_on_poll_container(message, channel)
-                if phantom.is_fail(ret_val):
-                    return action_result.set_status(phantom.APP_ERROR, "Unable to create container: {}".format(message))
+                if message_creation_date != last_poll_date:
+                    ret_val = self.save_on_poll_container(message, channel)
+                    if phantom.is_fail(ret_val):
+                        return action_result.set_status(phantom.APP_ERROR, "Unable to create container: {}".format(message))
 
         self._state["last_poll_date"] = str(newest_message)
         self.save_state(self._state)
