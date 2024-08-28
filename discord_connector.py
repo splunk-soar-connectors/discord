@@ -398,8 +398,8 @@ class DiscordConnector(BaseConnector):
 
         channel_id = param['channel_id']
 
-        status_after, after = self.parse_date(param.get('after', None))
-        status_before, before = self.parse_date(param.get('before', None))
+        status_after, fetching_start_date = self.parse_date(param.get('after', None))
+        status_before, fetching_end_date = self.parse_date(param.get('before', None))
         # one liner?
         limit = param.get('limit', None)
         if limit == 0:
@@ -407,13 +407,13 @@ class DiscordConnector(BaseConnector):
         oldest_first = param.get('oldest_first', False)
 
         self.save_progress(
-            "status_after {}: {} | status_before {}: {}".format(status_after, after, status_before, before))
+            "status_after {}: {} | status_before {}: {}".format(status_after, fetching_start_date, status_before, fetching_end_date))
         if not (status_after and status_before):
             return action_result.set_status(phantom.APP_ERROR,
                                             "action result: fetching messages from {} channel ended with failure, unable to format date"
                                             .format(channel_id))
 
-        status, messages = self.fetch_message_history(channel_id, action_result, after, before, oldest_first, limit)
+        status, messages = self.fetch_message_history(channel_id, action_result, fetching_start_date, fetching_end_date, oldest_first, limit)
         if not status:
             return action_result.set_status(phantom.APP_ERROR,
                                             "action result: fetching messages from {} channel ended with failure".format(
@@ -442,22 +442,22 @@ class DiscordConnector(BaseConnector):
             return False, None
 
     # if the method does not work check the imports some of them can overshadow 'messages' variable
-    def fetch_message_history(self, channel_id, action_result, after, before, oldest_first, limit):
+    def fetch_message_history(self, channel_id, action_result, fetching_start_date, fetching_end_date, oldest_first, limit):
         status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
                                            "Cannot fetch channel from Discord.")
         if not status:
             return status
-        status, messages = self.run_in_loop(self.gather_messages(channel, after, before, oldest_first, limit),
+        status, messages = self.run_in_loop(self.gather_messages(channel, fetching_start_date, fetching_end_date, oldest_first, limit),
                                             action_result, "Cannot fetch messages from Discord.")
-
-        self.save_progress("fetched messaged: {} with status {}".format(len(messages), status))
         return status, messages
 
-    async def gather_messages(self, channel, after, before, oldest_first, limit):
+    async def gather_messages(self, channel, fetching_start_date, fetching_end_date, oldest_first, limit):
         messages = [message async for message in
-                    channel.history(limit=limit, after=after, before=before, oldest_first=oldest_first)]
+                    channel.history(limit=limit, after=fetching_start_date, before=fetching_end_date, oldest_first=oldest_first)]
+
         self.save_progress("gathered messages: {} while working with parameters: after: {} {} | before: {} {}"
-                           .format(len(messages), after, type(after), before, type(before)))
+                           .format(len(messages), fetching_start_date, type(fetching_start_date),
+                                   fetching_end_date, type(fetching_end_date)))
         return messages
 
     def run_in_loop(self, coroutine, action_result, message=""):
@@ -558,6 +558,7 @@ class DiscordConnector(BaseConnector):
                         name=str(message.id),
                         cef={
                             "contains embeds or attachments": contains_embeds_or_attachments,
+                            "content": message.content,
                         }
                     )
                     self.save_artifact(dataclasses.asdict(artifact))

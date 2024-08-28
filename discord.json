@@ -626,7 +626,7 @@
                     "name": "channel_id"
                 },
                 "after": {
-                    "description": "start date: %Y-%m-%d %H:%M:%S",
+                    "description": "fetching start date: %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
@@ -637,7 +637,7 @@
                     "name": "after"
                 },
                 "before": {
-                    "description": "end date: %Y-%m-%d %H:%M:%S",
+                    "description": "fetching end date: %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
