@@ -205,7 +205,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 **channel_id** |  required  | discord channel id | string |  `discord channel id` 
 **after** |  optional  | start date: %Y-%m-%d %H:%M:%S | string | 
 **before** |  optional  | end date: %Y-%m-%d %H:%M:%S | string | 
-**limit** |  optional  | messages limit: 0 is equal to None | numeric | 
+**limit** |  optional  | messages limit | numeric | 
 **oldest_first** |  optional  | oldest first | boolean | 
 
 #### Action Output
@@ -224,16 +224,17 @@ summary.total_objects_successful | numeric |  |
 ## action: 'on poll'
 handles data ingestion from discord servers
 
-Type: **investigate**  
-Read only: **False**
+Type: **ingest**  
+Read only: **True**
 
 #### Action Parameters
-No parameters are required for this action
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**container_id** |  optional  | Parameter ignored in this app | numeric | 
+**start_time** |  optional  | Parameter ignored in this app | numeric | 
+**end_time** |  optional  | Parameter ignored in this app | numeric | 
+**container_count** |  optional  | Maximum number of events to query for | numeric | 
+**artifact_count** |  optional  | Parameter ignored in this app | numeric | 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
---------- | ---- | -------- | --------------
-action_result.status | string |  |  
-action_result.message | string |  |  
-summary.total_objects | numeric |  |  
-summary.total_objects_successful | numeric |  |  
+No Output
