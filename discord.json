@@ -648,7 +648,7 @@
                     "name": "before"
                 },
                 "limit": {
-                    "description": "messages limit: 0 is equal to None",
+                    "description": "messages limit",
                     "data_type": "numeric",
                     "required": false,
                     "primary": false,
@@ -745,29 +745,37 @@
             "identifier": "on_poll",
             "description": "handles data ingestion from discord servers",
             "verbose": "",
-            "type": "investigate",
-            "read_only": false,
-            "parameters": {},
-            "output": [
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "summary.total_objects",
-                    "data_type": "numeric"
-                },
-                {
-                    "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
-                }
-            ],
+            "type": "ingest",
+            "read_only": true,
+             "parameters": {
+                 "container_id": {
+                     "description": "Parameter ignored in this app",
+                     "data_type": "numeric",
+                     "order": 0
+                 },
+                 "start_time": {
+                     "description": "Parameter ignored in this app",
+                     "data_type": "numeric",
+                     "order": 1
+                 },
+                 "end_time": {
+                     "description": "Parameter ignored in this app",
+                     "data_type": "numeric",
+                     "order": 2
+                 },
+                 "container_count": {
+                     "description": "Maximum number of events to query for",
+                     "data_type": "numeric",
+                     "default": 100,
+                     "order": 3
+                 },
+                 "artifact_count": {
+                     "description": "Parameter ignored in this app",
+                     "data_type": "numeric",
+                     "order": 4
+                 }
+             },
+            "output": [],
             "render": {
                 "type": "table"
             },
