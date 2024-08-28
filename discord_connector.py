@@ -407,13 +407,15 @@ class DiscordConnector(BaseConnector):
         oldest_first = param.get('oldest_first', False)
 
         self.save_progress(
-            "status_after {}: {} | status_before {}: {}".format(status_after, fetching_start_date, status_before, fetching_end_date))
+            "status_after {}: {} | status_before {}: {}".format(status_after, fetching_start_date, status_before,
+                                                                fetching_end_date))
         if not (status_after and status_before):
             return action_result.set_status(phantom.APP_ERROR,
                                             "action result: fetching messages from {} channel ended with failure, unable to format date"
                                             .format(channel_id))
 
-        status, messages = self.fetch_message_history(channel_id, action_result, fetching_start_date, fetching_end_date, oldest_first, limit)
+        status, messages = self.fetch_message_history(channel_id, action_result, fetching_start_date, fetching_end_date,
+                                                      oldest_first, limit)
         if not status:
             return action_result.set_status(phantom.APP_ERROR,
                                             "action result: fetching messages from {} channel ended with failure".format(
@@ -442,22 +444,24 @@ class DiscordConnector(BaseConnector):
             return False, None
 
     # if the method does not work check the imports some of them can overshadow 'messages' variable
-    def fetch_message_history(self, channel_id, action_result, fetching_start_date, fetching_end_date, oldest_first, limit):
+    def fetch_message_history(self, channel_id, action_result, fetching_start_date, fetching_end_date, oldest_first,
+                              limit):
         status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
                                            "Cannot fetch channel from Discord.")
         if not status:
             return status
-        status, messages = self.run_in_loop(self.gather_messages(channel, fetching_start_date, fetching_end_date, oldest_first, limit),
-                                            action_result, "Cannot fetch messages from Discord.")
+        status, messages = self.run_in_loop(
+            self.gather_messages(channel, fetching_start_date, fetching_end_date, oldest_first, limit),
+            action_result, "Cannot fetch messages from Discord.")
         return status, messages
 
     async def gather_messages(self, channel, fetching_start_date, fetching_end_date, oldest_first, limit):
         messages = [message async for message in
-                    channel.history(limit=limit, after=fetching_start_date, before=fetching_end_date, oldest_first=oldest_first)]
+                    channel.history(limit=limit, after=fetching_start_date, before=fetching_end_date,
+                                    oldest_first=oldest_first)]
 
-        self.save_progress("gathered messages: {} while working with parameters: after: {} {} | before: {} {}"
-                           .format(len(messages), fetching_start_date, type(fetching_start_date),
-                                   fetching_end_date, type(fetching_end_date)))
+        self.save_progress("gathered messages: {} while working with parameters: after: {} | before: {}"
+                           .format(len(messages), fetching_start_date, fetching_end_date,))
         return messages
 
     def run_in_loop(self, coroutine, action_result, message=""):
@@ -476,12 +480,11 @@ class DiscordConnector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # if not self.is_poll_now():
-        #     self.save_progress("Maximum number of containers have been reached")
-        #     return action_result.set_status(phantom.APP_ERROR)
+        if not self.is_poll_now():
+            self.save_progress("Maximum number of containers have been reached")
+            return action_result.set_status(phantom.APP_ERROR)
 
         container_count = param.get('container_count', None)
-        self.save_progress("container count: {}".format(container_count))
 
         status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result,
                                             message="Cannot fetch channel from Discord.")
@@ -493,86 +496,63 @@ class DiscordConnector(BaseConnector):
         last_poll_date = self._state.get("last_poll_date", None)
         if last_poll_date is not None:
             _, last_poll_date = self.parse_date(last_poll_date)
+            last_poll_date = last_poll_date
+
         newest_message = last_poll_date
+        if newest_message is None:
+            newest_message = datetime.min
 
-        self.save_progress("-------")
-        self.save_progress("{}".format(self._state))
-        self.save_progress("-------")
+        for channel in filter((lambda channel_to_test: isinstance(channel_to_test, discord.TextChannel)), channels):
 
-        for channel in channels:
-            if isinstance(channel, discord.TextChannel):
-                self.save_progress("checking channel: {} | {} | beginning from {} | {}".format(channel.name, channel.id,
-                                                                                               last_poll_date,
-                                                                                               type(last_poll_date)))
+            status, messages = self.fetch_message_history(channel.id, action_result, last_poll_date,
+                                                          None, True, container_count)
+            if not status:
+                self.debug_print("action result: Cannot Poll messages from {} {}".format(channel.name, channel.id))
+                return action_result.set_status(phantom.APP_ERROR)
 
-                status, messages = self.fetch_message_history(channel.id, action_result, last_poll_date, None, False,
-                                                              container_count)
-                self.save_progress("messages gathered with status {}".format(status))
-                if not status:
-                    self.debug_print("action result: Cannot Poll messages from {} {}".format(channel.name, channel.id))
-                    return action_result.set_status(phantom.APP_ERROR, "action result: Cannot Poll messages")
+            self.save_progress("saving the containers")
+            for message in messages:
 
-                # messages = self._loop.run_until_complete(self.gather_messages(channel, last_poll_date, None, False, container_count))
+                _, message_creation_date = self.parse_date(message.created_at.strftime("%Y-%m-%d %H:%M:%S"))
+                if newest_message < message_creation_date:
+                    newest_message = message_creation_date
 
-                self.save_progress("saving the containers")
-                for message in messages:
+                ret_val = self.save_on_poll_container(message, channel)
+                if phantom.is_fail(ret_val):
+                    return action_result.set_status(phantom.APP_ERROR, "Unable to create container: {}".format(message))
 
-                    contains_embeds_or_attachments = True if (message.attachments or message.embeds) else False
-
-                    parsing_status, message_creation_date = self.parse_date(
-                        message.created_at.strftime("%Y-%m-%d %H:%M:%S"))
-                    self.save_progress("parsing_status: {}".format(parsing_status))
-
-                    self.save_progress("newest_message: {} : {} | message.created.at: {} : {}"
-                                       .format(newest_message, type(newest_message),
-                                               message_creation_date, type(message_creation_date)))
-
-                    # None can be achieved only if this is first on poll run ever, should it be try block?
-                    if newest_message is None:
-                        newest_message = message_creation_date
-                    if newest_message < message_creation_date:
-                        newest_message = message_creation_date
-                        self.save_progress("newest_message changed to: {}".format(newest_message))
-
-                    self.save_progress("fuck")
-
-                    container = {
-                        "name": f"message {message.id} on channel {channel.name}",
-                        "description": "generated by on poll action",
-                        "sensitivity": "White" if not contains_embeds_or_attachments else "Green"
-                    }
-
-                    ret_val, ret_message, container_id = self.save_container(container)
-
-                    self.save_progress("return value: {} | message: {} | container_id: {}"
-                                       .format(ret_val, ret_message, container_id))
-
-                    if phantom.is_fail(ret_val):
-                        return action_result.set_status(
-                            phantom.APP_ERROR,
-                            "Unable to create container: {}".format(message)
-                        )
-
-                    artifact = Artifact(
-                        container_id=str(container_id),
-                        name=str(message.id),
-                        cef={
-                            "contains embeds or attachments": contains_embeds_or_attachments,
-                            "content": message.content,
-                        }
-                    )
-                    self.save_artifact(dataclasses.asdict(artifact))
-
-        self.save_progress("last poll date: {}".format(str(newest_message)))
         self._state["last_poll_date"] = str(newest_message)
         self.save_state(self._state)
 
-        self.save_progress("-------")
-        self.save_progress("{}".format(self._state))
-        self.save_progress("-------")
-
         action_result = self.add_action_result(ActionResult(dict(param)))
         return action_result.set_status(phantom.APP_SUCCESS)
+
+    def save_on_poll_container(self, message, channel):
+
+        contains_embeds_or_attachments = True if (message.attachments or message.embeds) else False
+
+        container = {
+            "name": f"message {message.id} on channel {channel.name}",
+            "description": "generated by on poll action",
+            "sensitivity": "White" if not contains_embeds_or_attachments else "Green"
+        }
+
+        ret_val, ret_message, container_id = self.save_container(container)
+
+        self.save_progress("container saved finished: return value: {} | message: {} | container_id: {}"
+                           .format(ret_val, ret_message, container_id))
+
+        artifact = Artifact(
+            container_id=str(container_id),
+            name=str(message.id),
+            cef={
+                "contains embeds or attachments": contains_embeds_or_attachments,
+                "content": message.content,
+            }
+        )
+        self.save_artifact(dataclasses.asdict(artifact))
+
+        return ret_val
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
