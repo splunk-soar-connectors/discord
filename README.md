@@ -26,10 +26,9 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [ban user](#action-ban-user) - Bans user from a guild  
 [fetch message](#action-fetch-message) - Gets information about the message  
 [delete message](#action-delete-message) - Removes a message from a channel  
-[get user](#action-get-user) - Get information about a user of a Discord guild/server 
 [fetch message history](#action-fetch-message-history) - fetches message history  
-[on poll](#action-on-poll) - handles data ingestion from discord servers  
-
+[get user](#action-get-user) - Get information about a user of a Discord guild/server  
+[on poll](#action-on-poll) - handles data ingestion from discord text channels  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -201,6 +200,34 @@ action_result.message | string |  |
 summary.total_objects | numeric |  |  
 summary.total_objects_successful | numeric |  |    
 
+## action: 'fetch message history'
+fetches message history
+
+Type: **investigate**  
+Read only: **True**
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**channel_id** |  required  | discord channel id | string |  `discord channel id` 
+**fetching_start_date** |  optional  | fetching start date: %Y-%m-%d %H:%M:%S | string |  `date` 
+**fetching_end_date** |  optional  | fetching end date: %Y-%m-%d %H:%M:%S | string |  `date` 
+**limit** |  optional  | messages limit | numeric |  `limit` 
+**oldest_first** |  optional  | oldest first | boolean | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.data.\*.message id | string |  `discord message id`  |  
+action_result.data.\*.author id | string |  `discord user id`  |  
+action_result.data.\*.created at | string |  `date`  |  
+action_result.data.\*.embeds_attachments | string |  `discord message embeds_attachments`  |  
+action_result.data.\*.content | string |  `message content`  |  
+action_result.status | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
+
 ## action: 'get user'
 Get information about a user of a Discord guild/server
 
@@ -226,50 +253,16 @@ action_result.data.\*.public_flags | string |  |
 action_result.status | string |  |  
 action_result.message | string |  |  
 summary.total_objects | numeric |  |  
-summary.total_objects_successful | numeric |  |  
-
-## action: 'fetch message history'
-fetches message history
-
-Type: **investigate**  
-Read only: **True**
-
-#### Action Parameters
-PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
---------- | -------- | ----------- | ---- | --------
-**channel_id** |  required  | discord channel id | string |  `discord channel id` 
-**after** |  optional  | fetching start date: %Y-%m-%d %H:%M:%S | string | 
-**before** |  optional  | fetching end date: %Y-%m-%d %H:%M:%S | string | 
-**limit** |  optional  | messages limit | numeric | 
-**oldest_first** |  optional  | oldest first | boolean | 
-
-#### Action Output
-DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
---------- | ---- | -------- | --------------
-action_result.data.\*.message id | string |  `discord message id`  |  
-action_result.data.\*.author id | string |  `discord message author id`  |  
-action_result.data.\*.created at | string |  `discord message creation date`  |  
-action_result.data.\*.embeds_attachments | string |  `discord message embeds/attachments`  |  
-action_result.data.\*.content | string |  `discord message content`  |  
-action_result.status | string |  |  
-action_result.message | string |  |  
-summary.total_objects | numeric |  |  
 summary.total_objects_successful | numeric |  |    
 
 ## action: 'on poll'
-handles data ingestion from discord servers
+handles data ingestion from discord text channels
 
 Type: **ingest**  
 Read only: **True**
 
 #### Action Parameters
-PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
---------- | -------- | ----------- | ---- | --------
-**container_id** |  optional  | Parameter ignored in this app | numeric | 
-**start_time** |  optional  | Parameter ignored in this app | numeric | 
-**end_time** |  optional  | Parameter ignored in this app | numeric | 
-**container_count** |  optional  | Maximum number of events to query for | numeric | 
-**artifact_count** |  optional  | Parameter ignored in this app | numeric | 
+No parameters are required for this action
 
 #### Action Output
 No Output
