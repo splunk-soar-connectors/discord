@@ -20,6 +20,7 @@ from datetime import datetime
 
 # Phantom App imports
 import phantom.app as phantom
+import pytz
 import requests
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
@@ -271,7 +272,7 @@ class DiscordConnector(BaseConnector):
         delete_message_seconds = param.get('delete_message_seconds', 86400)
 
         status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
-                                         error_message=DISCORD_ERROR_FETCHING_MEMBER)
+                                        error_message=DISCORD_ERROR_FETCHING_MEMBER)
         status, result = self.run_in_loop(
             self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result,
             error_message=DISCORD_ERROR_BANING_MEMBER)
@@ -325,7 +326,8 @@ class DiscordConnector(BaseConnector):
         if date_string is None:
             return True, None
         try:
-            return True, datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+            date = datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+            return True, date.replace(tzinfo=pytz.UTC)
         except ValueError:
             return False, None
 
@@ -358,7 +360,7 @@ class DiscordConnector(BaseConnector):
 
         status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
                                         error_message=DISCORD_ERROR_FETCHING_MEMBER)
-        
+
         action_result.add_data({
             "display_name": user.display_name,
             "name": user.name,
@@ -388,7 +390,7 @@ class DiscordConnector(BaseConnector):
         container_count = param.get('container_count', None)
 
         status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result,
-                                            message="Cannot fetch channel from Discord.")
+                                            error_message="Cannot fetch channel from Discord.")
         if not status:
             self.save_progress("action result: Cannot Poll messages, unable to fetch channels ")
             return action_result.set_status(phantom.APP_ERROR, "action result: Cannot Poll messages")
@@ -396,12 +398,15 @@ class DiscordConnector(BaseConnector):
         self._status = self.load_state()
         last_poll_date = self._state.get("last_poll_date", None)
         if last_poll_date is not None:
-            _, last_poll_date = self.parse_date(last_poll_date)
-            last_poll_date = last_poll_date
+            last_poll_date_parsing_status, last_poll_date = self.parse_date(last_poll_date)
+            if not last_poll_date_parsing_status:
+                return action_result.set_status(phantom.APP_ERROR, "Unable to parse last poll date")
+
+        self.save_progress("lading last poll date: {}".format(last_poll_date))
 
         newest_message = last_poll_date
         if newest_message is None:
-            newest_message = datetime.min
+            newest_message = datetime.min.replace(tzinfo=pytz.UTC)
 
         for channel in filter((lambda channel_to_test: isinstance(channel_to_test, discord.TextChannel)), channels):
 
@@ -423,7 +428,9 @@ class DiscordConnector(BaseConnector):
                     if phantom.is_fail(ret_val):
                         return action_result.set_status(phantom.APP_ERROR, "Unable to create container: {}".format(message))
 
-        self._state["last_poll_date"] = str(newest_message)
+        newest_message = newest_message.replace(tzinfo=pytz.UTC)
+        self.save_progress("saving last poll date: {}".format(str(newest_message)[:-6]))
+        self._state["last_poll_date"] = str(newest_message)[:-6]
         self.save_state(self._state)
 
         action_result = self.add_action_result(ActionResult(dict(param)))

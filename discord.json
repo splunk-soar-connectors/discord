@@ -639,7 +639,7 @@
                     "name": "channel_id"
                 },
                 "fetching_start_date": {
-                    "description": "fetching start date: %Y-%m-%d %H:%M:%S",
+                    "description": "fetching start date (UTC): %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
@@ -654,7 +654,7 @@
                     "param_name": "fetching_start_date"
                 },
                 "fetching_end_date": {
-                    "description": "fetching end date: %Y-%m-%d %H:%M:%S",
+                    "description": "fetching end date (UTC): %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
@@ -674,7 +674,7 @@
                     "required": false,
                     "primary": false,
                     "contains": [
-                      "limit"  
+                      "limit"
                     ],
                     "value_list": [],
                     "default": "",
