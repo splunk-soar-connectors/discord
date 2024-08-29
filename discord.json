@@ -28,16 +28,14 @@
     "configuration": {
         "token": {
             "description": "Discord bot token",
-            "data_type": "string",
+            "data_type": "password",
             "required": true,
-            "value_list": [],
-            "default": "",
             "order": 0,
             "name": "token",
             "id": 0
         },
         "guild_id": {
-            "description": "server/guild id",
+            "description": "Server aka Guild ID",
             "data_type": "numeric",
             "required": true,
             "value_list": [],
@@ -122,12 +120,12 @@
             "action": "send message",
             "identifier": "send_message",
             "description": "Send a message to the Discord channel",
-            "verbose": "Send a message to Discord",
+            "verbose": "Send a message to the Discord channel.",
             "type": "generic",
             "read_only": false,
             "parameters": {
                 "destination": {
-                    "description": "Discord channels ID",
+                    "description": "Discord channel ID to send message to",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -172,7 +170,7 @@
                     "data_path": "action_result.data.*.message_id",
                     "data_type": "string",
                     "column_name": "Message ID",
-                    "column_order": 1,
+                    "column_order": 2,
                     "contains": [
                         "discord message id"
                     ]
@@ -181,7 +179,7 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "status",
-                    "column_order": 2
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.message",
@@ -205,12 +203,12 @@
             "action": "kick user",
             "identifier": "kick_user",
             "description": "Kicks user from a guild",
-            "verbose": "Kicks user from a guild",
+            "verbose": "Kicks user from a guild.",
             "type": "correct",
             "read_only": false,
             "parameters": {
                 "user_id": {
-                    "description": "User ID",
+                    "description": "The ID of a user to kick from a guild",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -250,257 +248,6 @@
                     "contains": [],
                     "column_name": "reason",
                     "column_order": 1
-                },
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 1
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "summary.total_objects",
-                    "data_type": "numeric"
-                },
-                {
-                    "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
-                }
-            ],
-            "render": {
-                "type": "table"
-            },
-            "versions": "EQ(*)"
-        },
-        {
-            "action": "ban user",
-            "identifier": "ban_user",
-            "description": "Bans user from a guild",
-            "verbose": "Bans user from a guild and deletes specific number of seconds worth of messages",
-            "type": "correct",
-            "read_only": false,
-            "parameters": {
-                "user_id": {
-                    "description": "User ID",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": true,
-                    "contains": [
-                        "discord user id"
-                    ],
-                    "value_list": [],
-                    "default": "",
-                    "order": 0,
-                    "name": "user_id"
-                },
-                "delete_message_seconds": {
-                    "description": "The number of seconds worth of messages to delete from the user in the guild. The minimum is 0 and the maximum is 604800 (7 days). Defaults to 1 day.",
-                    "data_type": "numeric",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "86400",
-                    "order": 0,
-                    "name": "user_id"
-                },
-                "reason": {
-                    "description": "The reason the user got kicked.",
-                    "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 1,
-                    "name": "reason"
-                }
-            },
-            "output": [
-                {
-                    "data_path": "action_result.parameter.user_id",
-                    "data_type": "string",
-                    "contains": [
-                        "discord user id"
-                    ],
-                    "column_name": "user_id",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.parameter.delete_message_seconds",
-                    "data_type": "numeric",
-                    "contains": [],
-                    "column_name": "user_id",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.parameter.reason",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "reason",
-                    "column_order": 1
-                },
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 1
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "summary.total_objects",
-                    "data_type": "numeric"
-                },
-                {
-                    "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
-                }
-            ],
-            "render": {
-                "type": "table"
-            },
-            "versions": "EQ(*)"
-        },
-        {
-            "action": "fetch message",
-            "identifier": "fetch_message",
-            "description": "gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message",
-            "verbose": "",
-            "type": "investigate",
-            "read_only": false,
-            "parameters": {
-                "channel_id": {
-                    "description": "channel id",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": true,
-                    "contains": [
-                        "discord channel id"
-                    ],
-                    "value_list": [],
-                    "default": "",
-                    "order": 0,
-                    "name": "channel_id"
-                },
-                "message_id": {
-                    "description": "message id",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": false,
-                    "contains": [
-                        "discord message id"
-                    ],
-                    "value_list": [],
-                    "default": "",
-                    "order": 1,
-                    "name": "message_id"
-                }
-            },
-            "output": [
-                {
-                    "data_path": "action_result.data.*.message origin.channel id",
-                    "data_type": "numeric",
-                    "contains": [
-                        "discord channel id"
-                    ],
-                    "column_name": "channel id",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.message origin.channel name",
-                    "data_type": "string",
-                    "contains": [
-                        "discord channel name"
-                    ],
-                    "column_name": "channel name",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.message data.created at",
-                    "data_type": "numeric",
-                    "contains": [
-                        "date"
-                    ],
-                    "column_name": "message creation date",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.message data.edited at",
-                    "data_type": "numeric",
-                    "contains": [
-                        "date"
-                    ],
-                    "column_name": "message edition date",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.author data.author id",
-                    "data_type": "numeric",
-                    "contains": [
-                        "author id"
-                    ],
-                    "column_name": "author id",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.author data.author name",
-                    "data_type": "string",
-                    "contains": [
-                        "author name"
-                    ],
-                    "column_name": "author name",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.attachments",
-                    "data_type": "string",
-                    "contains": [
-                        "artifact id"
-                    ],
-                    "column_name": "list of attachments",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.embeds",
-                    "data_type": "string",
-                    "contains": [
-                        "artifact id"
-                    ],
-                    "column_name": "list of embeds",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.content",
-                    "data_type": "string",
-                    "contains": [
-                        "message content"
-                    ],
-                    "column_name": "content",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.jump url",
-                    "data_type": "string",
-                    "contains": [
-                        "url"
-                    ],
-                    "column_name": "jump url",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.data.*.flags",
-                    "data_type": "string",
-                    "contains": [
-                        "flags"
-                    ],
-                    "column_name": "message flags",
-                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.status",
@@ -527,15 +274,107 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "delete message",
-            "identifier": "delete_message",
-            "description": "removes the message",
-            "verbose": "",
+            "action": "ban user",
+            "identifier": "ban_user",
+            "description": "Bans user from a guild",
+            "verbose": "Bans user from a guild and deletes specific number of seconds worth of messages.",
             "type": "correct",
             "read_only": false,
             "parameters": {
+                "user_id": {
+                    "description": "The ID of a user to ban from a guild",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "discord user id"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "user_id"
+                },
+                "delete_message_seconds": {
+                    "description": "The number of seconds worth of messages to delete from the user in the guild. The minimum is 0 and the maximum is 604800 (7 days). Defaults to 1 day.",
+                    "data_type": "numeric",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "86400",
+                    "order": 1,
+                    "name": "user_id"
+                },
+                "reason": {
+                    "description": "The reason the user got kicked.",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 2,
+                    "name": "reason"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.user_id",
+                    "data_type": "string",
+                    "contains": [
+                        "discord user id"
+                    ],
+                    "column_name": "user_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.delete_message_seconds",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "user_id",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.parameter.reason",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "reason",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "fetch message",
+            "identifier": "fetch_message",
+            "description": "Gets information about the message",
+            "verbose": "Gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message.",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {
                 "channel_id": {
-                    "description": "channel id",
+                    "description": "The ID of a channel to fetch message from",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -548,7 +387,181 @@
                     "name": "channel_id"
                 },
                 "message_id": {
-                    "description": "message id",
+                    "description": "The ID of a message to get information of",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [
+                        "discord message id"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "message_id"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.channel_id",
+                    "data_type": "string",
+                    "contains": [
+                        "discord channel id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.message_id",
+                    "data_type": "string",
+                    "contains": [
+                        "discord message id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.message origin.channel id",
+                    "data_type": "numeric",
+                    "contains": [
+                        "discord channel id"
+                    ],
+                    "column_name": "channel id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.message origin.channel name",
+                    "data_type": "string",
+                    "contains": [
+                        "discord channel name"
+                    ],
+                    "column_name": "channel name",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.message data.created at",
+                    "data_type": "numeric",
+                    "contains": [
+                        "date"
+                    ],
+                    "column_name": "message creation date",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.message data.edited at",
+                    "data_type": "numeric",
+                    "contains": [
+                        "date"
+                    ],
+                    "column_name": "message edition date",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.data.*.author data.author id",
+                    "data_type": "numeric",
+                    "contains": [
+                        "author id",
+                        "discord user id"
+                    ],
+                    "column_name": "author id",
+                    "column_order": 4
+                },
+                {
+                    "data_path": "action_result.data.*.author data.author name",
+                    "data_type": "string",
+                    "contains": [
+                        "author name"
+                    ],
+                    "column_name": "author name",
+                    "column_order": 5
+                },
+                {
+                    "data_path": "action_result.data.*.attachments",
+                    "data_type": "string",
+                    "contains": [
+                        "artifact id"
+                    ],
+                    "column_name": "list of attachments",
+                    "column_order": 6
+                },
+                {
+                    "data_path": "action_result.data.*.embeds",
+                    "data_type": "string",
+                    "contains": [
+                        "artifact id"
+                    ],
+                    "column_name": "list of embeds",
+                    "column_order": 7
+                },
+                {
+                    "data_path": "action_result.data.*.content",
+                    "data_type": "string",
+                    "contains": [
+                        "message content"
+                    ],
+                    "column_name": "content",
+                    "column_order": 8
+                },
+                {
+                    "data_path": "action_result.data.*.jump url",
+                    "data_type": "string",
+                    "contains": [
+                        "url"
+                    ],
+                    "column_name": "jump url",
+                    "column_order": 9
+                },
+                {
+                    "data_path": "action_result.data.*.flags",
+                    "data_type": "string",
+                    "contains": [
+                        "flags"
+                    ],
+                    "column_name": "message flags",
+                    "column_order": 10
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 11
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "delete message",
+            "identifier": "delete_message",
+            "description": "Removes a message from a channel",
+            "verbose": "Removes a message from a channel.",
+            "type": "correct",
+            "read_only": false,
+            "parameters": {
+                "channel_id": {
+                    "description": "The ID of a channel to delete message from",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "discord channel id"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "channel_id"
+                },
+                "message_id": {
+                    "description": "The ID of a message to delete",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -610,7 +623,7 @@
             "description": "fetches message history",
             "verbose": "",
             "type": "investigate",
-            "read_only": false,
+            "read_only": true,
             "parameters": {
                 "channel_id": {
                     "description": "discord channel id",
@@ -618,8 +631,8 @@
                     "required": true,
                     "primary": true,
                     "contains": [
-                        "discord channel id"
-                    ],
+                                  "discord channel id"
+                              ],
                     "value_list": [],
                     "default": "",
                     "order": 0,
@@ -630,7 +643,9 @@
                     "data_type": "string",
                     "required": false,
                     "primary": false,
-                    "contains": [],
+                    "contains": [
+                      "date"
+                    ],
                     "value_list": [],
                     "default": "",
                     "order": 1,
@@ -643,7 +658,9 @@
                     "data_type": "string",
                     "required": false,
                     "primary": false,
-                    "contains": [],
+                    "contains": [
+                      "date"
+                    ],
                     "value_list": [],
                     "default": "",
                     "order": 2,
@@ -656,7 +673,9 @@
                     "data_type": "numeric",
                     "required": false,
                     "primary": false,
-                    "contains": [],
+                    "contains": [
+                      "limit"  
+                    ],
                     "value_list": [],
                     "default": "",
                     "order": 3,
@@ -672,14 +691,14 @@
                     "default": "",
                     "order": 4,
                     "name": "oldest first"
-                }
+                  }
             },
             "output": [
                 {
                     "data_path": "action_result.data.*.message id",
                     "data_type": "string",
                     "column_name": "message ID",
-                    "column_order": 1,
+                    "column_order": 0,
                     "contains": [
                         "discord message id"
                     ]
@@ -690,41 +709,133 @@
                     "column_name": "Author ID",
                     "column_order": 1,
                     "contains": [
-                        "discord message author id"
+                        "discord user id"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.created at",
                     "data_type": "string",
                     "column_name": "Creation date",
-                    "column_order": 1,
+                    "column_order": 2,
                     "contains": [
-                        "discord message creation date"
+                        "date"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.embeds_attachments",
                     "data_type": "string",
                     "column_name": "Embeds/Attachments",
-                    "column_order": 1,
+                    "column_order": 3,
                     "contains": [
-                        "discord message embeds/attachments"
+                        "discord message embeds_attachments"
                     ]
                 },
-                                {
+                {
                     "data_path": "action_result.data.*.content",
                     "data_type": "string",
                     "column_name": "content",
-                    "column_order": 1,
+                    "column_order": 4,
                     "contains": [
-                        "discord message content"
+                        "message content"
                     ]
                 },
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "status",
-                    "column_order": 4
+                    "column_order": 5
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "get user",
+            "identifier": "get_user",
+            "description": "Get information about a user of a Discord guild/server",
+            "verbose": "This action will get information about a user.",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {
+                "user_id": {
+                    "description": "The ID of a user to get information of",
+
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "discord user id"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "user_id"
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.user_id",
+                    "data_type": "string",
+                    "contains": [
+                        "discord user id"
+                    ],
+                    "column_name": "user_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.display_name",
+                    "data_type": "string",
+                    "column_name": "user display name",
+                    "column_order": 1,
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.data.*.name",
+                    "data_type": "string",
+                    "column_name": "user name",
+                    "column_order": 2,
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.data.*.created_at",
+                    "data_type": "string",
+                    "column_name": "user created at",
+                    "column_order": 3,
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.data.*.system",
+                    "data_type": "string",
+                    "column_name": "user system",
+                    "column_order": 4,
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.data.*.public_flags",
+                    "data_type": "string",
+                    "column_name": "user public flags",
+                    "column_order": 5,
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 6
                 },
                 {
                     "data_path": "action_result.message",
@@ -751,7 +862,7 @@
             "verbose": "",
             "type": "ingest",
             "read_only": true,
-             "parameters": {},
+            "parameters": {},
             "output": [],
             "render": {
                 "type": "table"
@@ -763,11 +874,11 @@
         "wheel": [
             {
                 "module": "aiohappyeyeballs",
-                "input_file": "wheels/py3/aiohappyeyeballs-2.3.7-py3-none-any.whl"
+                "input_file": "wheels/py3/aiohappyeyeballs-2.4.0-py3-none-any.whl"
             },
             {
                 "module": "aiohttp",
-                "input_file": "wheels/py39/aiohttp-3.10.4-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+                "input_file": "wheels/py39/aiohttp-3.10.5-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
             },
             {
                 "module": "aiosignal",
