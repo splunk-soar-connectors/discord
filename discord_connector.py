@@ -175,7 +175,7 @@ class DiscordConnector(BaseConnector):
                 "author name": message.author.name,
             },
             "jump url": message.jump_url,
-            "flags": [flag[:1] for flag in list(filter((lambda flag: flag[1]), message.flags))] or "no flags",
+            "flags": [flag[0] for flag in filter(lambda flag: flag[1], message.flags)] or "no flags",
             "attachments": attachments or "no attachments",
             "embeds": embeds or "no embeds",
             "content": message.content
