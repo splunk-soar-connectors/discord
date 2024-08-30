@@ -146,7 +146,7 @@ class DiscordConnector(BaseConnector):
             name=f"embed: {embed.title}",
             cef={"URL": embed.url, "Description": embed.description}
         )
-        return self.save_artifact_to_soar(dataclasses.asdict(artifact))
+        return self.save_artifact_to_soar(artifact)
 
     def create_attachment_artifact(self, attachment, container_id):
         artifact = Artifact(
@@ -154,10 +154,10 @@ class DiscordConnector(BaseConnector):
             name=f"attachment: {attachment.filename}",
             cef={"URL": attachment.url, "Description": attachment.description, "Type": attachment.content_type}
         )
-        return self.save_artifact_to_soar(dataclasses.asdict(artifact))
+        return self.save_artifact_to_soar(artifact)
 
-    def save_artifact_to_soar(self, artifact):
-        status, creation_message, artifact_id = self.save_artifact(artifact)
+    def save_artifact_to_soar(self, artifact: Artifact):
+        status, creation_message, artifact_id = self.save_artifact(dataclasses.asdict(artifact))
         self.save_progress("creating artifact: status: {}, creation message: {}, artifact id {}"
                            .format(status, creation_message, artifact_id))
         return artifact_id
@@ -318,28 +318,31 @@ class DiscordConnector(BaseConnector):
             })
 
         summary = action_result.update_summary({})
-        summary['action result: '] = "action result: fetching messages from {} channel ended with success".format(
+        summary["action result: "] = "action result: fetching messages from {} channel ended with success".format(
             channel_id)
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def parse_date(self, date_string):
         if date_string is None:
-            return True, None
+            return PARSE_SUCCEEDED, None
         try:
             date = datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
-            return True, date.replace(tzinfo=pytz.UTC)
+            return PARSE_SUCCEEDED, date.replace(tzinfo=pytz.UTC)
         except ValueError:
-            return False, None
+            return PARSE_FAILED, None
 
-    def fetch_message_history(self, channel_id, action_result, fetching_start_date, fetching_end_date, oldest_first,
-                              limit):
+    def fetch_message_history(self, channel_id, action_result, fetching_start_date: datetime or None,
+                              fetching_end_date: datetime or None, oldest_first,
+                              limit) -> tuple[bool, list[discord.Message]] or tuple[bool, None]:
+
         status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
                                            "Cannot fetch channel from Discord.")
         if not status:
-            return status
+            return status, None
         status, messages = self.run_in_loop(
             self.gather_messages(channel, fetching_start_date, fetching_end_date, oldest_first, limit),
             action_result, "Cannot fetch messages from Discord.")
+
         return status, messages
 
     async def gather_messages(self, channel, fetching_start_date, fetching_end_date, oldest_first, limit):
@@ -348,7 +351,7 @@ class DiscordConnector(BaseConnector):
                                     oldest_first=oldest_first)]
 
         self.save_progress("gathered messages: {} while working with parameters: after: {} | before: {}"
-                           .format(len(messages), fetching_start_date, fetching_end_date,))
+                           .format(len(messages), fetching_start_date, fetching_end_date, ))
         return messages
 
     def _handle_get_user(self, param):
@@ -398,15 +401,13 @@ class DiscordConnector(BaseConnector):
         self._status = self.load_state()
         last_poll_date = self._state.get("last_poll_date", None)
         if last_poll_date is not None:
-            last_poll_date_parsing_status, last_poll_date = self.parse_date(last_poll_date)
-            if not last_poll_date_parsing_status:
+            validation_pass, last_poll_date = self.parse_date(last_poll_date)
+            if not validation_pass:
                 return action_result.set_status(phantom.APP_ERROR, "Unable to parse last poll date")
 
         self.save_progress("lading last poll date: {}".format(last_poll_date))
 
-        newest_message = last_poll_date
-        if newest_message is None:
-            newest_message = datetime.min.replace(tzinfo=pytz.UTC)
+        newest_message = last_poll_date or datetime.min.replace(tzinfo=pytz.UTC)
 
         for channel in filter((lambda channel_to_test: isinstance(channel_to_test, discord.TextChannel)), channels):
 
@@ -420,13 +421,13 @@ class DiscordConnector(BaseConnector):
             for message in messages:
 
                 _, message_creation_date = self.parse_date(message.created_at.strftime("%Y-%m-%d %H:%M:%S"))
-                if newest_message < message_creation_date:
-                    newest_message = message_creation_date
+                newest_message = max(message_creation_date, newest_message)
 
                 if message_creation_date != last_poll_date:
                     ret_val = self.save_on_poll_container(message, channel)
                     if phantom.is_fail(ret_val):
-                        return action_result.set_status(phantom.APP_ERROR, "Unable to create container: {}".format(message))
+                        return action_result.set_status(phantom.APP_ERROR,
+                                                        "Unable to create container: {}".format(message))
 
         newest_message = newest_message.replace(tzinfo=pytz.UTC)
         self.save_progress("saving last poll date: {}".format(str(newest_message)[:-6]))
@@ -507,7 +508,7 @@ class DiscordConnector(BaseConnector):
             if self._state is None:
                 self.debug_print("Please check the owner, owner group, and the permissions of the state file")
                 self.debug_print("The Splunk SOAR user should have correct access rights and ownership for the \
-                    corresponding state file (refer readme file for more information)")
+                    corresponding state file")
                 return phantom.APP_ERROR
 
         # get the asset config
