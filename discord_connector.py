@@ -214,14 +214,14 @@ class DiscordConnector(BaseConnector):
                                             error_message=DISCORD_ERROR_FETCHING_CHANNEL)
 
         for channel in channels:
-            if isinstance(channel, discord.TextChannel):
+            if channel.type == discord.ChannelType.text:
                 action_result.add_data({
                     "name": channel.name,
                     "id": channel.id
                 })
 
         summary = action_result.update_summary({})
-        summary['num_channels'] = sum(isinstance(channel, discord.TextChannel) for channel in channels)
+        summary['num_channels'] = len([channel for channel in channels if channel.type == discord.ChannelType.text])
 
         return status
 
