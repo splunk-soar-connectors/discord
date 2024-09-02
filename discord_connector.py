@@ -68,12 +68,12 @@ class DiscordConnector(BaseConnector):
                 elif len(e.args) == 1:
                     error_message = e.args[0]
         except Exception as e:
-            self.error_print("Error occurred while fetching exception information. Details: {}".format(str(e)))
+            self.error_print(f"Error occurred while fetching exception information. Details: {str(e)}")
 
         if not error_code:
-            error_text = "Error Message: {}".format(error_message)
+            error_text = f"Error Message: {error_message}"
         else:
-            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_message)
+            error_text = f"Error Code: {error_code}. Error Message: {error_message}"
 
         return error_text
 
@@ -92,7 +92,7 @@ class DiscordConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_fetch_message(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -102,14 +102,14 @@ class DiscordConnector(BaseConnector):
         status, message = self.fetch_message(channel_id, message_id, action_result)
         if not status:
             return action_result.set_status(phantom.APP_ERROR,
-                                            "action result: fetching message {} ended with failure".format(message_id))
+                                            f"action result: fetching message {message_id} ended with failure")
 
         attachments, embeds = self.create_artifacts(message)
         message = self.parse_message(message, attachments, embeds)
 
         action_result.add_data(message)
         summary = action_result.update_summary({})
-        summary['action result: '] = "fetching message {} ended with success".format(message_id)
+        summary['action result: '] = f"fetching message {message_id} ended with success"
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -158,8 +158,8 @@ class DiscordConnector(BaseConnector):
 
     def save_artifact_to_soar(self, artifact: Artifact):
         status, creation_message, artifact_id = self.save_artifact(dataclasses.asdict(artifact))
-        self.save_progress("creating artifact: status: {}, creation message: {}, artifact id {}"
-                           .format(status, creation_message, artifact_id))
+        self.save_progress(
+            f"creating artifact: status: {status}, creation message: {creation_message}, artifact id {artifact_id}")
         return artifact_id
 
     def parse_message(self, message, attachments, embeds):
@@ -184,7 +184,7 @@ class DiscordConnector(BaseConnector):
         }
 
     def _handle_delete_message(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         channel_id = param['channel_id']
@@ -193,8 +193,8 @@ class DiscordConnector(BaseConnector):
         status = self.delete_message(channel_id, message_id, action_result)
 
         summary = action_result.update_summary({})
-        summary['action result: '] = "Deleting message {} ended with {}".format(message_id,
-                                                                                "success" if status else "failure")
+        result = "success" if status else "failure"
+        summary['action result: '] = f"Deleting message {message_id} ended with {result}"
         return action_result.set_status(phantom.APP_SUCCESS) if status else action_result.set_status(phantom.APP_ERROR)
 
     def delete_message(self, channel_id, message_id, action_result):
@@ -209,7 +209,7 @@ class DiscordConnector(BaseConnector):
         self._guild = await self._client.fetch_guild(self._guild_id)
 
     def _handle_list_channels(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result,
@@ -228,7 +228,7 @@ class DiscordConnector(BaseConnector):
         return status
 
     def _handle_send_message(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -247,7 +247,7 @@ class DiscordConnector(BaseConnector):
         return status
 
     def _handle_kick_user(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -263,7 +263,7 @@ class DiscordConnector(BaseConnector):
 
     def _handle_ban_user(self, param):
 
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -280,7 +280,7 @@ class DiscordConnector(BaseConnector):
         return status
 
     def _handle_fetch_message_history(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         channel_id = param['channel_id']
@@ -294,20 +294,18 @@ class DiscordConnector(BaseConnector):
         oldest_first = param.get('oldest_first', False)
 
         self.save_progress(
-            "status_after {}: {} | status_before {}: {}".format(status_after, fetching_start_date, status_before,
-                                                                fetching_end_date))
+            f"status_after {status_after}: {fetching_start_date} | status_before {status_before}: {fetching_end_date}")
         if not (status_after and status_before):
             return action_result.set_status(phantom.APP_ERROR,
-                                            "action result: fetching messages from {} channel ended with failure, unable to format date"
-                                            .format(channel_id))
+                                            f"action result: fetching messages from {channel_id} "
+                                            f"channel ended with failure, unable to format date"
+                                            )
 
         status, messages = self.fetch_message_history(channel_id, action_result, fetching_start_date, fetching_end_date,
                                                       oldest_first, limit)
         if not status:
             return action_result.set_status(phantom.APP_ERROR,
-                                            "action result: fetching messages from {} channel ended with failure".format(
-                                                channel_id))
-
+                                            f"action result: fetching messages from {channel_id} channel ended with failure")
         for message in messages:
             action_result.add_data({
                 "message id": message.id,
@@ -318,8 +316,7 @@ class DiscordConnector(BaseConnector):
             })
 
         summary = action_result.update_summary({})
-        summary["action result: "] = "action result: fetching messages from {} channel ended with success".format(
-            channel_id)
+        summary["action result: "] = f"action result: fetching messages from {channel_id} channel ended with success"
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def parse_date(self, date_string):
@@ -350,12 +347,12 @@ class DiscordConnector(BaseConnector):
                     channel.history(limit=limit, after=fetching_start_date, before=fetching_end_date,
                                     oldest_first=oldest_first)]
 
-        self.save_progress("gathered messages: {} while working with parameters: after: {} | before: {}"
-                           .format(len(messages), fetching_start_date, fetching_end_date, ))
+        self.save_progress(
+            "gathered messages: {len(messages)} while working with parameters: after: {fetching_start_date} | before: {fetching_end_date}")
         return messages
 
     def _handle_get_user(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -387,7 +384,7 @@ class DiscordConnector(BaseConnector):
                                             f"Other exception. Error type: {e.__class__.__name__} Details: {str(e)}"), None
 
     def _handle_on_poll(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         container_count = param.get('container_count', None)
@@ -405,7 +402,7 @@ class DiscordConnector(BaseConnector):
             if not validation_pass:
                 return action_result.set_status(phantom.APP_ERROR, "Unable to parse last poll date")
 
-        self.save_progress("lading last poll date: {}".format(last_poll_date))
+        self.save_progress(f"lading last poll date: {last_poll_date}")
 
         newest_message = last_poll_date or datetime.min.replace(tzinfo=pytz.UTC)
 
@@ -414,7 +411,7 @@ class DiscordConnector(BaseConnector):
             status, messages = self.fetch_message_history(channel.id, action_result, last_poll_date,
                                                           None, True, container_count)
             if not status:
-                self.debug_print("action result: Cannot Poll messages from {} {}".format(channel.name, channel.id))
+                self.debug_print(f"action result: Cannot Poll messages from {channel.name} {channel.id}")
                 return action_result.set_status(phantom.APP_ERROR)
 
             self.save_progress("saving the containers")
@@ -427,10 +424,10 @@ class DiscordConnector(BaseConnector):
                     ret_val = self.save_on_poll_container(message, channel)
                     if phantom.is_fail(ret_val):
                         return action_result.set_status(phantom.APP_ERROR,
-                                                        "Unable to create container: {}".format(message))
+                                                        "fUnable to create container: {message}")
 
         newest_message = newest_message.replace(tzinfo=pytz.UTC)
-        self.save_progress("saving last poll date: {}".format(str(newest_message)[:-6]))
+        self.save_progress(f"saving last poll date: {str(newest_message)[:-6]}")
         self._state["last_poll_date"] = str(newest_message)[:-6]
         self.save_state(self._state)
 
@@ -449,8 +446,8 @@ class DiscordConnector(BaseConnector):
 
         ret_val, ret_message, container_id = self.save_container(container)
 
-        self.save_progress("container saved finished: return value: {} | message: {} | container_id: {}"
-                           .format(ret_val, ret_message, container_id))
+        self.save_progress(
+            f"container saved finished: return value: {ret_val} | message: {ret_message} | container_id: {container_id}")
 
         artifact = Artifact(
             container_id=str(container_id),
