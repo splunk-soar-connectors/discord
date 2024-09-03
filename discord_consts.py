@@ -20,3 +20,6 @@ DISCORD_ERROR_DELETING_MESSAGE = "Cannot delete message from Discord."
 DISCORD_ERROR_FETCHING_MEMBER = "Cannot fetch member from Discord."
 DISCORD_ERROR_KICKING_MEMBER = "Cannot kick member from Discord."
 DISCORD_ERROR_BANING_MEMBER = "Cannot ban member from Discord."
+
+PARSE_FAILED = False
+PARSE_SUCCEEDED = True

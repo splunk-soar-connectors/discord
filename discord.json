@@ -371,7 +371,7 @@
             "description": "Gets information about the message",
             "verbose": "Gets information about the message, such as: attachments, embeds, content, author, creation and edition date, it also shows jump url to the fetched message.",
             "type": "investigate",
-            "read_only": false,
+            "read_only": true,
             "parameters": {
                 "channel_id": {
                     "description": "The ID of a channel to fetch message from",
@@ -618,6 +618,152 @@
             "versions": "EQ(*)"
         },
         {
+            "action": "fetch message history",
+            "identifier": "fetch_message_history",
+            "description": "fetches message history",
+            "verbose": "",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {
+                "channel_id": {
+                    "description": "discord channel id",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                                  "discord channel id"
+                              ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "channel_id"
+                },
+                "fetching_start_date": {
+                    "description": "fetching start date (UTC): %Y-%m-%d %H:%M:%S",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [
+                      "date"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1,
+                    "name": "fetching_start_date",
+                    "id": 2,
+                    "param_name": "fetching_start_date"
+                },
+                "fetching_end_date": {
+                    "description": "fetching end date (UTC): %Y-%m-%d %H:%M:%S",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [
+                      "date"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 2,
+                    "name": "fetching_end_date",
+                    "id": 3,
+                    "param_name": "fetching_end_date"
+                },
+                "limit": {
+                    "description": "messages limit",
+                    "data_type": "numeric",
+                    "required": false,
+                    "primary": false,
+                    "contains": [
+                      "limit"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 3,
+                    "name": "limit"
+                },
+                "oldest_first": {
+                    "description": "oldest first",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 4,
+                    "name": "oldest first"
+                  }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.data.*.message id",
+                    "data_type": "string",
+                    "column_name": "message ID",
+                    "column_order": 0,
+                    "contains": [
+                        "discord message id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.author id",
+                    "data_type": "string",
+                    "column_name": "Author ID",
+                    "column_order": 1,
+                    "contains": [
+                        "discord user id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.created at",
+                    "data_type": "string",
+                    "column_name": "Creation date",
+                    "column_order": 2,
+                    "contains": [
+                        "date"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.embeds_attachments",
+                    "data_type": "string",
+                    "column_name": "Embeds/Attachments",
+                    "column_order": 3,
+                    "contains": [
+                        "discord message embeds_attachments"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.content",
+                    "data_type": "string",
+                    "column_name": "content",
+                    "column_order": 4,
+                    "contains": [
+                        "message content"
+                    ]
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 5
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
             "action": "get user",
             "identifier": "get_user",
             "description": "Get information about a user of a Discord guild/server",
@@ -627,6 +773,7 @@
             "parameters": {
                 "user_id": {
                     "description": "The ID of a user to get information of",
+
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -703,6 +850,20 @@
                     "data_type": "numeric"
                 }
             ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "on poll",
+            "identifier": "on_poll",
+            "description": "handles data ingestion from discord text channels",
+            "verbose": "",
+            "type": "ingest",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
             "render": {
                 "type": "table"
             },
