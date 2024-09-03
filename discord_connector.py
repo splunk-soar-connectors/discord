@@ -348,7 +348,7 @@ class DiscordConnector(BaseConnector):
                                     oldest_first=oldest_first)]
 
         self.save_progress(
-            "gathered messages: {len(messages)} while working with parameters: after: {fetching_start_date} | before: {fetching_end_date}")
+            f"gathered messages: {len(messages)} while working with parameters: after: {fetching_start_date} | before: {fetching_end_date}")
         return messages
 
     def _handle_get_user(self, param):
