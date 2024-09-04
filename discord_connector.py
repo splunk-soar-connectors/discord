@@ -16,7 +16,9 @@
 import asyncio
 import dataclasses
 import json
+from collections.abc import Sequence
 from datetime import datetime
+from typing import List, Optional, Union
 
 # Phantom App imports
 import phantom.app as phantom
@@ -26,6 +28,7 @@ from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 import discord
+from discord.abc import GuildChannel
 from discord_artifact import Artifact
 from discord_consts import *
 
@@ -93,11 +96,10 @@ class DiscordConnector(BaseConnector):
 
     def _handle_fetch_message(self, param):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
-
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        channel_id = param['channel_id']
-        message_id = param['message_id']
+        channel_id: int = param['channel_id']
+        message_id: int = param['message_id']
 
         status, message = self.fetch_message(channel_id, message_id, action_result)
         if not status:
@@ -113,7 +115,10 @@ class DiscordConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def fetch_message(self, channel_id, message_id, action_result) -> discord.Message or None:
+    def fetch_message(self, channel_id: int, message_id: int, action_result: ActionResult) -> tuple[bool, Optional[discord.Message]]:
+        channel: Union[discord.TextChannel, discord.VoiceChannel, discord.StageChannel]
+        message: discord.Message
+
         status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
                                            error_message=DISCORD_ERROR_FETCHING_CHANNEL)
         if not status:
@@ -123,24 +128,26 @@ class DiscordConnector(BaseConnector):
 
         return status, message
 
-    def create_artifacts(self, message):
-        container_id = self.get_container_id()
+    def create_artifacts(self, message: discord.Message) -> tuple[list[Optional[int]], list[Optional[int]]]:
+        container_id: str = self.get_container_id()
         attachments = []
         embeds = []
 
         if message.embeds:
             self.save_progress("working on embeds")
+            embed: discord.Embed
             for embed in message.embeds:
                 embeds.append(self.create_embed_artifact(embed, container_id))
 
         if message.attachments:
             self.save_progress("working on attachments")
+            attachment: discord.Attachment
             for attachment in message.attachments:
                 attachments.append(self.create_attachment_artifact(attachment, container_id))
 
         return attachments, embeds
 
-    def create_embed_artifact(self, embed, container_id):
+    def create_embed_artifact(self, embed: discord.Embed, container_id: str):
         artifact = Artifact(
             container_id=container_id,
             name=f"embed: {embed.title}",
@@ -148,7 +155,7 @@ class DiscordConnector(BaseConnector):
         )
         return self.save_artifact_to_soar(artifact)
 
-    def create_attachment_artifact(self, attachment, container_id):
+    def create_attachment_artifact(self, attachment: discord.Attachment, container_id: str):
         artifact = Artifact(
             container_id=container_id,
             name=f"attachment: {attachment.filename}",
@@ -156,13 +163,13 @@ class DiscordConnector(BaseConnector):
         )
         return self.save_artifact_to_soar(artifact)
 
-    def save_artifact_to_soar(self, artifact: Artifact):
+    def save_artifact_to_soar(self, artifact: Artifact) -> Optional[int]:
         status, creation_message, artifact_id = self.save_artifact(dataclasses.asdict(artifact))
         self.save_progress(
             f"creating artifact: status: {status}, creation message: {creation_message}, artifact id {artifact_id}")
         return artifact_id
 
-    def parse_message(self, message, attachments, embeds):
+    def parse_message(self, message: discord.Message, attachments: List[Optional[int]], embeds: List[Optional[int]]):
         return {
             "message origin": {
                 "channel id": message.channel.id,
@@ -187,8 +194,8 @@ class DiscordConnector(BaseConnector):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        channel_id = param['channel_id']
-        message_id = param['message_id']
+        channel_id: int = param['channel_id']
+        message_id: int = param['message_id']
 
         status = self.delete_message(channel_id, message_id, action_result)
 
@@ -197,11 +204,11 @@ class DiscordConnector(BaseConnector):
         summary['action result: '] = f"Deleting message {message_id} ended with {result}"
         return action_result.set_status(phantom.APP_SUCCESS) if status else action_result.set_status(phantom.APP_ERROR)
 
-    def delete_message(self, channel_id, message_id, action_result):
+    def delete_message(self, channel_id: int, message_id: int, action_result: ActionResult):
         status, message = self.fetch_message(channel_id, message_id, action_result)
         if not status:
             return status
-        status, result = self.run_in_loop(message.delete(), action_result, error_message=DISCORD_ERROR_DELETING_MESSAGE)
+        status, _ = self.run_in_loop(message.delete(), action_result, error_message=DISCORD_ERROR_DELETING_MESSAGE)
         return status
 
     async def _load_guild(self):
@@ -212,6 +219,7 @@ class DiscordConnector(BaseConnector):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
+        channels: Sequence[GuildChannel]
         status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result,
                                             error_message=DISCORD_ERROR_FETCHING_CHANNEL)
 
@@ -229,15 +237,17 @@ class DiscordConnector(BaseConnector):
 
     def _handle_send_message(self, param):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
-
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        destination = param['destination']
-        message = param['message']
+        destination: int = param['destination']
+        message_to_send: str = param['message']
 
+        channel: Union[discord.TextChannel, discord.VoiceChannel, discord.StageChannel]
         status, channel = self.run_in_loop(self._guild.fetch_channel(destination), action_result,
                                            error_message=DISCORD_ERROR_FETCHING_CHANNEL)
-        status, message = self.run_in_loop(channel.send(message), action_result,
+
+        message: discord.Message
+        status, message = self.run_in_loop(channel.send(message_to_send), action_result,
                                            error_message=DISCORD_ERROR_SENDING_MESSAGE)
 
         action_result.add_data({
@@ -248,32 +258,30 @@ class DiscordConnector(BaseConnector):
 
     def _handle_kick_user(self, param):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
-
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        user_id = param['user_id']
-        reason = param.get('reason', "")
+        user_id: int = param['user_id']
+        reason: str = param.get('reason', "")
 
+        user: discord.Member
         status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
                                         error_message=DISCORD_ERROR_FETCHING_MEMBER)
-        status, result = self.run_in_loop(self._guild.kick(user, reason=reason), action_result,
-                                          error_message=DISCORD_ERROR_KICKING_MEMBER)
-
+        status, _ = self.run_in_loop(self._guild.kick(user, reason=reason), action_result,
+                                     error_message=DISCORD_ERROR_KICKING_MEMBER)
         return status
 
     def _handle_ban_user(self, param):
-
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
-
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        user_id = param['user_id']
-        reason = param.get('reason', "")
+        user_id: int = param['user_id']
+        reason: str = param.get('reason', "")
         delete_message_seconds = param.get('delete_message_seconds', 86400)
 
+        user: discord.Member
         status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
                                         error_message=DISCORD_ERROR_FETCHING_MEMBER)
-        status, result = self.run_in_loop(
+        status, _ = self.run_in_loop(
             self._guild.ban(user, reason=reason, delete_message_seconds=delete_message_seconds), action_result,
             error_message=DISCORD_ERROR_BANING_MEMBER)
 
@@ -283,15 +291,16 @@ class DiscordConnector(BaseConnector):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        channel_id = param['channel_id']
+        channel_id: int = param['channel_id']
 
         status_after, fetching_start_date = self.parse_date(param.get('fetching_start_date', None))
         status_before, fetching_end_date = self.parse_date(param.get('fetching_end_date', None))
 
-        limit = param.get('limit', None)
+        limit: Optional[int] = param.get('limit', None)
         if limit == 0:
             limit = None
-        oldest_first = param.get('oldest_first', False)
+
+        oldest_first: bool = param.get('oldest_first', False)
 
         self.save_progress(
             f"status_after {status_after}: {fetching_start_date} | status_before {status_before}: {fetching_end_date}")
@@ -301,11 +310,13 @@ class DiscordConnector(BaseConnector):
                                             f"channel ended with failure, unable to format date"
                                             )
 
+        messages: list[discord.Message]
         status, messages = self.fetch_message_history(channel_id, action_result, fetching_start_date, fetching_end_date,
                                                       oldest_first, limit)
         if not status:
             return action_result.set_status(phantom.APP_ERROR,
                                             f"action result: fetching messages from {channel_id} channel ended with failure")
+
         for message in messages:
             action_result.add_data({
                 "message id": message.id,
@@ -319,30 +330,37 @@ class DiscordConnector(BaseConnector):
         summary["action result: "] = f"action result: fetching messages from {channel_id} channel ended with success"
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def parse_date(self, date_string):
+    def parse_date(self, date_string: str) -> tuple[bool, Optional[datetime]]:
         if date_string is None:
-            return PARSE_SUCCEEDED, None
+            return True, None
         try:
             date = datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
-            return PARSE_SUCCEEDED, date.replace(tzinfo=pytz.UTC)
+            return True, date.replace(tzinfo=pytz.UTC)
         except ValueError:
-            return PARSE_FAILED, None
+            return False, None
 
-    def fetch_message_history(self, channel_id, action_result, fetching_start_date: datetime or None,
-                              fetching_end_date: datetime or None, oldest_first,
-                              limit) -> tuple[bool, list[discord.Message]] or tuple[bool, None]:
+    def fetch_message_history(self, channel_id: int, action_result: ActionResult,
+                              fetching_start_date: Optional[datetime],
+                              fetching_end_date: Optional[datetime], oldest_first,
+                              limit: Optional[int]) -> tuple[bool, Optional[list[discord.Message]]]:
 
+        channel: Union[discord.TextChannel, discord.VoiceChannel, discord.StageChannel]
         status, channel = self.run_in_loop(self._guild.fetch_channel(channel_id), action_result,
                                            "Cannot fetch channel from Discord.")
         if not status:
             return status, None
+
+        messages: list[discord.Message]
         status, messages = self.run_in_loop(
             self.gather_messages(channel, fetching_start_date, fetching_end_date, oldest_first, limit),
             action_result, "Cannot fetch messages from Discord.")
 
         return status, messages
 
-    async def gather_messages(self, channel, fetching_start_date, fetching_end_date, oldest_first, limit):
+    async def gather_messages(self, channel: Union[discord.TextChannel, discord.VoiceChannel, discord.StageChannel],
+                              fetching_start_date: Optional[datetime], fetching_end_date: Optional[datetime],
+                              oldest_first: bool, limit: Optional[int]) -> list[discord.Message]:
+
         messages = [message async for message in
                     channel.history(limit=limit, after=fetching_start_date, before=fetching_end_date,
                                     oldest_first=oldest_first)]
@@ -353,11 +371,10 @@ class DiscordConnector(BaseConnector):
 
     def _handle_get_user(self, param):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
-
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        user_id = param['user_id']
-
+        user_id: int = param['user_id']
+        user: discord.Member
         status, user = self.run_in_loop(self._guild.fetch_member(user_id), action_result,
                                         error_message=DISCORD_ERROR_FETCHING_MEMBER)
 
@@ -371,7 +388,7 @@ class DiscordConnector(BaseConnector):
 
         return status
 
-    def run_in_loop(self, coroutine, action_result, error_message=""):
+    def run_in_loop(self, coroutine, action_result: ActionResult, error_message: str = "") -> tuple[bool, Optional[any]]:
         try:
             return action_result.set_status(phantom.APP_SUCCESS), self._loop.run_until_complete(coroutine)
         except discord.DiscordException as e:
@@ -390,10 +407,10 @@ class DiscordConnector(BaseConnector):
         container_count = param.get('container_count', None)
 
         status, channels = self.run_in_loop(self._guild.fetch_channels(), action_result,
-                                            error_message="Cannot fetch channel from Discord.")
+                                            error_message=DISCORD_ERROR_FETCHING_CHANNEL)
         if not status:
             self.save_progress("action result: Cannot Poll messages, unable to fetch channels ")
-            return action_result.set_status(phantom.APP_ERROR, "action result: Cannot Poll messages")
+            return action_result.set_status(phantom.APP_ERROR, DISCORD_ERROR_FETCHING_MESSAGE)
 
         self._status = self.load_state()
         last_poll_date = self._state.get("last_poll_date", None)
@@ -404,9 +421,11 @@ class DiscordConnector(BaseConnector):
 
         self.save_progress(f"lading last poll date: {last_poll_date}")
 
-        newest_message = last_poll_date or datetime.min.replace(tzinfo=pytz.UTC)
+        newest_message: datetime = last_poll_date or datetime.min.replace(tzinfo=pytz.UTC)
 
-        for channel in filter((lambda channel_to_test: isinstance(channel_to_test, discord.TextChannel)), channels):
+        for channel in filter((lambda channel_to_test: isinstance(channel_to_test,
+                                                                  (discord.TextChannel, discord.VoiceChannel, discord.StageChannel))),
+                              channels):
 
             status, messages = self.fetch_message_history(channel.id, action_result, last_poll_date,
                                                           None, True, container_count)
@@ -424,7 +443,7 @@ class DiscordConnector(BaseConnector):
                     ret_val = self.save_on_poll_container(message, channel)
                     if phantom.is_fail(ret_val):
                         return action_result.set_status(phantom.APP_ERROR,
-                                                        "fUnable to create container: {message}")
+                                                        f"Unable to create container: {message}")
 
         newest_message = newest_message.replace(tzinfo=pytz.UTC)
         self.save_progress(f"saving last poll date: {str(newest_message)[:-6]}")
@@ -434,7 +453,8 @@ class DiscordConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def save_on_poll_container(self, message, channel):
+    def save_on_poll_container(self, message: discord.Message,
+                               channel: Union[discord.TextChannel, discord.VoiceChannel, discord.StageChannel]):
 
         contains_embeds_or_attachments = True if (message.attachments or message.embeds) else False
 
@@ -454,6 +474,7 @@ class DiscordConnector(BaseConnector):
             name=str(message.id),
             cef={
                 "contains embeds or attachments": contains_embeds_or_attachments,
+                "message creation date": message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                 "content": message.content,
             }
         )
