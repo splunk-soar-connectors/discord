@@ -26,9 +26,9 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [ban user](#action-ban-user) - Bans user from a guild  
 [fetch message](#action-fetch-message) - Gets information about the message  
 [delete message](#action-delete-message) - Removes a message from a channel  
-[fetch message history](#action-fetch-message-history) - fetches message history  
+[fetch message history](#action-fetch-message-history) - Gets information about the message  
 [get user](#action-get-user) - Get information about a user of a Discord guild/server  
-[on poll](#action-on-poll) - handles data ingestion from discord text channels  
+[on poll](#action-on-poll) - Handles data ingestion from discord text channels  
 
 ## action: 'test connectivity'
 Tests authorization with Discord
@@ -201,10 +201,12 @@ summary.total_objects | numeric |  |
 summary.total_objects_successful | numeric |  |    
 
 ## action: 'fetch message history'
-fetches message history
+Gets information about the message
 
 Type: **investigate**  
 Read only: **True**
+
+Gets information about the message, from start data to end date.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
@@ -218,6 +220,11 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
+action_result.parameter.channel_id | numeric |  `discord channel id`  |  
+action_result.parameter.fetching_start_date | string |  `date`  |  
+action_result.parameter.fetching_end_date | string |  `date`  |  
+action_result.parameter.limit | numeric |  `limit`  |  
+action_result.parameter.oldest_first | boolean |  |  
 action_result.data.\*.message id | string |  `discord message id`  |  
 action_result.data.\*.author id | string |  `discord user id`  |  
 action_result.data.\*.created at | string |  `date`  |  
@@ -256,10 +263,12 @@ summary.total_objects | numeric |  |
 summary.total_objects_successful | numeric |  |    
 
 ## action: 'on poll'
-handles data ingestion from discord text channels
+Handles data ingestion from discord text channels
 
 Type: **ingest**  
 Read only: **True**
+
+Handles data ingestion from discord text channels.
 
 #### Action Parameters
 No parameters are required for this action
