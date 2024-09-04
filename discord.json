@@ -620,8 +620,8 @@
         {
             "action": "fetch message history",
             "identifier": "fetch_message_history",
-            "description": "fetches message history",
-            "verbose": "",
+            "description": "Gets information about the message",
+            "verbose": "Gets information about the message, from start data to end date.",
             "type": "investigate",
             "read_only": true,
             "parameters": {
@@ -687,13 +687,55 @@
                     "required": false,
                     "primary": false,
                     "contains": [],
-                    "value_list": [],
+                    "value_list": [
+                        false,
+                        true
+                    ],
                     "default": "",
                     "order": 4,
                     "name": "oldest first"
                   }
             },
             "output": [
+                {
+                    "data_path": "action_result.parameter.channel_id",
+                    "data_type": "numeric",
+                    "contains": [
+                        "discord channel id"
+                    ],
+                    "column_name": "channel_id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.fetching_start_date",
+                    "data_type": "string",
+                    "contains": [
+                        "date"
+                    ],
+                    "column_name": "fetching_start_date",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.parameter.fetching_end_date",
+                    "data_type": "string",
+                    "contains": [
+                        "date"
+                    ],
+                    "column_name": "fetching_end_date",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.parameter.limit",
+                    "data_type": "numeric",
+                    "contains": [
+                        "limit"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.oldest_first",
+                    "data_type": "boolean",
+                    "contains": []
+                },
                 {
                     "data_path": "action_result.data.*.message id",
                     "data_type": "string",
@@ -707,7 +749,7 @@
                     "data_path": "action_result.data.*.author id",
                     "data_type": "string",
                     "column_name": "Author ID",
-                    "column_order": 1,
+                    "column_order": 3,
                     "contains": [
                         "discord user id"
                     ]
@@ -716,7 +758,7 @@
                     "data_path": "action_result.data.*.created at",
                     "data_type": "string",
                     "column_name": "Creation date",
-                    "column_order": 2,
+                    "column_order": 4,
                     "contains": [
                         "date"
                     ]
@@ -725,7 +767,7 @@
                     "data_path": "action_result.data.*.embeds_attachments",
                     "data_type": "string",
                     "column_name": "Embeds/Attachments",
-                    "column_order": 3,
+                    "column_order": 5,
                     "contains": [
                         "discord message embeds_attachments"
                     ]
@@ -734,7 +776,7 @@
                     "data_path": "action_result.data.*.content",
                     "data_type": "string",
                     "column_name": "content",
-                    "column_order": 4,
+                    "column_order": 6,
                     "contains": [
                         "message content"
                     ]
@@ -743,7 +785,7 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "status",
-                    "column_order": 5
+                    "column_order": 7
                 },
                 {
                     "data_path": "action_result.message",
@@ -858,8 +900,8 @@
         {
             "action": "on poll",
             "identifier": "on_poll",
-            "description": "handles data ingestion from discord text channels",
-            "verbose": "",
+            "description": "Handles data ingestion from discord text channels",
+            "verbose": "Handles data ingestion from discord text channels.",
             "type": "ingest",
             "read_only": true,
             "parameters": {},
