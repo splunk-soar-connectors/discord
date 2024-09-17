@@ -19,7 +19,7 @@
     "product_version_regex": ".*",
     "publisher": "Splunk",
     "license": "Copyright (c) 2024 Splunk Inc.",
-    "app_version": "1.0.0",
+    "app_version": "1.0.1",
     "utctime_updated": "2024-08-12T12:06:21.058775Z",
     "package_name": "phantom",
     "main_module": "discord_connector.py",
@@ -631,8 +631,8 @@
                     "required": true,
                     "primary": true,
                     "contains": [
-                                  "discord channel id"
-                              ],
+                        "discord channel id"
+                    ],
                     "value_list": [],
                     "default": "",
                     "order": 0,
@@ -644,7 +644,7 @@
                     "required": false,
                     "primary": false,
                     "contains": [
-                      "date"
+                        "date"
                     ],
                     "value_list": [],
                     "default": "",
@@ -659,7 +659,7 @@
                     "required": false,
                     "primary": false,
                     "contains": [
-                      "date"
+                        "date"
                     ],
                     "value_list": [],
                     "default": "",
@@ -674,7 +674,7 @@
                     "required": false,
                     "primary": false,
                     "contains": [
-                      "limit"
+                        "limit"
                     ],
                     "value_list": [],
                     "default": "",
@@ -694,7 +694,7 @@
                     "default": "",
                     "order": 4,
                     "name": "oldest first"
-                  }
+                }
             },
             "output": [
                 {
@@ -815,7 +815,6 @@
             "parameters": {
                 "user_id": {
                     "description": "The ID of a user to get information of",
-
                     "data_type": "string",
                     "required": true,
                     "primary": true,

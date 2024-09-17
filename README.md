@@ -2,7 +2,7 @@
 # Discord
 
 Publisher: Splunk  
-Connector Version: 1.0.0  
+Connector Version: 1.0.1  
 Product Vendor: Discord  
 Product Name: Discord  
 Product Version Supported (regex): ".\*"  
