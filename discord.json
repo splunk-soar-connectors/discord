@@ -747,7 +747,7 @@
                     "data_path": "action_result.data.*.message id",
                     "data_type": "string",
                     "column_name": "message ID",
-                    "column_order": 0,
+                    "column_order": 3,
                     "contains": [
                         "discord message id"
                     ]
@@ -756,7 +756,7 @@
                     "data_path": "action_result.data.*.author id",
                     "data_type": "string",
                     "column_name": "Author ID",
-                    "column_order": 3,
+                    "column_order": 4,
                     "contains": [
                         "discord user id"
                     ]
@@ -765,7 +765,7 @@
                     "data_path": "action_result.data.*.created at",
                     "data_type": "string",
                     "column_name": "Creation date",
-                    "column_order": 4,
+                    "column_order": 5,
                     "contains": [
                         "date"
                     ]
@@ -774,7 +774,7 @@
                     "data_path": "action_result.data.*.embeds_attachments",
                     "data_type": "string",
                     "column_name": "Embeds/Attachments",
-                    "column_order": 5,
+                    "column_order": 6,
                     "contains": [
                         "discord message embeds_attachments"
                     ]
@@ -783,7 +783,7 @@
                     "data_path": "action_result.data.*.content",
                     "data_type": "string",
                     "column_name": "content",
-                    "column_order": 6,
+                    "column_order": 7,
                     "contains": [
                         "message content"
                     ]
@@ -792,7 +792,7 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "status",
-                    "column_order": 7
+                    "column_order": 8
                 },
                 {
                     "data_path": "action_result.message",
