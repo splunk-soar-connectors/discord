@@ -43,6 +43,12 @@
             "order": 1,
             "name": "guild_id",
             "id": 1
+        },
+        "verify_server_cert": {
+            "description": "Verify server certificate",
+            "data_type": "boolean",
+            "default": false,
+            "order": 2
         }
     },
     "actions": [
