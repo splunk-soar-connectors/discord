@@ -16,14 +16,15 @@
     "logo_dark": "discord_dark.svg",
     "product_name": "Discord",
     "python_version": "3",
+    "fips_compliant": true,
     "product_version_regex": ".*",
     "publisher": "Splunk",
     "license": "Copyright (c) 2024 Splunk Inc.",
-    "app_version": "1.0.1",
+    "app_version": "1.0.2",
     "utctime_updated": "2024-08-12T12:06:21.058775Z",
     "package_name": "phantom_discord",
     "main_module": "discord_connector.py",
-    "min_phantom_version": "6.2.2.134",
+    "min_phantom_version": "6.3.0",
     "app_wizard_version": "1.0.0",
     "configuration": {
         "token": {
