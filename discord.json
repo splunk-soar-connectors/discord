@@ -633,7 +633,7 @@
             "read_only": true,
             "parameters": {
                 "channel_id": {
-                    "description": "discord channel id",
+                    "description": "The ID of a channel to fetch message history from",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -646,7 +646,7 @@
                     "name": "channel_id"
                 },
                 "fetching_start_date": {
-                    "description": "fetching start date (UTC): %Y-%m-%d %H:%M:%S",
+                    "description": "Fetching start date (UTC): %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
@@ -661,7 +661,7 @@
                     "param_name": "fetching_start_date"
                 },
                 "fetching_end_date": {
-                    "description": "fetching end date (UTC): %Y-%m-%d %H:%M:%S",
+                    "description": "Fetching end date (UTC): %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
@@ -676,7 +676,7 @@
                     "param_name": "fetching_end_date"
                 },
                 "limit": {
-                    "description": "messages limit",
+                    "description": "Limit of messages",
                     "data_type": "numeric",
                     "required": false,
                     "primary": false,
@@ -689,7 +689,7 @@
                     "name": "limit"
                 },
                 "oldest_first": {
-                    "description": "oldest first",
+                    "description": "Set to true for having oldest messages first",
                     "data_type": "boolean",
                     "required": false,
                     "primary": false,
@@ -698,7 +698,7 @@
                         false,
                         true
                     ],
-                    "default": "",
+                    "default": true,
                     "order": 4,
                     "name": "oldest first"
                 }
