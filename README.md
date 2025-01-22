@@ -2,21 +2,22 @@
 # Discord
 
 Publisher: Splunk  
-Connector Version: 1.0.1  
+Connector Version: 1.0.2  
 Product Vendor: Discord  
 Product Name: Discord  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.2.2.134  
+Minimum Product Version: 6.3.0  
 
 Integrate with Discord to post messages and attachments to channels
 
-### Configuration Variables
-The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Discord asset in SOAR.
+### Configuration variables
+This table lists the configuration variables required to operate Discord. These variables are specified when configuring a Discord asset in Splunk SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **token** |  required  | password | Discord bot token
 **guild_id** |  required  | numeric | Server aka Guild ID
+**verify_server_cert** |  optional  | boolean | Verify server certificate
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Tests authorization with Discord  
@@ -211,11 +212,11 @@ Gets information about the message, from start data to end date.
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**channel_id** |  required  | discord channel id | string |  `discord channel id` 
-**fetching_start_date** |  optional  | fetching start date (UTC): %Y-%m-%d %H:%M:%S | string |  `date` 
-**fetching_end_date** |  optional  | fetching end date (UTC): %Y-%m-%d %H:%M:%S | string |  `date` 
-**limit** |  optional  | messages limit | numeric |  `limit` 
-**oldest_first** |  optional  | oldest first | boolean | 
+**channel_id** |  required  | The ID of a channel to fetch message history from | string |  `discord channel id` 
+**fetching_start_date** |  optional  | Fetching start date (UTC): %Y-%m-%d %H:%M:%S | string |  `date` 
+**fetching_end_date** |  optional  | Fetching end date (UTC): %Y-%m-%d %H:%M:%S | string |  `date` 
+**limit** |  optional  | Limit of messages | numeric |  `limit` 
+**oldest_first** |  optional  | Set to true for having oldest messages first | boolean | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
