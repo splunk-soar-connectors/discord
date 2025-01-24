@@ -216,7 +216,7 @@ class DiscordConnector(BaseConnector):
 
         for channel in channels:
             if channel.type == discord.ChannelType.text:
-                action_result.add_data({"name": channel.name, "id": channel.id})
+                action_result.add_data({"name": channel.name, "id": str(channel.id)})
 
         summary = action_result.update_summary({})
         summary["num_channels"] = len([channel for channel in channels if channel.type == discord.ChannelType.text])
