@@ -163,19 +163,19 @@ class DiscordConnector(BaseConnector):
 
     def parse_message(self, message: discord.Message, attachments: List[Optional[int]], embeds: List[Optional[int]]):
         return {
-            "message origin": {
-                "channel id": message.channel.id,
-                "channel name": message.channel.name,
+            "message_origin": {
+                "channel_id": message.channel.id,
+                "channel_name": message.channel.name,
             },
             "message data": {
-                "created at": str(message.created_at),
-                "edited at": str(message.edited_at) if message.edited_at is not None else "message was not edited",
+                "created_at": str(message.created_at),
+                "edited_at": str(message.edited_at) if message.edited_at is not None else "message was not edited",
             },
-            "author data": {
-                "author id": message.author.id,
-                "author name": message.author.name,
+            "author_data": {
+                "author_id": message.author.id,
+                "author_name": message.author.name,
             },
-            "jump url": message.jump_url,
+            "jump_url": message.jump_url,
             "flags": [flag[0] for flag in filter(lambda flag: flag[1], message.flags)] or "no flags",
             "attachments": attachments or "no attachments",
             "embeds": embeds or "no embeds",
