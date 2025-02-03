@@ -283,6 +283,10 @@ class DiscordConnector(BaseConnector):
         if limit == 0:
             limit = None
 
+        if limit < 0:
+            return action_result.set_status(phantom.APP_ERROR,
+                                            f"action result: limit must be greater than or equal to 0.")
+
         oldest_first: bool = param.get("oldest_first", False)
 
         self.save_progress(f"status_after {status_after}: {fetching_start_date} | status_before {status_before}: {fetching_end_date}")
