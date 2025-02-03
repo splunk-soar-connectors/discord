@@ -938,7 +938,7 @@
             },
             {
                 "module": "attrs",
-                "input_file": "wheels/py3/attrs-24.3.0-py3-none-any.whl"
+                "input_file": "wheels/py3/attrs-25.1.0-py3-none-any.whl"
             },
             {
                 "module": "discord.py",

@@ -284,8 +284,7 @@ class DiscordConnector(BaseConnector):
             limit = None
 
         if limit < 0:
-            return action_result.set_status(phantom.APP_ERROR,
-                                            f"action result: limit must be greater than or equal to 0.")
+            return action_result.set_status(phantom.APP_ERROR, "action result: limit must be greater than or equal to 0.")
 
         oldest_first: bool = param.get("oldest_first", False)
 
