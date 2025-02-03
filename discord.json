@@ -19,7 +19,7 @@
     "fips_compliant": true,
     "product_version_regex": ".*",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2024-2025 Splunk Inc.",
+    "license": "Copyright (c) 2025 Splunk Inc.",
     "app_version": "1.0.2",
     "utctime_updated": "2024-08-12T12:06:21.058775Z",
     "package_name": "phantom_discord",
