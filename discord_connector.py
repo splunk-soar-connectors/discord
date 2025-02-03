@@ -164,16 +164,16 @@ class DiscordConnector(BaseConnector):
     def parse_message(self, message: discord.Message, attachments: List[Optional[int]], embeds: List[Optional[int]]):
         return {
             "message_origin": {
-                "channel_id": message.channel.id,
-                "channel_name": message.channel.name,
+                "channel_id": str(message.channel.id),
+                "channel_name": str(message.channel.name),
             },
             "message data": {
                 "created_at": str(message.created_at),
                 "edited_at": str(message.edited_at) if message.edited_at is not None else "message was not edited",
             },
             "author_data": {
-                "author_id": message.author.id,
-                "author_name": message.author.name,
+                "author_id": str(message.author.id),
+                "author_name": str(message.author.name),
             },
             "jump_url": message.jump_url,
             "flags": [flag[0] for flag in filter(lambda flag: flag[1], message.flags)] or "no flags",
@@ -236,7 +236,7 @@ class DiscordConnector(BaseConnector):
         message: discord.Message
         status, message = self.run_in_loop(channel.send(message_to_send), action_result, error_message=DISCORD_ERROR_SENDING_MESSAGE)
 
-        action_result.add_data({"message_id": message.id})
+        action_result.add_data({"message_id": str(message.id)})
 
         return status
 
@@ -302,8 +302,8 @@ class DiscordConnector(BaseConnector):
         for message in messages:
             action_result.add_data(
                 {
-                    "message id": message.id,
-                    "author id": message.author.id,
+                    "message id": str(message.id),
+                    "author id": str(message.author.id),
                     "created at": str(message.created_at),
                     "embeds_attachments": True if (message.attachments or message.embeds) else False,
                     "content": message.content,
