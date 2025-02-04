@@ -841,7 +841,7 @@
                     "contains": [
                         "discord user id"
                     ],
-                    "column_name": "user_id",
+                    "column_name": "user id",
                     "column_order": 0
                 },
                 {
