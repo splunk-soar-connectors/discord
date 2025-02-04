@@ -588,7 +588,7 @@
                     "contains": [
                         "discord channel id"
                     ],
-                    "column_name": "channel_id",
+                    "column_name": "channel id",
                     "column_order": 0
                 },
                 {
@@ -597,7 +597,7 @@
                     "contains": [
                         "discord message id"
                     ],
-                    "column_name": "message_id",
+                    "column_name": "message id",
                     "column_order": 1
                 },
                 {
