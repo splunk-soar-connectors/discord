@@ -710,7 +710,7 @@
                     "contains": [
                         "discord channel id"
                     ],
-                    "column_name": "channel_id",
+                    "column_name": "channel id",
                     "column_order": 0
                 },
                 {
@@ -719,7 +719,7 @@
                     "contains": [
                         "date"
                     ],
-                    "column_name": "fetching_start_date",
+                    "column_name": "fetching start date",
                     "column_order": 1
                 },
                 {
@@ -728,7 +728,7 @@
                     "contains": [
                         "date"
                     ],
-                    "column_name": "fetching_end_date",
+                    "column_name": "fetching end date",
                     "column_order": 2
                 },
                 {
