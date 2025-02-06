@@ -1,7 +1,7 @@
 # Discord
 
 Publisher: Splunk \
-Connector Version: 1.0.3 \
+Connector Version: 1.0.2 \
 Product Vendor: Discord \
 Product Name: Discord \
 Minimum Product Version: 6.3.0
