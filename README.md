@@ -16,7 +16,6 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **token** | required | password | Discord bot token |
 **guild_id** | required | numeric | Server aka Guild ID |
-**verify_server_cert** | optional | boolean | Verify server certificate |
 
 ### Supported Actions
 
