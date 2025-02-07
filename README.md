@@ -6,7 +6,7 @@ Product Vendor: Discord \
 Product Name: Discord \
 Minimum Product Version: 6.3.0
 
-Integrate with Discord to post messages and attachments to channels
+Integrate with Discord to post messages and menage users in guilds
 
 ### Configuration variables
 
