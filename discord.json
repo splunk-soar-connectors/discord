@@ -1,7 +1,7 @@
 {
     "appid": "0e4f8ac8-af3d-4fbd-802f-fd06607fe0b9",
     "name": "Discord",
-    "description": "Integrate with Discord to post messages and attachments to channels",
+    "description": "Integrate with Discord to post messages and manage users in guilds",
     "contributors": [
         {
             "name": "Kacper Czernik"
@@ -16,14 +16,15 @@
     "logo_dark": "discord_dark.svg",
     "product_name": "Discord",
     "python_version": "3",
+    "fips_compliant": true,
     "product_version_regex": ".*",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2024 Splunk Inc.",
-    "app_version": "1.0.1",
+    "license": "Copyright (c) 2025 Splunk Inc.",
+    "app_version": "1.0.2",
     "utctime_updated": "2024-08-12T12:06:21.058775Z",
-    "package_name": "phantom",
+    "package_name": "phantom_discord",
     "main_module": "discord_connector.py",
-    "min_phantom_version": "6.2.2.134",
+    "min_phantom_version": "6.3.0",
     "app_wizard_version": "1.0.0",
     "configuration": {
         "token": {
@@ -416,7 +417,7 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.message origin.channel id",
+                    "data_path": "action_result.data.*.message_origin.channel_id",
                     "data_type": "numeric",
                     "contains": [
                         "discord channel id"
@@ -425,7 +426,7 @@
                     "column_order": 0
                 },
                 {
-                    "data_path": "action_result.data.*.message origin.channel name",
+                    "data_path": "action_result.data.*.message_origin.channel_name",
                     "data_type": "string",
                     "contains": [
                         "discord channel name"
@@ -434,7 +435,7 @@
                     "column_order": 1
                 },
                 {
-                    "data_path": "action_result.data.*.message data.created at",
+                    "data_path": "action_result.data.*.message_data.created_at",
                     "data_type": "numeric",
                     "contains": [
                         "date"
@@ -443,7 +444,7 @@
                     "column_order": 2
                 },
                 {
-                    "data_path": "action_result.data.*.message data.edited at",
+                    "data_path": "action_result.data.*.message_data.edited_at",
                     "data_type": "numeric",
                     "contains": [
                         "date"
@@ -452,7 +453,7 @@
                     "column_order": 3
                 },
                 {
-                    "data_path": "action_result.data.*.author data.author id",
+                    "data_path": "action_result.data.*.author_data.author_id",
                     "data_type": "numeric",
                     "contains": [
                         "author id",
@@ -462,7 +463,7 @@
                     "column_order": 4
                 },
                 {
-                    "data_path": "action_result.data.*.author data.author name",
+                    "data_path": "action_result.data.*.author_data.author_name",
                     "data_type": "string",
                     "contains": [
                         "author name"
@@ -498,7 +499,7 @@
                     "column_order": 8
                 },
                 {
-                    "data_path": "action_result.data.*.jump url",
+                    "data_path": "action_result.data.*.jump_url",
                     "data_type": "string",
                     "contains": [
                         "url"
@@ -581,7 +582,7 @@
                     "contains": [
                         "discord channel id"
                     ],
-                    "column_name": "channel_id",
+                    "column_name": "channel id",
                     "column_order": 0
                 },
                 {
@@ -590,7 +591,7 @@
                     "contains": [
                         "discord message id"
                     ],
-                    "column_name": "message_id",
+                    "column_name": "message id",
                     "column_order": 1
                 },
                 {
@@ -626,7 +627,7 @@
             "read_only": true,
             "parameters": {
                 "channel_id": {
-                    "description": "discord channel id",
+                    "description": "The ID of a channel to fetch message history from",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -639,7 +640,7 @@
                     "name": "channel_id"
                 },
                 "fetching_start_date": {
-                    "description": "fetching start date (UTC): %Y-%m-%d %H:%M:%S",
+                    "description": "Fetching start date (UTC): %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
@@ -654,7 +655,7 @@
                     "param_name": "fetching_start_date"
                 },
                 "fetching_end_date": {
-                    "description": "fetching end date (UTC): %Y-%m-%d %H:%M:%S",
+                    "description": "Fetching end date (UTC): %Y-%m-%d %H:%M:%S",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
@@ -669,7 +670,7 @@
                     "param_name": "fetching_end_date"
                 },
                 "limit": {
-                    "description": "messages limit",
+                    "description": "Limit of messages",
                     "data_type": "numeric",
                     "required": false,
                     "primary": false,
@@ -682,7 +683,7 @@
                     "name": "limit"
                 },
                 "oldest_first": {
-                    "description": "oldest first",
+                    "description": "Set to true for having oldest messages first",
                     "data_type": "boolean",
                     "required": false,
                     "primary": false,
@@ -691,7 +692,7 @@
                         false,
                         true
                     ],
-                    "default": "",
+                    "default": false,
                     "order": 4,
                     "name": "oldest first"
                 }
@@ -703,7 +704,7 @@
                     "contains": [
                         "discord channel id"
                     ],
-                    "column_name": "channel_id",
+                    "column_name": "channel id",
                     "column_order": 0
                 },
                 {
@@ -712,7 +713,7 @@
                     "contains": [
                         "date"
                     ],
-                    "column_name": "fetching_start_date",
+                    "column_name": "fetching start date",
                     "column_order": 1
                 },
                 {
@@ -721,7 +722,7 @@
                     "contains": [
                         "date"
                     ],
-                    "column_name": "fetching_end_date",
+                    "column_name": "fetching end date",
                     "column_order": 2
                 },
                 {
@@ -740,16 +741,16 @@
                     "data_path": "action_result.data.*.message id",
                     "data_type": "string",
                     "column_name": "message ID",
-                    "column_order": 0,
+                    "column_order": 3,
                     "contains": [
                         "discord message id"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.author id",
+                    "data_path": "action_result.data.*.author_id",
                     "data_type": "string",
                     "column_name": "Author ID",
-                    "column_order": 3,
+                    "column_order": 4,
                     "contains": [
                         "discord user id"
                     ]
@@ -758,7 +759,7 @@
                     "data_path": "action_result.data.*.created at",
                     "data_type": "string",
                     "column_name": "Creation date",
-                    "column_order": 4,
+                    "column_order": 5,
                     "contains": [
                         "date"
                     ]
@@ -767,7 +768,7 @@
                     "data_path": "action_result.data.*.embeds_attachments",
                     "data_type": "string",
                     "column_name": "Embeds/Attachments",
-                    "column_order": 5,
+                    "column_order": 6,
                     "contains": [
                         "discord message embeds_attachments"
                     ]
@@ -776,7 +777,7 @@
                     "data_path": "action_result.data.*.content",
                     "data_type": "string",
                     "column_name": "content",
-                    "column_order": 6,
+                    "column_order": 7,
                     "contains": [
                         "message content"
                     ]
@@ -785,7 +786,7 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "status",
-                    "column_order": 7
+                    "column_order": 8
                 },
                 {
                     "data_path": "action_result.message",
@@ -834,7 +835,7 @@
                     "contains": [
                         "discord user id"
                     ],
-                    "column_name": "user_id",
+                    "column_name": "user id",
                     "column_order": 0
                 },
                 {
@@ -915,23 +916,23 @@
         "wheel": [
             {
                 "module": "aiohappyeyeballs",
-                "input_file": "wheels/py3/aiohappyeyeballs-2.4.0-py3-none-any.whl"
+                "input_file": "wheels/py3/aiohappyeyeballs-2.4.4-py3-none-any.whl"
             },
             {
                 "module": "aiohttp",
-                "input_file": "wheels/py39/aiohttp-3.10.5-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+                "input_file": "wheels/py39/aiohttp-3.11.11-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
             },
             {
                 "module": "aiosignal",
-                "input_file": "wheels/py3/aiosignal-1.3.1-py3-none-any.whl"
+                "input_file": "wheels/shared/aiosignal-1.3.2-py2.py3-none-any.whl"
             },
             {
                 "module": "async_timeout",
-                "input_file": "wheels/py3/async_timeout-4.0.3-py3-none-any.whl"
+                "input_file": "wheels/py3/async_timeout-5.0.1-py3-none-any.whl"
             },
             {
                 "module": "attrs",
-                "input_file": "wheels/py3/attrs-24.2.0-py3-none-any.whl"
+                "input_file": "wheels/py3/attrs-25.1.0-py3-none-any.whl"
             },
             {
                 "module": "discord.py",
@@ -939,19 +940,23 @@
             },
             {
                 "module": "frozenlist",
-                "input_file": "wheels/py39/frozenlist-1.4.1-cp39-cp39-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl"
-            },
-            {
-                "module": "idna",
-                "input_file": "wheels/py3/idna-3.7-py3-none-any.whl"
+                "input_file": "wheels/py39/frozenlist-1.5.0-cp39-cp39-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.manylinux_2_28_x86_64.whl"
             },
             {
                 "module": "multidict",
-                "input_file": "wheels/py39/multidict-6.0.5-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+                "input_file": "wheels/py39/multidict-6.1.0-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+            },
+            {
+                "module": "propcache",
+                "input_file": "wheels/py39/propcache-0.2.1-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+            },
+            {
+                "module": "typing_extensions",
+                "input_file": "wheels/py3/typing_extensions-4.12.2-py3-none-any.whl"
             },
             {
                 "module": "yarl",
-                "input_file": "wheels/py39/yarl-1.9.4-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+                "input_file": "wheels/py39/yarl-1.18.3-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
             }
         ]
     }
